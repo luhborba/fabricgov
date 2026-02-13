@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "fabricgov"
+version = "0.1.0"
+description = "Framework de governança de ambientes Microsoft Fabric"
+authors = ["Luciano Borba <luhborbafilho@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fabricgov"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+msal = "^1.28"
+httpx = "^0.27"
+click = "^8.1"
+pydantic = "^2.0"
+python-dotenv = "^1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+pytest-httpx = "^0.30"
+
+[tool.poetry.scripts]
+fabricgov = "fabricgov.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
