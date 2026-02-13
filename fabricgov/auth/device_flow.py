@@ -12,6 +12,7 @@ class DeviceFlowAuth:
         self._app = msal.PublicClientApplication(
             client_id=client_id,
             authority=f"https://login.microsoftonline.com/{tenant_id}",
+            validate_authority=False,
         )
     
     def get_token(self, scope: str) -> str:
