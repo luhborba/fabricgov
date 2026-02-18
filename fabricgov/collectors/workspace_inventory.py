@@ -49,17 +49,28 @@ class WorkspaceInventoryCollector(BaseCollector):
         self._progress = progress_callback or (lambda msg: None)
         self._poll_interval = poll_interval
         self._max_poll_time = max_poll_time
+        
+        # Acumuladores de datasources (preenchidos durante os scans)
+        self._datasource_instances = []
+        self._misconfigured_datasource_instances = []
 
     def collect(self) -> dict[str, Any]:
         """
-        Executa coleta completa do inventário de workspaces.
+        Executa coleta completa do inventário de workspaces e artefatos.
         
         Returns:
             {
-                "workspaces": [...],  # lista de todos os workspaces com metadados
+                "workspaces": [...],  # metadados dos workspaces
+                "dashboards": [...],
+                "datasets": [...],
+                "reports": [...],
+                ... (todos os tipos de artefatos)
+                "datasourceInstances": [...],
+                "misconfiguredDatasourceInstances": [...],
                 "summary": {
                     "total_workspaces": int,
                     "total_items": int,
+                    "items_by_type": {...},
                     "scan_duration_seconds": float,
                     "batches_processed": int,
                 }
@@ -73,15 +84,7 @@ class WorkspaceInventoryCollector(BaseCollector):
         self._progress(f"Encontrados {len(workspace_ids)} workspaces")
 
         if not workspace_ids:
-            return {
-                "workspaces": [],
-                "summary": {
-                    "total_workspaces": 0,
-                    "total_items": 0,
-                    "scan_duration_seconds": 0,
-                    "batches_processed": 0,
-                }
-            }
+            return self._empty_result()
 
         # Etapa 2: Divide em lotes de 100
         batches = [
@@ -92,36 +95,43 @@ class WorkspaceInventoryCollector(BaseCollector):
         self._progress(f"Dividido em {total_batches} lote(s) de até {self.BATCH_SIZE} workspaces")
 
         # Etapa 3: Processa cada lote
-        all_workspaces = []
+        all_workspaces_raw = []
         for batch_num, batch_ids in enumerate(batches, start=1):
             self._progress(f"\n--- Lote {batch_num}/{total_batches} ({len(batch_ids)} workspaces) ---")
             batch_result = self._scan_workspaces(batch_ids, batch_num, total_batches)
-            all_workspaces.extend(batch_result)
+            all_workspaces_raw.extend(batch_result)
 
-        # Etapa 4: Agrega resultado final
+        # Etapa 4: Extrai e agrupa artefatos por tipo
+        self._progress("\nExtraindo e agrupando artefatos...")
+        
+        # Inicializa acumuladores de datasources
+        self._datasource_instances = []
+        self._misconfigured_datasource_instances = []
+        
+        result = self._extract_artifacts(all_workspaces_raw)
+        
+        # Adiciona datasources ao resultado
+        result["datasourceInstances"] = self._datasource_instances
+        result["misconfiguredDatasourceInstances"] = self._misconfigured_datasource_instances
+        result["summary"]["items_by_type"]["datasourceInstances"] = len(self._datasource_instances)
+        result["summary"]["items_by_type"]["misconfiguredDatasourceInstances"] = len(
+            self._misconfigured_datasource_instances
+        )
+        
+        # Etapa 5: Calcula summary
         duration = time.time() - start_time
-        total_items = sum(
-            len(ws.get("datasets", [])) +
-            len(ws.get("reports", [])) +
-            len(ws.get("dashboards", [])) +
-            len(ws.get("dataflows", [])) +
-            len(ws.get("datamarts", [])) +
-            len(ws.get("lakehouses", [])) +
-            len(ws.get("warehouses", []))
-            for ws in all_workspaces
+        result["summary"]["total_workspaces"] = len(result["workspaces"])
+        result["summary"]["total_items"] = sum(result["summary"]["items_by_type"].values())
+        result["summary"]["scan_duration_seconds"] = round(duration, 2)
+        result["summary"]["batches_processed"] = total_batches
+
+        total_items = result["summary"]["total_items"]
+        self._progress(
+            f"\n✓ Coleta concluída: {len(result['workspaces'])} workspaces, "
+            f"{total_items} itens em {duration:.1f}s"
         )
 
-        self._progress(f"\n✓ Coleta concluída: {len(all_workspaces)} workspaces, {total_items} itens em {duration:.1f}s")
-
-        return {
-            "workspaces": all_workspaces,
-            "summary": {
-                "total_workspaces": len(all_workspaces),
-                "total_items": total_items,
-                "scan_duration_seconds": round(duration, 2),
-                "batches_processed": total_batches,
-            }
-        }
+        return result
 
     # ── métodos internos ──────────────────────────────────────────────────
 
@@ -231,9 +241,136 @@ class WorkspaceInventoryCollector(BaseCollector):
     def _get_scan_result(self, scan_id: str) -> dict[str, Any]:
         """
         GET /v1.0/myorg/admin/workspaces/scanResult/{scanId}
-        Retorna resultado completo do scan.
+        Retorna resultado completo do scan incluindo datasources.
         """
-        return self._get(
+        result = self._get(
             endpoint=f"/v1.0/myorg/admin/workspaces/scanResult/{scan_id}",
             scope=self.FABRIC_SCOPE,
         )
+        
+        # Acumula datasources de todos os scans
+        self._datasource_instances.extend(result.get("datasourceInstances", []))
+        self._misconfigured_datasource_instances.extend(
+            result.get("misconfiguredDatasourceInstances", [])
+        )
+        
+        return result
+
+    def _extract_artifacts(self, workspaces_raw: list[dict]) -> dict[str, Any]:
+        """
+        Extrai artefatos de dentro dos workspaces e cria seções separadas.
+        
+        Args:
+            workspaces_raw: lista de workspaces como retornados pelo scan
+        
+        Returns:
+            Dicionário com workspaces (só metadados) e artefatos agrupados por tipo
+        """
+        # Lista completa de tipos de artefatos conhecidos
+        artifact_types = [
+            "dashboards",
+            "datasets",
+            "reports",
+            "dataflows",
+            "datamarts",
+            "workbooks",
+            "lakehouses",
+            "warehouses",
+            "notebooks",
+            "sparkJobDefinitions",
+            "mlModels",
+            "mlExperiments",
+            "kqlDatabases",
+            "kqlQuerysets",
+            "eventstreams",
+            "reflex",
+            "semanticModels",
+            "sqlEndpoints",
+            "mirroredDatabases",
+            "mirroredWarehouses",
+            "graphqlApis",
+            "sqlDatabases",
+            "variableLibraries",
+            "paginatedReports",
+            "deploymentPipelines",
+        ]
+
+        # Inicializa estrutura de output
+        output = {
+            "workspaces": [],
+            "summary": {"items_by_type": {}}
+        }
+        
+        # Adiciona seção vazia para cada tipo de artefato
+        for artifact_type in artifact_types:
+            output[artifact_type] = []
+            output["summary"]["items_by_type"][artifact_type] = 0
+
+        # Processa cada workspace
+        for ws in workspaces_raw:
+            # Extrai metadados do workspace (sem artefatos)
+            ws_metadata = {
+                "id": ws.get("id"),
+                "name": ws.get("name"),
+                "description": ws.get("description"),
+                "type": ws.get("type"),
+                "state": ws.get("state"),
+                "isReadOnly": ws.get("isReadOnly"),
+                "isOrphaned": ws.get("isOrphaned"),
+                "isOnDedicatedCapacity": ws.get("isOnDedicatedCapacity"),
+                "capacityId": ws.get("capacityId"),
+                "defaultDatasetStorageFormat": ws.get("defaultDatasetStorageFormat"),
+            }
+            output["workspaces"].append(ws_metadata)
+
+            # Extrai artefatos de cada tipo
+            for artifact_type in artifact_types:
+                artifacts = ws.get(artifact_type, [])
+                for artifact in artifacts:
+                    # Adiciona contexto do workspace em cada artefato
+                    artifact_with_context = {
+                        **artifact,
+                        "workspace_id": ws.get("id"),
+                        "workspace_name": ws.get("name"),
+                    }
+                    output[artifact_type].append(artifact_with_context)
+
+        # Calcula contadores por tipo
+        for artifact_type in artifact_types:
+            count = len(output[artifact_type])
+            output["summary"]["items_by_type"][artifact_type] = count
+
+        return output
+
+    def _empty_result(self) -> dict[str, Any]:
+        """Retorna estrutura vazia quando não há workspaces."""
+        artifact_types = [
+            "dashboards", "datasets", "reports", "dataflows", "datamarts",
+            "workbooks", "lakehouses", "warehouses", "notebooks", "sparkJobDefinitions",
+            "mlModels", "mlExperiments", "kqlDatabases", "kqlQuerysets", "eventstreams",
+            "reflex", "semanticModels", "sqlEndpoints", "mirroredDatabases",
+            "mirroredWarehouses", "graphqlApis", "sqlDatabases", "variableLibraries",
+            "paginatedReports", "deploymentPipelines",
+        ]
+        
+        empty = {
+            "workspaces": [],
+            "datasourceInstances": [],
+            "misconfiguredDatasourceInstances": [],
+            "summary": {
+                "total_workspaces": 0,
+                "total_items": 0,
+                "items_by_type": {},
+                "scan_duration_seconds": 0,
+                "batches_processed": 0,
+            }
+        }
+        
+        for artifact_type in artifact_types:
+            empty[artifact_type] = []
+            empty["summary"]["items_by_type"][artifact_type] = 0
+        
+        empty["summary"]["items_by_type"]["datasourceInstances"] = 0
+        empty["summary"]["items_by_type"]["misconfiguredDatasourceInstances"] = 0
+        
+        return empty
