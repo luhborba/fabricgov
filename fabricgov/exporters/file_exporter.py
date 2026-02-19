@@ -49,27 +49,64 @@ class FileExporter:
             log_messages: lista de mensagens de progresso capturadas
         
         Returns:
-            Path da pasta criada (ex: output/20260213_163616/)
+            Path da pasta criada (ex: output/20260219_163616/)
         """
         # Cria pasta timestampada
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         run_dir = self.output_dir / timestamp
         run_dir.mkdir(parents=True, exist_ok=True)
 
-        # Exporta log.txt
-        self._export_log(run_dir, log_messages, result)
+        # Exporta log.txt (se houver mensagens)
+        if log_messages:
+            self._export_log(run_dir, log_messages, result)
 
         # Exporta summary.json (sempre JSON, independente do formato escolhido)
-        self._export_summary(run_dir, result.get("summary", {}))
+        if "summary" in result:
+            self._export_summary(run_dir, result.get("summary", {}))
 
-        # Exporta cada tipo de artefato (só os que têm dados)
+        # Detecta tipo de resultado e exporta adequadamente
+        self._export_result_data(run_dir, result)
+
+        return run_dir
+
+    def _export_result_data(self, run_dir: Path, result: dict[str, Any]) -> None:
+        """
+        Detecta o tipo de resultado e exporta os dados adequadamente.
+        
+        Suporta:
+        - WorkspaceInventoryCollector: múltiplas chaves no primeiro nível
+        - WorkspaceAccessCollector: chave "workspace_access" + "summary"
+        - ReportAccessCollector: chave "report_access" + "summary"
+        """
+        # Caso 1: Access collectors (workspace_access ou report_access)
+        if "workspace_access" in result:
+            items = result["workspace_access"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "workspace_access", items)
+            
+            # Exporta erros se houver
+            errors = result.get("workspace_access_errors", [])
+            if isinstance(errors, list) and len(errors) > 0:
+                self._export_artifact(run_dir, "workspace_access_errors", errors)
+            return
+        
+        if "report_access" in result:
+            items = result["report_access"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "report_access", items)
+            
+            # Exporta erros se houver
+            errors = result.get("report_access_errors", [])
+            if isinstance(errors, list) and len(errors) > 0:
+                self._export_artifact(run_dir, "report_access_errors", errors)
+            return
+
+        # Caso 2: WorkspaceInventoryCollector (múltiplas chaves)
         artifact_keys = [k for k in result.keys() if k not in ["summary"]]
         for key in artifact_keys:
             items = result[key]
             if isinstance(items, list) and len(items) > 0:
                 self._export_artifact(run_dir, key, items)
-
-        return run_dir
 
     # ── métodos internos ──────────────────────────────────────────────────
 
