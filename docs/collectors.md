@@ -7,8 +7,8 @@ Os **coletores** são responsáveis por buscar dados específicos das APIs do Mi
 ## 📦 Coletores Disponíveis
 
 ### ✅ WorkspaceInventoryCollector
-
-Coleta inventário completo de workspaces e artefatos via **Admin Scan API**.
+### ✅ WorkspaceAccessCollector
+### ✅ ReportAccessCollector
 
 ---
 
@@ -321,6 +321,510 @@ if misconfigured:
 
 ---
 
+## 🔐 WorkspaceAccessCollector
+
+Extrai roles de acesso (Admin, Member, Contributor, Viewer) em workspaces via Power BI Admin API.
+
+### O que coleta
+
+- **Roles em workspaces:** Admin, Member, Contributor, Viewer
+- **Usuários:** email, identifier, principal type
+- **Service Principals:** Apps com acesso aos workspaces
+
+**Filtragem automática:**
+- Personal Workspaces são ignorados (não suportam API de usuários)
+
+---
+
+### Como funciona
+
+**Pré-requisito:**
+Requer o resultado do `WorkspaceInventoryCollector` para obter a lista de workspace IDs.
+
+**Fluxo:**
+1. Recebe o `inventory_result` do WorkspaceInventoryCollector
+2. Filtra Personal Workspaces (nome começa com "PersonalWorkspace")
+3. Para cada workspace:
+   - **GET** `/v1.0/myorg/admin/groups/{groupId}/users`
+   - Coleta lista de usuários e roles
+   - Se detectar **429 Rate Limit**: pausa 30s e tenta novamente (até 5x)
+4. Agrega resultados e gera summary
+
+---
+
+### Parâmetros do Construtor
+```python
+WorkspaceAccessCollector(
+    auth: AuthProvider,                          # Obrigatório
+    inventory_result: dict[str, Any],            # Obrigatório
+    progress_callback: Callable[[str], None] | None = None,
+    **kwargs                                     # Passa para BaseCollector
+)
+```
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `auth` | `AuthProvider` | ServicePrincipalAuth ou DeviceFlowAuth |
+| `inventory_result` | `dict` | Resultado do WorkspaceInventoryCollector.collect() |
+| `progress_callback` | `Callable` | Função chamada a cada update de progresso |
+
+---
+
+### Uso Básico
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import (
+    WorkspaceInventoryCollector,
+    WorkspaceAccessCollector
+)
+
+auth = ServicePrincipalAuth.from_env()
+
+# Passo 1: Coleta inventário
+inventory_collector = WorkspaceInventoryCollector(auth=auth)
+inventory_result = inventory_collector.collect()
+
+# Passo 2: Coleta acessos
+access_collector = WorkspaceAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result
+)
+access_result = access_collector.collect()
+
+print(f"Total de acessos: {access_result['summary']['total_access_entries']}")
+print(f"Workspaces processados: {access_result['summary']['workspaces_processed']}")
+```
+
+---
+
+### Estrutura do Output
+```python
+{
+  "workspace_access": [
+    {
+      "workspace_id": "abc-123",
+      "workspace_name": "Marketing Analytics",
+      "user_email": "user@company.com",
+      "user_identifier": "user-guid",
+      "principal_type": "User",  # ou "App" (Service Principal)
+      "role": "Admin"  # Admin, Member, Contributor, Viewer
+    }
+  ],
+  "workspace_access_errors": [
+    {
+      "workspace_id": "xyz-789",
+      "workspace_name": "Failed Workspace",
+      "error_type": "TooManyRequestsError",
+      "error_message": "Rate limit persistiu após 5 tentativas",
+      "status_code": 429
+    }
+  ],
+  "summary": {
+    "total_workspaces": 302,
+    "personal_workspaces_skipped": 120,
+    "workspaces_processed": 182,
+    "workspaces_with_users": 88,
+    "total_access_entries": 294,
+    "users_count": 48,
+    "service_principals_count": 7,
+    "roles_breakdown": {
+      "Admin": 263,
+      "Member": 9,
+      "Viewer": 15,
+      "Contributor": 7
+    },
+    "rate_limit_pauses": 15,
+    "errors_count": 2
+  }
+}
+```
+
+---
+
+### Performance
+
+**Tenant de referência (302 workspaces):**
+- **Workspaces filtrados:** 182 (120 Personal Workspaces ignorados)
+- **Tempo de execução:** ~5-10 minutos
+- **Acessos coletados:** 294 entradas
+- **Rate limit pauses:** 15 pausas de 30s
+
+---
+
+### Limitações e Rate Limiting
+
+#### Rate Limit da API
+
+A API `GET /admin/groups/{groupId}/users` tem **limite de ~200 requests/hora** (não documentado oficialmente).
+
+**Comportamento observado:**
+- Após ~200 requests, a API retorna `429 Too Many Requests`
+- O limite parece ser uma **janela deslizante**, não fixo de 1 hora
+- Pausar 30s e tentar novamente geralmente funciona
+
+**Estratégia implementada:**
+1. Ao detectar `429`, pausa 30 segundos
+2. Tenta novamente o mesmo workspace (até 5 tentativas)
+3. Se após 5 pausas ainda der `429`, registra como erro
+
+**Estimativa de tempo:**
+- 100 workspaces: ~3-5 minutos
+- 200 workspaces: ~7-12 minutos (com pausas)
+- 500 workspaces: ~20-40 minutos (com múltiplas pausas)
+
+---
+
+#### Personal Workspaces
+
+**Personal Workspaces não suportam a API de usuários.**
+
+**Identificação:**
+- Nome do workspace começa com `"PersonalWorkspace "`
+- Exemplo: `"PersonalWorkspace John Doe (john@company.com)"`
+
+**Comportamento:**
+- Retornam `404 Not Found` ao tentar buscar usuários
+- São **automaticamente filtrados** pelo coletor antes de fazer chamadas
+
+**Exemplo de log:**
+```
+Total de workspaces: 302
+Personal Workspaces ignorados: 120
+Workspaces a processar: 182
+```
+
+---
+
+### Tratamento de Erros
+
+#### Rate Limit (429)
+```python
+# O coletor lida automaticamente com 429
+# Pausa 30s e tenta novamente até 5x
+
+# Se esgotar tentativas, registra em workspace_access_errors
+{
+  "workspace_id": "...",
+  "error_type": "TooManyRequestsError",
+  "status_code": 429
+}
+```
+
+#### Workspace não encontrado (404)
+
+Raro, mas pode acontecer se workspace foi deletado entre o inventory e a coleta de access.
+```python
+{
+  "workspace_id": "...",
+  "error_type": "NotFoundError",
+  "status_code": 404
+}
+```
+
+---
+
+### Casos de Uso
+
+#### 1. Auditoria de acessos privilegiados
+```python
+result = access_collector.collect()
+
+admins = [
+    access for access in result['workspace_access']
+    if access['role'] == 'Admin'
+]
+
+print(f"Total de Admins: {len(admins)}")
+for admin in admins:
+    print(f"  {admin['user_email']} → {admin['workspace_name']}")
+```
+
+#### 2. Identificar Service Principals com acesso
+```python
+result = access_collector.collect()
+
+service_principals = [
+    access for access in result['workspace_access']
+    if access['principal_type'] == 'App'
+]
+
+print(f"Service Principals com acesso: {len(service_principals)}")
+```
+
+#### 3. Workspaces com apenas 1 Admin (risco de órfão)
+```python
+from collections import defaultdict
+
+result = access_collector.collect()
+
+workspaces_admins = defaultdict(list)
+for access in result['workspace_access']:
+    if access['role'] == 'Admin':
+        workspaces_admins[access['workspace_id']].append(access['user_email'])
+
+at_risk = {
+    ws_id: admins for ws_id, admins in workspaces_admins.items()
+    if len(admins) == 1
+}
+
+print(f"⚠️  {len(at_risk)} workspaces com apenas 1 Admin (risco de órfão)")
+```
+
+---
+
+## 📄 ReportAccessCollector
+
+Extrai permissões de acesso (Owner, Read, ReadWrite, etc.) em reports via Power BI Admin API.
+
+### O que coleta
+
+- **Permissões em reports:** Owner, Read, ReadWrite, ReadCopy, ReadReshare, ReadExplore
+- **Usuários:** email, identifier, principal type
+- **Service Principals:** Apps com acesso aos reports
+
+**Filtragem automática:**
+- Reports em Personal Workspaces são ignorados (não suportam API de usuários)
+
+---
+
+### Como funciona
+
+**Pré-requisito:**
+Requer o resultado do `WorkspaceInventoryCollector` para obter a lista de report IDs.
+
+**Fluxo:**
+1. Recebe o `inventory_result` do WorkspaceInventoryCollector
+2. Filtra reports de Personal Workspaces (workspace_name começa com "PersonalWorkspace")
+3. Para cada report:
+   - **GET** `/v1.0/myorg/admin/reports/{reportId}/users`
+   - Coleta lista de usuários e permissões
+   - Se detectar **429 Rate Limit**: pausa 30s e tenta novamente (até 5x)
+4. Agrega resultados e gera summary
+
+---
+
+### Parâmetros do Construtor
+```python
+ReportAccessCollector(
+    auth: AuthProvider,                          # Obrigatório
+    inventory_result: dict[str, Any],            # Obrigatório
+    progress_callback: Callable[[str], None] | None = None,
+    **kwargs                                     # Passa para BaseCollector
+)
+```
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `auth` | `AuthProvider` | ServicePrincipalAuth ou DeviceFlowAuth |
+| `inventory_result` | `dict` | Resultado do WorkspaceInventoryCollector.collect() |
+| `progress_callback` | `Callable` | Função chamada a cada update de progresso |
+
+---
+
+### Uso Básico
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import (
+    WorkspaceInventoryCollector,
+    ReportAccessCollector
+)
+
+auth = ServicePrincipalAuth.from_env()
+
+# Passo 1: Coleta inventário
+inventory_collector = WorkspaceInventoryCollector(auth=auth)
+inventory_result = inventory_collector.collect()
+
+# Passo 2: Coleta acessos de reports
+access_collector = ReportAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result
+)
+access_result = access_collector.collect()
+
+print(f"Total de acessos: {access_result['summary']['total_access_entries']}")
+print(f"Reports processados: {access_result['summary']['reports_processed']}")
+```
+
+---
+
+### Estrutura do Output
+```python
+{
+  "report_access": [
+    {
+      "report_id": "report-123",
+      "report_name": "Sales Dashboard",
+      "workspace_id": "abc-123",
+      "workspace_name": "Marketing Analytics",
+      "user_email": "user@company.com",
+      "user_identifier": "user-guid",
+      "principal_type": "User",
+      "permission": "Owner"  # Owner, Read, ReadWrite, ReadCopy, ReadReshare, ReadExplore
+    }
+  ],
+  "report_access_errors": [...],
+  "summary": {
+    "total_reports": 777,
+    "personal_workspaces_reports_skipped": 150,
+    "reports_processed": 627,
+    "reports_with_users": 400,
+    "total_access_entries": 4363,
+    "users_count": 54,
+    "service_principals_count": 7,
+    "permissions_breakdown": {
+      "Owner": 3945,
+      "ReadReshare": 15,
+      "ReadCopy": 164,
+      "Read": 230,
+      "ReadReshareExplore": 2,
+      "ReadWrite": 7
+    },
+    "rate_limit_pauses": 25,
+    "errors_count": 3
+  }
+}
+```
+
+---
+
+### Performance
+
+**Tenant de referência (777 reports):**
+- **Reports filtrados:** 627 (150 em Personal Workspaces ignorados)
+- **Tempo de execução:** ~15-30 minutos
+- **Acessos coletados:** 4363 entradas
+- **Rate limit pauses:** 25 pausas de 30s
+
+---
+
+### Limitações e Rate Limiting
+
+#### Rate Limit da API
+
+A API `GET /admin/reports/{reportId}/users` tem **limite de ~200 requests/hora** (não documentado oficialmente).
+
+**Mesma estratégia do WorkspaceAccessCollector:**
+- Ao detectar `429`, pausa 30 segundos
+- Tenta novamente até 5 vezes
+- Registra como erro apenas se esgotar tentativas
+
+**Estimativa de tempo:**
+- 200 reports: ~5-10 minutos
+- 500 reports: ~15-25 minutos (com pausas)
+- 1000 reports: ~30-60 minutos (com múltiplas pausas)
+
+---
+
+#### Reports em Personal Workspaces
+
+**Reports em Personal Workspaces não suportam a API de usuários.**
+
+**Comportamento:**
+- Retornam `404 Not Found` ou `429 Too Many Requests`
+- São **automaticamente filtrados** pelo coletor antes de fazer chamadas
+
+**Exemplo de log:**
+```
+Total de reports: 777
+Reports em Personal Workspaces ignorados: 150
+Reports a processar: 627
+```
+
+---
+
+### Casos de Uso
+
+#### 1. Reports compartilhados externamente
+```python
+result = access_collector.collect()
+
+external_shares = [
+    access for access in result['report_access']
+    if not access['user_email'].endswith('@yourcompany.com')
+]
+
+print(f"Reports compartilhados externamente: {len(external_shares)}")
+```
+
+#### 2. Reports com muitos Owners (má prática)
+```python
+from collections import defaultdict
+
+result = access_collector.collect()
+
+report_owners = defaultdict(list)
+for access in result['report_access']:
+    if access['permission'] == 'Owner':
+        report_owners[access['report_id']].append(access['user_email'])
+
+too_many_owners = {
+    rpt_id: owners for rpt_id, owners in report_owners.items()
+    if len(owners) > 3
+}
+
+print(f"⚠️  {len(too_many_owners)} reports com mais de 3 Owners")
+```
+
+---
+
+## 📊 Exemplo Completo: Coleta de Inventário + Acessos
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import (
+    WorkspaceInventoryCollector,
+    WorkspaceAccessCollector,
+    ReportAccessCollector,
+)
+from fabricgov.exporters import FileExporter
+from datetime import datetime
+
+# Callback de progresso
+log_messages = []
+
+def progress(msg: str):
+    timestamp_msg = f"[{datetime.now().strftime('%H:%M:%S')}] {msg}"
+    print(timestamp_msg)
+    log_messages.append(timestamp_msg)
+
+# Autenticação
+auth = ServicePrincipalAuth.from_env()
+
+# Etapa 1: Inventário
+inventory_collector = WorkspaceInventoryCollector(
+    auth=auth,
+    progress_callback=progress
+)
+inventory_result = inventory_collector.collect()
+
+# Etapa 2: Acessos de Workspaces
+workspace_access_collector = WorkspaceAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result,
+    progress_callback=progress
+)
+workspace_access_result = workspace_access_collector.collect()
+
+# Etapa 3: Acessos de Reports
+report_access_collector = ReportAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result,
+    progress_callback=progress
+)
+report_access_result = report_access_collector.collect()
+
+# Etapa 4: Exporta tudo
+exporter = FileExporter(format="csv", output_dir="output")
+
+exporter.export(inventory_result, log_messages)
+exporter.export(workspace_access_result, [])
+exporter.export(report_access_result, [])
+
+print("✓ Coleta e export concluídos")
+```
+
+---
+
 ## 🛠️ BaseCollector — Funcionalidades Comuns
 
 Todos os coletores herdam do `BaseCollector`, que provê:
@@ -378,80 +882,12 @@ collector = WorkspaceInventoryCollector(
 
 ---
 
-## 📊 Exemplo Completo com Análise
-```python
-from fabricgov.auth import ServicePrincipalAuth
-from fabricgov.collectors import WorkspaceInventoryCollector
-from fabricgov.exporters import FileExporter
-from datetime import datetime
-
-# Setup
-log_messages = []
-
-def progress(msg: str):
-    timestamp_msg = f"[{datetime.now().strftime('%H:%M:%S')}] {msg}"
-    print(timestamp_msg)
-    log_messages.append(timestamp_msg)
-
-# Coleta
-auth = ServicePrincipalAuth.from_env()
-collector = WorkspaceInventoryCollector(
-    auth=auth,
-    progress_callback=progress
-)
-result = collector.collect()
-
-# Análise
-print("\n" + "="*70)
-print("ANÁLISE DO INVENTÁRIO")
-print("="*70)
-
-# Workspaces por tipo
-workspace_types = {}
-for ws in result['workspaces']:
-    ws_type = ws.get('type', 'Unknown')
-    workspace_types[ws_type] = workspace_types.get(ws_type, 0) + 1
-
-print("\nWorkspaces por tipo:")
-for ws_type, count in workspace_types.items():
-    print(f"  {ws_type}: {count}")
-
-# Top 10 workspaces com mais artefatos
-workspace_item_counts = {}
-for item_type in ['datasets', 'reports', 'dashboards']:
-    for item in result[item_type]:
-        ws_id = item['workspace_id']
-        workspace_item_counts[ws_id] = workspace_item_counts.get(ws_id, 0) + 1
-
-top_workspaces = sorted(
-    workspace_item_counts.items(),
-    key=lambda x: x[1],
-    reverse=True
-)[:10]
-
-print("\nTop 10 workspaces com mais artefatos:")
-for ws_id, count in top_workspaces:
-    ws_name = next(
-        (ws['name'] for ws in result['workspaces'] if ws['id'] == ws_id),
-        "Unknown"
-    )
-    print(f"  {ws_name}: {count} itens")
-
-# Exporta
-exporter = FileExporter(format="csv", output_dir="output")
-output_path = exporter.export(result, log_messages)
-
-print(f"\n✓ Arquivos exportados em: {output_path}")
-```
-
----
-
 ## 🚧 Coletores em Desenvolvimento
 
 Os seguintes coletores estão planejados para versões futuras:
 
 - **CapacityConsumptionCollector** — métricas de CU via DAX queries
-- **SecurityAccessCollector** — roles e permissões detalhadas
+- **SecurityAccessCollector** — roles e permissões detalhadas em datasets/dashboards
 - **RefreshMonitoringCollector** — histórico de refresh e datasources
 - **ConnectionsCollector** — conexões e permissões por conexão
 
