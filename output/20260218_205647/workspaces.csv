@@ -1,0 +1,366 @@
+capacityId,defaultDatasetStorageFormat,description,id,isOnDedicatedCapacity,isOrphaned,isReadOnly,name,state,type
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,82155fbb-d40b-4183-820d-1da585bd4804,True,,,Demo,Active,Workspace
+,,Relatório da Unifaa.,d2f477c2-57bf-442a-b432-ab4daef87ff2,False,,,Unifaa,Active,Workspace
+,,,172dbdba-f52a-43f6-ab52-01ac3a1f72ea,False,,,PPU,Active,Workspace
+,,,65721dec-53d5-4b12-9f00-b3acb0118dbe,False,,,Scala,Active,Workspace
+,,,cf50ab7d-e2a6-42f6-9cdb-6753976dd4ce,False,,,DBA,Active,Workspace
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,d397e342-a1a0-47e4-94ee-acd6f23ddc52,True,,,BI,Active,Workspace
+,,,d16910c9-7717-47ce-8a9c-7f46aee91221,False,,,ALL TEAM,Active,Workspace
+,,Projeto da ISH.,655763a4-d9b5-4c2d-88ec-200cc4e483e3,False,,,ISH,Active,Workspace
+,,,b1b01635-0245-489d-98fd-39f3a126389a,False,,,Rafael 0308,Active,Workspace
+,,,525d5632-2db4-44f7-af1f-fd928a08bb68,False,,,Power Tuning Análises,Active,Workspace
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,41587bdf-74b1-4981-9723-47a11f1c989e,True,,,Comercial BI,Active,Workspace
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,016301fa-5208-47b2-b948-af7919be1446,True,,,Team Leader,Active,Workspace
+,,,08a96a82-1109-448d-9c21-d5caf6477305,False,,,BI (1),Active,Workspace
+,,,48426966-6a78-4cdd-bfa9-ed609233c9f3,False,,,Vortx,Active,Workspace
+,,,f973263d-6c07-47bf-adf1-be1ffe6649bd,False,,,PersonalWorkspace Contato Fabricio Lima Soluções em BD (contato@fabriciolima.net),Active,Personal
+,,,6af4040d-44f3-42c8-96bb-dc0bee589939,False,,,PersonalWorkspace Rafael Mendonça (Rafael.mendonca@powertuning.com.br),Active,Personal
+,,,74a5f3ad-2085-46cd-9756-9930459351e4,False,,,PersonalWorkspace Dirceu Resende (dirceu.resende@powertuning.com.br),Active,Personal
+,,,b20a82e9-0bff-4da2-9f30-25c6fdc6b20a,False,,,PersonalWorkspace Danilo Amorim (danilo.amorim@powertuning.com.br),Active,Personal
+,,,d6d1ce36-772e-4bb6-b337-bc65d6b141d0,False,,,PersonalWorkspace Rodrigo Ribeiro (rodrigo.ribeiro@powertuning.com.br),Active,Personal
+,,,7d98a2ff-4912-4896-a255-2dd6a97353e6,False,,,PersonalWorkspace Fabricio Lima (fabricio.lima@powertuning.com.br),Active,Personal
+,,,89ecdef6-da3c-4ba7-9e02-80359172f78b,False,,,PersonalWorkspace Fabiana Lima (fabiana.lima@powertuning.com.br),Active,Personal
+,,,d15a7b60-456d-46ac-aec5-bb860ba6935f,False,,,PersonalWorkspace Frederico Flavio de Oliveira Santos (frederico.flavio@faa.edu.br),Active,Personal
+,,,7c653238-aaf9-43bd-b835-47b7f4c1ab39,False,,,PersonalWorkspace Aderb Breda (aderb.breda@powertuning.com.br),Active,Personal
+,,,73666c2d-d252-4b85-95fe-5e07b1bd0b01,False,,,PersonalWorkspace Luiz Vitor Lima (luiz.lima@powertuning.com.br),Active,Personal
+,,,67fb0ee1-1aaf-4a8d-a42e-140c0de8a6bb,False,,,PersonalWorkspace Jeniffer Karen (jeniffer.karen@powertuning.com.br),Active,Personal
+,,,2de0e570-ccb4-40ca-bdb2-c9f16abc068c,False,,,PersonalWorkspace Naiara Mozini (naiara.mozini@santalolla.com.br),Active,Personal
+,,,4e1cd858-c538-4940-9cd6-4e0da93be5b7,False,,,PersonalWorkspace Adriano Sousa (adriano.sousa@powertuning.com.br),Active,Personal
+,,,0e2448ed-4b61-4708-9ac0-997cd83ab8b7,False,,,PersonalWorkspace Oselio Candido (oselio.candido@powertuning.com.br),Active,Personal
+,,,c417274f-8278-46ef-89c4-b6f509f2ade1,False,,,PersonalWorkspace Wesley Cardoso (wesley.cardoso@powertuning.com.br),Active,Personal
+,,,bcbd6b2e-7632-4118-b849-0815ab40be29,False,,,PersonalWorkspace Fabiano Amorim (fabiano.amorim@powertuning.com.br),Active,Personal
+,,,b4a5971a-b7a7-40cb-8ed2-3d2a715244ca,False,,,PersonalWorkspace Eduardo Rabelo (eduardo.rabelo@powertuning.com.br),Active,Personal
+,,,2bf3ec9a-f93e-466a-9d98-bfc1de13517e,False,,,PersonalWorkspace Gustavo Larocca (gustavo.larocca@powertuning.com.br),Active,Personal
+,,,e1bb01d0-bb91-4f1a-8f67-204039256172,False,,,PersonalWorkspace Raiane Flores (raiane.flores@powertuning.com.br),Active,Personal
+,,,050adf14-5cb1-4580-b384-37398182c594,False,,,PersonalWorkspace Rafael Mendonça (rafael@rlcontabilidade-ce.com.br),Active,Personal
+,,,2354e4d6-c422-4599-bab5-c767f3e802e0,False,,,Custom Visuals Exploration Tool,Active,Workspace
+,,,de2ef325-3b5c-4467-a525-c4f8dc0612d6,False,,,PersonalWorkspace Guilherme Moraes (moraes@hoya.com),Active,Personal
+,,,4a326a47-593d-4b4d-a437-201a54827cda,False,,,PersonalWorkspace Lucas Galon (lucas.galon@powertuning.com.br),Active,Personal
+,,,09727adf-f065-418b-96c4-61367da8daef,False,,,PersonalWorkspace Walter Cutini (walter.cutini@powertuning.com.br),Active,Personal
+,,,3e66a288-bbeb-4ce4-979a-f4e1ad456db6,False,,,Power Monitor,Active,Workspace
+,,,1bd5bbad-3a54-42e5-b41e-4b48cb6c9f52,False,,,Power Monitor Interno,Active,Workspace
+,,,8283a8f4-9aad-4962-8746-c20ab601283c,False,,,PersonalWorkspace Alvaro Morais (alvaro.morais@powertuning.com.br),Active,Personal
+,,,0287283f-e6fe-4054-84db-7f84ececee24,False,,,PersonalWorkspace Michelli Calmon (michelli.calmon@powertuning.com.br),Active,Personal
+,,,7b44b920-c23b-4a1e-862a-455c6fe703ed,False,,,PersonalWorkspace Thiago Alencar (tc@powertuning.com.br),Active,Personal
+,,,5aff5248-ccd8-4dcd-bfe5-ef321aea19c7,False,,,PersonalWorkspace Felippe Cruz (felippe.cruz@powertuning.com.br),Active,Personal
+,,,1468fa92-f195-415e-ada5-083813de7785,False,,,PersonalWorkspace Anderson José (anderson.jose@powertuning.com.br),Active,Personal
+,,,06c3eb6e-7e0d-4b7b-8203-d8ec2fed7c6e,False,,,PersonalWorkspace Camila Carmo (camila.carmo@powertuning.com.br),Active,Personal
+,,,88d00650-7acc-45b8-a0cb-8de277bf2cfd,False,,,PersonalWorkspace Isaac Araujo (isaac.araujo@powertuning.com.br),Active,Personal
+,,,2eb5a520-85fb-4f32-a351-ccbc435b6c53,False,,,PersonalWorkspace Emerson Carlos (emerson.carlos@powertuning.com.br),Active,Personal
+,,,3f7a184a-7500-4888-97c1-11455f29e187,False,,,PersonalWorkspace Éder Lelis (eder.lelis@powertuning.com.br),Active,Personal
+,,,04bbfb06-5f8c-4bdb-a383-7735f5227936,False,,,PersonalWorkspace Danilo Alves (danilo.alves@powertuning.com.br),Active,Personal
+,,,32da2f6b-1f26-4713-96c9-6493234fcd15,False,,,PersonalWorkspace Luiz Oliveira (luiz.oliveira@powertuning.com.br),Active,Personal
+,,,9b448b75-d8fa-4a38-b18e-e291418a2b44,False,,,PersonalWorkspace Jean Souza (jean.souza@powertuning.com.br),Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,240f4474-7eff-4240-86d0-30e3342ca4ec,True,,,PersonalWorkspace Equipe Suporte Power Tuning (suporte@powertuning.com.br),Active,Personal
+,,,27fe5207-95c4-4914-ad73-70a1eb4dadbf,False,,,PersonalWorkspace Juliana Quintão (juliana.quintao@powertuning.com.br),Active,Personal
+,,,bd01c5de-054b-4152-8c46-1ed8d7528a92,False,,,PersonalWorkspace Lucas Abreu (lucas.abreu@powertuning.com.br),Active,Personal
+,,,81f9aa02-5025-4b8b-bb5f-1c759f615245,False,,,PersonalWorkspace Bianca Alencar (bianca.alencar@powertuning.com.br),Active,Personal
+,,,39982823-16b5-4fe3-96b5-d55ea4288ec1,False,,,PersonalWorkspace Ricardo Barcelos (ricardo.barcelos@powertuning.com.br),Active,Personal
+,,,2a15ece4-d137-40e1-8dc6-8fb571cf3505,False,,,PersonalWorkspace Kelson Damasceno (kelson.damasceno@powertuning.com.br),Active,Personal
+,,,90cc7d4a-adea-4ecc-b07d-cfd88e4f9677,False,,,PersonalWorkspace wilson almeida (wilson.almeida@powertuning.com.br),Active,Personal
+,,,b2b20e02-f04e-4d06-b765-18f149fd3d63,False,,,PersonalWorkspace Wellington Felix (wellington.felix@powertuning.com.br),Active,Personal
+,,,b609611d-d009-4604-a019-e6a4d9dda9ba,False,,,PersonalWorkspace David Styveen (david.styveen@powertuning.com.br),Active,Personal
+,,,0878b34c-7757-4915-9cbd-2f8d319c3464,False,,,PersonalWorkspace Eduardo Roedel (eduardo.roedel@powertuning.com.br),Active,Personal
+,,,31100a81-73b9-46f7-8bed-824df0757c66,False,,,PersonalWorkspace Guilherme Rodrigues (guilherme.rodrigues@powertuning.com.br),Active,Personal
+,,,9b8c05b5-0d5d-4e22-b0de-b7db9e679076,False,,,PersonalWorkspace Bruno Bonilha (bruno.bonilha@powertuning.com.br),Active,Personal
+,,,c9ccc446-c088-43a1-9d82-cfa467d2fbf0,False,,,PersonalWorkspace Andre Casseverini (andre.casseverini@powertuning.com.br),Active,Personal
+,,,df34b80c-d233-406d-b39c-fca6eabee387,False,,,PersonalWorkspace Taiany Coelho (taiany.coelho@powertuning.com.br),Active,Personal
+,,,e141fa38-6e7f-42dd-acc9-7669dcf428b3,False,,,PersonalWorkspace Felipe Marques (felipe.marques@powertuning.com.br),Active,Personal
+,,,469929f3-15eb-47dc-ad6c-2a6bc4a1bc3e,False,,,PersonalWorkspace Caio Peixoto (caio.peixoto@powertuning.com.br),Active,Personal
+,,,6ec5a9d6-b960-4e5d-a73d-2adb1b3314a5,False,,,PersonalWorkspace Gabriel Hian (gabriel.hian@powertuning.com.br),Active,Personal
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,1f291e67-e5ea-4066-96b5-1fa1d5742d1d,True,,,Power Monitor 03/01/2023 16:33:12,Active,Workspace
+,,,55557583-0e36-40d2-b3c5-50a87786971d,False,,,PersonalWorkspace Hugo Silva (hugo.silva@powertuning.com.br),Active,Personal
+,,,afce8893-2dd3-4483-9fcd-35d65ba8ea09,False,,,Power Monitor 1/10/2023 10:04:36 AM,Active,Workspace
+,,,76a4926e-6563-4cf4-a85f-4331a173bec3,False,,,APP,Active,Workspace
+,,,9d5136be-6467-4e4a-9d95-f85d0cab6c3c,False,,,PersonalWorkspace Power Monitor (powermonitor@powertuning.com.br),Active,Personal
+,,,3986299e-f60c-414a-88c0-f8e8fee4c38c,False,,,PersonalWorkspace Rafael Batista Santos (rafael.batista@powertuning.com.br),Active,Personal
+,,,f914294e-c591-4bb4-86b1-6580fea6345b,False,,,PersonalWorkspace Thais Gonçalves (thais.goncalves@powertuning.com.br),Active,Personal
+,,,233d3905-6509-42e3-b23b-10a046005f7a,False,,,PersonalWorkspace Thiago Henrique (thiago.henrique@powertuning.com.br),Active,Personal
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,b353b7a3-cb59-4aa3-93f9-5f90f0136bc5,True,,,Workspace Premium,Active,Workspace
+,,,d6c0c6b8-5394-4cd2-8bc9-1e7df0238e15,False,,,PersonalWorkspace Leonardo Albuquerque (leonardo.albuquerque@powertuning.com.br),Active,Personal
+,,,1eb702c8-3da8-4319-86aa-117e5df4eebb,False,,,PersonalWorkspace Lucas Giuberti (lucas.giuberti@powertuning.com.br),Active,Personal
+,,,91d32291-1859-4c8e-affa-74380dd4cc58,False,,,PersonalWorkspace Philipe Lage (philipe.lage@powertuning.com.br),Active,Personal
+,,,cc14f25c-9876-42d3-a30b-2f9c4cf1e0b9,False,,,PersonalWorkspace Gabriel do Espirito Santo Silva (gabriel.silva@powertuning.com.br),Active,Personal
+,,,3675ae73-4628-4c43-89f9-0b27e860c953,False,,,PersonalWorkspace Luiz Serafim (luiz.serafim@powertuning.com.br),Active,Personal
+,,,905f294b-2d63-41b7-bfad-a8c12a5dbe2c,False,,,PersonalWorkspace Eric Sousa (eric.sousa@powertuning.com.br),Active,Personal
+,,,5f7d3998-4ee1-4a08-bbe9-c62a9a64e597,False,,,PersonalWorkspace Felipe Tavares Lima (felipe.lima@powertuning.com.br),Active,Personal
+,,,27869244-b038-4907-9549-9693c7056199,False,,,PersonalWorkspace Arthur Soares Jr (arthur.soaresjr@powertuning.com.br),Active,Personal
+,,,8c2c0b71-e7c2-4791-9cb2-d8014042611e,False,,,PersonalWorkspace Lucas Monteiro (lucas.monteiro@powertuning.com.br),Active,Personal
+,,,44d505db-a196-4133-84d9-3076fd2d4010,False,,,PersonalWorkspace João  Paulo de Souza Leite (joao.leite@powertuning.com.br),Active,Personal
+,,,aec34a5c-3f26-4957-bf34-77a6e25ff6b8,False,,,PersonalWorkspace Edvaldo Castro (edvaldo.castro@powertuning.com.br),Active,Personal
+,,,2acbd2aa-6739-41d4-9514-79414e1d6350,False,,,Fabric,Active,Workspace
+,,Admin monitoring,98cf6faf-511a-45ef-83ab-aa5249894ebb,False,,,Admin monitoring,Active,AdminWorkspace
+,,,1e803d2e-9bc6-428e-899a-2065ea3e5434,False,,,ExportacaodeDados,Active,Workspace
+,,,adcb70e1-6924-4e50-950f-baf015c368fa,False,,,PersonalWorkspace Sérgio Vinícius Vicente Franco (sergio.franco@powertuning.com.br),Active,Personal
+,,,93516ea6-6e11-47c3-b94d-6e6a7a7dcbb8,False,,,Real Time,Active,Workspace
+,,,d39526a0-807d-44c9-9a29-54fcb2b27f46,False,,,Parabens Aderb,Active,Workspace
+,,,8ece64d0-4eb8-4e8e-b9a5-aefebd545a65,False,,,App Teste Video,Active,Workspace
+,,,c0806e1d-8a69-4008-a8cb-91423c5719bc,False,,,PersonalWorkspace Washington Lourenço (washington.lourenco@powertuning.com.br),Active,Personal
+,,,b12dea32-fe11-484d-b838-290cdc6dc8b2,False,,,PersonalWorkspace Gabriel Vinicius (gabriel.vinicius@powertuning.com.br),Active,Personal
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,20784450-2dc0-4656-81e9-6aafcbb71bf0,True,,,Teste RLS,Active,Workspace
+,,,1d1df50b-e934-475d-934a-1e7f07b95e75,False,,,PersonalWorkspace Gleison Rodrigues (gleison.rodrigues@powertuning.com.br),Active,Personal
+,,,0753e429-b60c-4788-8748-19e0e1ae0163,False,,,PersonalWorkspace Gláucio Coelho (glaucio.coelho@powertuning.com.br),Active,Personal
+,,,f7ea2ddb-3d2b-4c9c-bbc4-d0d1eafcc6d9,False,,,PersonalWorkspace Raul Oliveira (raul.oliveira@powertuning.com.br),Active,Personal
+,,,e819cb98-1273-4a02-8c38-bc9eb22c61f7,False,,,PersonalWorkspace Dirceu Resende (difilho@msn.com),Active,Personal
+,,,c84fec8a-48f7-4b8e-bd41-08c55fd2c9bc,False,,,Live Fabric,Active,Workspace
+,,,2e051592-f9b6-4c1c-a5d5-605fe1577162,False,,,PersonalWorkspace Thais Diniz (thais.diniz@powertuning.com.br),Active,Personal
+,,,c7773101-b991-4ab1-a3e4-32538569424e,False,,,Teste Dashboard,Active,Workspace
+,,,44cc3f04-fe7c-4d3c-b2d3-38acf156b54c,False,,,PersonalWorkspace Talles Valiatti (talles.dsv@azurebrasil.cloud),Active,Personal
+,,,7afba470-189a-4296-9f4d-919149dd91b1,False,,,PersonalWorkspace Talles Valiatti (talles.valiatti@powertuning.com.br),Active,Personal
+,,,5624d1d0-83db-422c-9b5a-d8546c4ec53a,False,,,PersonalWorkspace Rafael Santos (rafael.santos@powertuning.com.br),Active,Personal
+,,,cf5150cd-e441-41b4-9cf3-7e1bfcf5ab32,False,,,PersonalWorkspace Gabriel Almada (gabriel.almada@powertuning.com.br),Active,Personal
+,,,4070e805-2bc6-4525-ba37-22f7017c413f,False,,,PersonalWorkspace Dickison Assunção (dickison.assuncao@powertuning.com.br),Active,Personal
+,,,d92ff069-fb3c-455a-a5da-65d3cf39d0bd,False,,,PersonalWorkspace Anderson Aroucha (anderson.aroucha@powertuning.com.br),Active,Personal
+,,,70459872-d4e0-4ea0-a19c-0cc52970b9a9,False,,,PersonalWorkspace Maria Rezende (maria.rezende@powertuning.com.br),Active,Personal
+,,,47703db7-ffc4-418c-870c-463245a3cfc2,False,,,PersonalWorkspace Rafael Palma (rafael.palma@powertuning.com.br),Active,Personal
+,,,d8881bab-33f5-48c6-ab32-921335e3ff3d,False,,,PersonalWorkspace Diego Barcelos (diego.barcelos@powertuning.com.br),Active,Personal
+,,,5e6940cc-0afa-44f9-b756-c29738b3e2e3,False,,,PersonalWorkspace Conta Emergencial (instant.adm@powertuning.com.br),Active,Personal
+,,,0230dc2e-0f2d-454a-b2fa-b0f14296b433,False,,,LinkedIn Sales Navigator Analytics Integration,Active,Workspace
+,,,dce43a3f-0d57-4ec2-ad51-3cbdb955dc6a,False,,,LabSoft,Active,Workspace
+,,,1658d7e3-fe15-490a-bfda-e9cfc2949df4,False,,,PersonalWorkspace Arthur Barcellos (arthur.barcellos@powertuning.com.br),Active,Personal
+,,,12df987e-918d-4d3a-845d-6de73d429925,False,,,PersonalWorkspace Douglas Rosseto (douglas.rosseto@powertuning.com.br),Active,Personal
+,,"Projeto de estudo do Fabric utilizando a API do Rick and Morty
+
+https://rickandmortyapi.com/",43614fa0-525e-4aa2-be01-49e1e62030f2,False,,,lakehouse_rick_n_morty,Active,Workspace
+,,,37384282-dbb8-4940-b004-f859bff90c9d,False,,,PersonalWorkspace Felipe Couto (felipe.couto@powertuning.com.br),Active,Personal
+,,,7da1052d-c3b3-47f9-b4c9-ea7eae52da95,False,,,PersonalWorkspace Andre Custodio,Active,Personal
+,,,3e064349-a706-4003-9531-0e7636215ca8,False,,,power_embedded_usability,Active,Workspace
+,,,e760f4b3-cbf8-452c-ab97-065e4fd57961,False,,,Maringa Turismo,Active,Workspace
+,,,367662d0-1dd3-44ed-9eb6-a98cca79d4ea,False,,,PersonalWorkspace Guilherme Govaski (guilherme.govaski@powertuning.com.br),Active,Personal
+,,,3f151873-95f3-48eb-a5e8-1cfd80c3003f,False,,,PersonalWorkspace Felipe Faria,Active,Personal
+,,,e57f59e7-f423-4262-9ceb-c36797ac4824,False,,,PersonalWorkspace Yan Marostegan (yan.marostegan@powertuning.com.br),Active,Personal
+,,,e5293467-3816-4ba7-b0bd-8ff61fdb2d44,False,,,PersonalWorkspace João Dutra (joao.dutra@powertuning.com.br),Active,Personal
+,,,5fda493d-380a-4680-a1bc-de71adb64187,False,,,PersonalWorkspace Erick Valeriano (erick.valeriano@powertuning.com.br),Active,Personal
+,,,e2c6d37f-e029-4820-be97-5a094b48dfa2,False,,,PersonalWorkspace Arthan Cruz (arthan.cruz@powertuning.com.br),Active,Personal
+,,,3e4c11d8-53c4-4f70-b5ed-1feade29d853,False,,,Financeiro Dev,Active,Workspace
+,,,335fb1e6-dc3b-4460-a2d9-e061e051b28b,False,,,Financeiro,Active,Workspace
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,037152ed-09e3-4e40-a71e-d98d89aabc6b,True,,,Test_Gabriel,Active,Workspace
+,,"web scraping com pyton
+",7ccbc97d-a567-48ff-8306-ec897c10195e,False,,,web scraping,Active,Workspace
+,,,9cf7f40b-543f-4b20-8c20-cbc3189aff0b,False,,,PersonalWorkspace Giovani Sversut (giovani.sversut@powertuning.com.br),Active,Personal
+,,,06a3847e-fdbf-4897-b083-998c72248ffc,False,,,PersonalWorkspace Márcio Lima (marcio.lima@powertuning.com.br),Active,Personal
+,,,d8ad8d40-f30e-4b52-97f1-362d9a634b39,False,,,PersonalWorkspace Nina Nogueira (nina.nogueira@powertuning.com.br),Active,Personal
+,,,37b19fae-4dd1-4cff-a0bd-24356d67fc03,False,,,Power Monitor - Fabricio Lima,Active,Workspace
+,,,6b792011-825c-4fce-96e1-82f4e5b836af,False,,,Power Monitor - David Styveen,Active,Workspace
+,,,587980fc-b14f-4e2d-8927-f843ce74da3b,False,,,PersonalWorkspace Edilson Santos (edilson.santos@powertuning.com.br),Active,Personal
+,,,f4346018-7015-4910-8a09-b99225687d47,False,,,PersonalWorkspace Sthéfane Lisboa (sthefane.lisboa@powertuning.com.br),Active,Personal
+,,,0c3a5398-237e-4f1a-b319-75a09aacdde2,False,,,"Microsoft Fabric Capacity Metrics 27/05/2024, 15:12:31",Active,Workspace
+,,,a059220a-f949-40bf-b369-10b7c9a63f9f,False,,,Power Monitor - Clientes,Active,Workspace
+,,"PBIX in OneDrive Folder
+DriveId: b!gSJxGJKrfk6RR46Y7eBVXUOFisPUsa5Jgvb3RjD_V0P2445vAsiiR4MhL_YDQgIf
+ItemId: 01VHZZPWJAYF3RDPYP6FHY6N3TELUELXR2",df1ebc8b-be13-4253-8e3b-a7a9a6a6f2cf,False,,,PersonalWorkspace 14adb711-c485-47b6-99ae-8a0e55f555ff OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!gSJxGJKrfk6RR46Y7eBVXUOFisPUsa5Jgvb3RjD_V0P2445vAsiiR4MhL_YDQgIf
+ItemId: 01VHZZPWJAYF3RDPYP6FHY6N3TELUELXR2",e95439d9-6b3c-4dd4-ae27-bd640c0f7ed7,False,,,PersonalWorkspace a33af124-7ce0-495c-aaa1-9ba1af9cfdee OneDrive,Active,Personal
+,,,27fe2205-e89e-4088-a974-81efae2fd81c,False,,,Teste Fabric F2,Active,Workspace
+,,,4c58ee54-5448-4952-b937-173bc008f836,False,,,test_samtools_cluster,Active,Workspace
+,,,0673fc18-3954-4486-8b2a-24d8c02f4261,False,,,Teste Fabric F2 - SSAS,Active,Workspace
+,,,ea93c6b0-2ad9-4495-8bd7-a939ae8d9544,False,,,PersonalWorkspace Roberson Ferreira (roberson.ferreira@powertuning.com.br),Active,Personal
+,,,fb3e6a9c-625a-4d1b-96f0-cd3511a34e1e,False,,,PersonalWorkspace Rafael mendonça gmail (rafaelpianista@gmail.com),Active,Personal
+,,,bc4c3ce0-894f-4a86-b3b5-2baff8455a9e,False,,,Candidatos 2024,Active,Workspace
+,,,67bf9884-c129-4286-b8d1-61edacabb71b,False,,,PersonalWorkspace Fabio Lima (fabio.lima@powertuning.com.br),Active,Personal
+,,,33112116-2e02-42e5-adfd-a3478918d2cb,False,,,PersonalWorkspace Renato Lopo (renato.lopo@powertuning.com.br),Active,Personal
+,,,69592d3f-e0f8-481f-bcd5-34c9fe91b130,False,,,PersonalWorkspace Daniel Pedro (daniel.pedro@powertuning.com.br),Active,Personal
+,,,eb6997b3-3b85-4805-96c9-3e4da95615d7,False,,,"Microsoft Fabric Capacity Metrics 21/08/2024, 09:05:49",Active,Workspace
+,,,5c0b703e-358c-4390-b937-6a340a35a09a,False,,,"Microsoft Fabric Capacity Metrics 22/08/2024, 13:05:50",Active,Workspace
+,,,c7e16dea-31c6-4f2f-8fbd-a7a1a1f1dcc7,False,,,PersonalWorkspace Michely Uliana (michely.uliana@powertuning.com.br),Active,Personal
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,8aeb1ec9-e64e-429b-a8b5-8009a24b3702,True,,,Demos Power Embedded,Active,Workspace
+,,,4361c241-4434-41bd-a116-4803dfd53360,False,,,PersonalWorkspace Erick Vendramel,Active,Personal
+,,,c7a5ebbd-9995-4024-90a5-1b5ffb69d90e,False,,,Fabric Capacity Metrics,Active,Workspace
+,,,b935352c-3c3a-42dc-b10f-c8b84967efd4,False,,,fabric_t2_aderb,Active,Workspace
+,,,d1d3715e-6d9e-4884-8256-d18fcb93ddaf,False,,,PersonalWorkspace Nayara Hellen (nayara.hellen@powertuning.com.br),Active,Personal
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,8076fc1d-17a1-4984-a206-363c661d20c7,True,,,Diretoria,Active,Workspace
+,,,5d8fb57b-344e-4a85-bd7b-511b1124318f,False,,,PersonalWorkspace João Macedo (joao.macedo@powertuning.com.br),Active,Personal
+,,,2864c26e-c8c9-4231-b345-48c0c5858bb6,False,,,PersonalWorkspace Paulo Eduardo (paulo.eduardo@powertuning.com.br),Active,Personal
+,,,7874da5a-0d0e-4263-aa6e-69cecb97f3e1,False,,,PersonalWorkspace Regiane Alves (regiane.alves@powertuning.com.br),Active,Personal
+,,,37c3be4f-2529-4bad-9732-87bc7fb5c534,False,,,Testes Dirceu,Active,Workspace
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,efb7e7b2-6ab8-4ba9-a972-426490ec1be9,True,,,Testes,Active,Workspace
+,,,57814812-14b0-485e-82c1-999828e3e3b5,False,,,PersonalWorkspace Wellington Cruz (wellington.cruz@powertuning.com.br),Active,Personal
+,,,a26cb11f-3593-4ed2-a0dc-6bf25bf4c1b6,False,,,PersonalWorkspace Henry Lima (henry.lima@powertuning.com.br),Active,Personal
+,,,5192eced-fa33-4184-9470-1f0018061b52,False,,,PersonalWorkspace Laura Kuntz (laura.kuntz@powertuning.com.br),Active,Personal
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,4d8f002a-6177-4fe8-afa1-72ff719a9b45,True,,,Relatórios para testes,Active,Workspace
+,,,fbd9754a-4012-476b-b5d4-81cc468f1fcc,False,,,WPFinanceiro ,Active,Workspace
+,,,790b70ce-9bdc-4553-8f94-a255b9a8eab6,False,,,Validacao,Active,Workspace
+,,,04f8972f-4049-4f7d-9a4d-c11f126d2979,False,,,WP - Administração - Teste,Active,Workspace
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,8a9a6a75-a967-43b3-8758-087f25c8a2bb,True,,,Teste,Active,Workspace
+,,,3eaf9017-7743-468f-bd1a-45ee61cb213d,False,,,Charlison ,Active,Workspace
+,,,8557ce10-283d-43e1-b42f-80413449c0bb,False,,,PersonalWorkspace Pedro Leão (pedro.leao@powertuning.com.br),Active,Personal
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,c6054bf6-efe7-49ba-bc6c-d8a20dcbc2a5,True,,,wp - fluxo,Active,Workspace
+,,,3463c444-2413-4d3e-935e-6bcc5d3e2e23,False,,,PersonalWorkspace Lucas Oliveira (lucas.oliveira@powertuning.com.br),Active,Personal
+,,,6962095b-3aeb-4244-901b-4dfccffb8113,False,,,PersonalWorkspace Richardy Rodrigues (richardy.rodrigues@powertuning.com.br),Active,Personal
+,,,367526cf-5cd5-4339-9e89-fb1ff13089d9,False,,,Incremental Download,Active,Workspace
+,,,1e2c0f28-31e7-405b-872f-4e245061d294,False,,,PersonalWorkspace Leonardo Volpi (AZBR),Active,Personal
+,,,06edf349-f3c0-46f6-8e99-acd39c6e7cbe,False,,,PersonalWorkspace Chris Hohne (chris.hohne@powertuning.com.br),Active,Personal
+,,,c8972e40-92fc-436d-8a60-cff8cfd37706,False,,,PowerEmbedded HubSpot,Active,Workspace
+,,,04fb7f5e-f73e-48e2-8f9a-de9924f17fd0,False,,,Treinamento Power BI,Active,Workspace
+,,,5379ada2-8d36-46dd-87dd-a97430d1214e,False,,,PersonalWorkspace Amanda Guedes (amanda.guedes@powertuning.com.br),Active,Personal
+,,,c021e349-3919-4645-8e46-6ef18f761c63,False,,,PersonalWorkspace Wildner Dias (wildner.dias@powertuning.com.br),Active,Personal
+,,,a9e87b8a-f2b8-4757-82bf-88d1d703d52c,False,,,PersonalWorkspace Charlison Oliveira,Active,Personal
+,,,0bf060bf-bfe9-44c7-b7c4-335da6598a58,False,,,testing_spark_configs,Active,Workspace
+,,,730b938c-110f-4d6f-a446-8bdfa061bc59,False,,,"Power Monitor 4/14/2025, 9:03:01 AM",Active,Workspace
+,,,04e9be05-165b-40a4-8969-dbad81a2003c,False,,,PersonalWorkspace André Sotero (andre.sotero@powertuning.com.br),Active,Personal
+,,,78feb8c7-5dd1-42c2-9d4c-ebf63f35db1d,False,,,PersonalWorkspace Bruno Lira (bruno.lira@powertuning.com.br),Active,Personal
+,,,2f83deb1-dd15-4e96-b691-f96ff7645765,False,,,Microsoft Fabric Capacity Metrics,Active,Workspace
+,,,8f882ba7-17b3-4d85-afc9-18a25785611f,False,,,"Microsoft Fabric Capacity Metrics 4/17/2025, 3:30:29 AM",Active,Workspace
+,,,a1a3852b-be7e-47ae-a57b-5a0a196e3544,False,,,PersonalWorkspace Giovanna Marcelino (giovanna.marcelino@powertuning.com.br),Active,Personal
+,,,bde5d645-420e-4c2d-87f9-3e3887b025fb,False,,,PersonalWorkspace Gabriel Oliveira (gabriel.oliveira@powertuning.com.br),Active,Personal
+,,,a58f8fc4-062c-4140-b6af-a57e90d1c2eb,False,,,PersonalWorkspace Paulo Peris (paulo.peris@powertuning.com.br),Active,Personal
+,,,a68679e9-8cc1-4d92-bf37-c51361a88181,False,,,PersonalWorkspace Lucas Adolfo (lucas.adolfo@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SULSVZKIDXH6VRAJNHZMVQA4GT2G",52f30bd8-4024-4ad2-8114-60c68c04a1ed,False,,,PersonalWorkspace bdb00ee6-8d92-4de7-9eef-ba3f976ca60a OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SULSVZKIDXH6VRAJNHZMVQA4GT2G",4892adc8-4d5d-4040-9f51-40b12f98c3c7,False,,,PersonalWorkspace c7ec57d7-75e6-4155-9da4-f86a9f598cf7 OneDrive,Active,Personal
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,83d64465-b615-4efd-a119-b0e1d89db63f,True,,,Apresentação Power Embedded ,Active,Workspace
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUPO2J5VFQMARND3ORP4S4IAQCAE",6db1fc5e-086e-4092-a0c6-63e5066df2f4,False,,,PersonalWorkspace 7a0bb0ee-b8f2-4cac-b69d-0440473e0e44 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUPO2J5VFQMARND3ORP4S4IAQCAE",d71a11e7-6de1-4bf7-8816-34891e03a91b,False,,,PersonalWorkspace 68c9843d-8204-4bd7-8467-ed5bb0ea7975 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!W_OMG0j2ykSizDcwwEtNpfqZ3Z6oxGlHorwb82awsomVX6IBuNGfTLTFGN2Pr24c
+ItemId: 01IS2C3VYRKED3YSYUH5E2R3UVUA3WMHBM",01986cc1-dab9-4d21-a765-e1ee2117205e,False,,,PersonalWorkspace 0892fdd6-b432-47b7-b592-d78cf7100acd OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!W_OMG0j2ykSizDcwwEtNpfqZ3Z6oxGlHorwb82awsomVX6IBuNGfTLTFGN2Pr24c
+ItemId: 01IS2C3VYRKED3YSYUH5E2R3UVUA3WMHBM",68bce03a-8447-44aa-801e-4b6ac8c507f5,False,,,PersonalWorkspace b1065765-7027-4df1-8fd6-68360d7083d0 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJAF336VSN34ZCJUZK6YSR3P7UI",72d03630-516b-43a4-abae-8af9f1262876,False,,,PersonalWorkspace 7b110fbf-438c-445b-a80f-34b2e1259e86 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJAF336VSN34ZCJUZK6YSR3P7UI",e8266778-787d-4f6c-a6d0-aba6304974b8,False,,,PersonalWorkspace 6db39895-3707-42ae-b4e6-0299a8a9358d OneDrive,Active,Personal
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,Workspace - Public Test,ac89ca51-4b79-4fd4-abaf-83448529003f,True,,,Teste Power Tuning,Active,Workspace
+,,,5253856c-f8c8-47c2-9014-e173ac9fb78d,False,,,PersonalWorkspace Sheilliane Santos (sheilliane.santos@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUKU6CM3QCSL75BJYNRNAMJXBHB3",f11bfd03-50ba-45ef-acd6-8447a98d9e84,False,,,PersonalWorkspace 9fb6c85a-4de1-4c7d-8b4c-b4b3a506ebb8 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUKU6CM3QCSL75BJYNRNAMJXBHB3",998ef979-4fc5-42b8-9ede-e2373d0448e7,False,,,PersonalWorkspace b8c2fe43-c5a4-48d8-9856-6e31c457e831 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUPZTIDUE27C4NG3GUUSV2FLSZTS",8a533433-c097-48e0-bce3-52da0391abff,False,,,PersonalWorkspace b92e6d02-e528-4cbf-9c97-f7926b8cb281 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUPZTIDUE27C4NG3GUUSV2FLSZTS",331ca506-b832-46d9-b779-70f5559bcad0,False,,,PersonalWorkspace 0e518fa5-a303-4b6b-a379-04d683b2aa6e OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJH2W4KNP5QUVBZOEUCOZGDPPOR",3f0673f1-49cb-4114-a2bb-d11e33bfe720,False,,,PersonalWorkspace 38143ded-d2e2-4cac-9c73-313b9027cf32 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJH2W4KNP5QUVBZOEUCOZGDPPOR",4a3adf47-4f10-400e-b941-d5e10219c89e,False,,,PersonalWorkspace abe1b542-6c69-424d-8992-3ec883c39c28 OneDrive,Active,Personal
+,,,b591591c-4193-474b-a279-b859a1114bc9,False,,,onelake_security,Active,Workspace
+,,,524d3ec3-e60b-4df0-9fc9-55e867fdaad9,False,,,PersonalWorkspace Renato Siqueira (renato.siqueira@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUILNRJ5OUTEYVEZLISG6S64R4PK",67044ada-f0b0-4c3a-b84a-a088fe58b11e,False,,,PersonalWorkspace 8c9c576a-5347-43ee-b8b7-a698e41d2e31 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUILNRJ5OUTEYVEZLISG6S64R4PK",ab4e8659-afb2-445e-9b1e-d62a4be31a4b,False,,,PersonalWorkspace fe8c7983-7420-4777-9171-079f4bef962b OneDrive,Active,Personal
+,,,70e487d6-7684-403a-a937-bfd98257d369,False,,,PersonalWorkspace Lorena Mendonça (lorena.mendonca@powertuning.com.br),Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,f90eecee-4063-40b2-bb9d-0c35586c819e,True,,,Analysis Services,Active,Workspace
+,,,f23a8122-8ace-48ad-bc2a-60fe2ac45455,False,,,PersonalWorkspace Thais Marinho (thais.marinho@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJ2VBKJOVFONFF37JAAM2TP6FAW",fdc173ea-ea11-4e55-a331-aaf02ab5ff1e,False,,,PersonalWorkspace 227cdb3a-f5fa-4572-9dbf-04d802982438 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJ2VBKJOVFONFF37JAAM2TP6FAW",316a2e0f-78ee-41b5-841f-efa1b94c6a5f,False,,,PersonalWorkspace 0eecb9fe-24f8-4a75-b3dd-e422c7be05ba OneDrive,Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,10b54478-7b14-4a4d-8d84-6410c35f3335,True,,,PersonalWorkspace Adryan Lucas (adryan.lucas@powertuning.com.br),Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,cbcb4f2e-31bf-47d9-9ac6-390a10dc0c39,True,,,PersonalWorkspace John Oliveira (john.oliveira@powertuning.com.br),Active,Personal
+,,,4b48c466-21bb-4d3a-a285-43c7c4123ecb,False,,,PersonalWorkspace Paulo Dias (paulo.dias@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUN7HQ5QFM3REVEJZPRUYWZMD3SL",6e5d2764-aae2-4478-a07a-131e8214e0a9,False,,,PersonalWorkspace dd0fec6f-f1f3-49c8-b3e7-9322fff3dca2 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUN7HQ5QFM3REVEJZPRUYWZMD3SL",f7ebfd9e-2fc3-4e78-a95c-c88a57209006,False,,,PersonalWorkspace 474a78e2-e8e1-4aaf-9094-c20dcca75a9b OneDrive,Active,Personal
+BFACD738-DA18-4FFD-A388-8C08BEADBE12,Small,,aeac755a-182c-46d4-9543-890fb1a0c8fc,True,,,Fabric East US,Active,Workspace
+BFACD738-DA18-4FFD-A388-8C08BEADBE12,Small,,568ad072-472d-4f1d-91cf-e1b84bef17a4,True,,,CNPJ,Active,Workspace
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJFWZ53OI4KAZGLUQ3DEERL6DKN",72a00887-209d-465f-b579-19274fa02789,False,,,PersonalWorkspace 2960ef24-f80c-4aa3-ac17-4eaaf567eb58 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUJFWZ53OI4KAZGLUQ3DEERL6DKN",2a2f2022-9a5a-4812-a13c-4eff0a0dfe55,False,,,PersonalWorkspace fdc23c5c-cd3b-415d-8256-2f1ca21f3215 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUP4PVKUGRC4EVDJXIGTHRPR6EMO",3d8c91f2-658a-4b98-9ba4-94de2bf198d9,False,,,PersonalWorkspace 9889ef35-56fe-4a64-aa5b-6eabbafc415d OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUP4PVKUGRC4EVDJXIGTHRPR6EMO",36a476eb-a19d-4d41-9eb7-3f5b25f8ae64,False,,,PersonalWorkspace 4a0f3f08-5cf3-4c30-8570-6e8620d821a0 OneDrive,Active,Personal
+,,,bdaac6bc-fd39-4d07-9edb-a8ba1d4cb2c7,False,,,PersonalWorkspace Jefferson Arceno (jefferson.arceno@powertuning.com.br),Active,Personal
+BFACD738-DA18-4FFD-A388-8C08BEADBE12,Small,,ea2a78e4-d3bd-469a-856b-2855c0e86005,True,,,testet,Active,Workspace
+,,,4c568419-00bd-4fe8-8b0f-c30efe3d02cc,False,,,"Power Monitor 31/07/2025, 13:54:51",Active,Workspace
+,,,0d07fbe8-26f2-463b-8145-0b8310db31e8,False,,,Fabric New 21082025,Active,Workspace
+,,,cd48e904-057e-4146-95e1-99cde7460d17,False,,,PersonalWorkspace Luccas Machado (luccas.machado@powertuning.com.br),Active,Personal
+,,,21395a53-8b39-42ea-bd18-d5a1d366ac87,False,,,PersonalWorkspace Francisco Neto (francisco.neto@powertuning.com.br),Active,Personal
+,,,ed54abc0-6f73-4ef6-8981-f73ac97dd625,False,,,PersonalWorkspace Arthur Reis (arthur.reis@powertuning.com.br),Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUKDTI2HCKVPPFC2M46FXM4M2BUE",16fd3582-5069-4154-bd39-a0cf3ce86449,False,,,PersonalWorkspace db5e5b0a-dcbe-49e4-9952-1612b0d68f8f OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUKDTI2HCKVPPFC2M46FXM4M2BUE",ea8c3ef7-a3b3-48c2-a0b8-def697139163,False,,,PersonalWorkspace 34d63b64-b29b-4236-a3de-86cb434a9fe7 OneDrive,Active,Personal
+,,,125a60bf-8088-448d-ab48-2ee448662274,False,,,PersonalWorkspace Rodrigo Dornel (rodrigo.dornel@powertuning.com.br),Active,Personal
+BFACD738-DA18-4FFD-A388-8C08BEADBE12,Small,,cfa6c73b-46f1-4990-900a-22526fbf6899,True,,,Poc SHI,Active,Workspace
+,,,39819fd7-f615-4fa4-bd63-3cb313060337,False,,,Novo Capacity Metrics,Active,Workspace
+,,,f0d64b48-2f7d-42a5-85ef-834698a7e485,False,,,PersonalWorkspace Luciano Borba (luciano.borba@powertuning.com.br),Active,Personal
+,,,5f7ba4de-f1ee-43cb-9f6e-8ea6053ad561,False,,,PersonalWorkspace Alison Pezzott (alison.pezzott@powertuning.com.br),Active,Personal
+,,,67a13b1d-b607-4768-b501-bae1111c9d33,False,,,PersonalWorkspace Rafael Dos Santos,Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,b9f7de23-3d9c-4d17-af05-613614b88098,True,,,Pezzott-DEV,Active,Workspace
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,4ef88f76-e618-4abe-ac5f-6be3aa0e5d41,True,,,PersonalWorkspace Mateus Nascimento (mateus.nascimento@powertuning.com.br),Active,Personal
+,,,6c948bef-5d5b-4aaf-99a1-0d46c37c262f,False,,,PersonalWorkspace Marilha Testa (marilha.testa@powertuning.com.br),Active,Personal
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,7bc78b94-4f7c-46b3-9dd7-82caae1aad18,True,,,Teste-LucianoBorba,Active,Workspace
+,,,29ad4afa-1f10-4452-a98b-e2060dceac1d,False,,,PersonalWorkspace Kelianne Brito (kelianne.brito@powertuning.com.br),Active,Personal
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,2ec42e4b-c4f2-415d-a94b-479638a19f1d,True,,,Teste Capacidade Paga,Active,Workspace
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,28b2ba64-4870-4c28-841f-dc4f73b4e180,True,,,Workspace - Luciano - Teste - Power Monitor,Active,Workspace
+,,,2326dc87-ed65-43fb-a300-2d789303bfc9,False,,,PersonalWorkspace Pedro Gomes (pedro.gomes@powertuning.com.br),Active,Personal
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,725575ab-19ad-4abd-9f6b-85de3becd443,True,,,Power Embedded - Clientes,Active,Workspace
+04aee2e9-e5cb-48af-a3cd-5c4056903379,Small,,33582011-1f91-4a98-a2ed-7b5b02e999d6,True,,,Nova Workspace,Active,Workspace
+,,,8d740ea3-8e47-42e1-9683-fed4e6491a57,False,,,Teste - Luciano - Workspace PRO,Active,Workspace
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,8557b22d-68c7-4228-98b2-647b5479e224,True,,,PowerOmniTest,Active,Workspace
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,93b1f398-f460-43ab-8aac-52f2bfaa5f83,True,,,POC-Bunge,Active,Workspace
+5FB0E08D-649F-4196-8CEA-F32CA5E5173D,Small,,91d26a91-64b7-4f05-9468-27ff1c5df40c,True,,,PersonalWorkspace Arthur Mendes (arthur.mendes@powertuning.com.br),Active,Personal
+,,,e4f7ba42-3ca7-4dcb-ae36-c7c87f6e59c8,False,,,PersonalWorkspace Daniela Stoco (daniela.stoco@powertuning.com.br),Active,Personal
+,,,d3faa91b-5fce-413c-a7b4-39eb2c409dd6,False,,,PersonalWorkspace Matheus Brandao (matheus.brandao@powertuning.com.br),Active,Personal
+,,,226941b0-cc0d-4105-9b04-da621ee7e82d,False,,,PersonalWorkspace Vanessa Hagen (vanessa.hagen@powertuning.com.br),Active,Personal
+,,,1218d2da-8a1b-4cb1-8c0c-b82ec11c008d,False,,,Assessments - CM Soluções,Active,Workspace
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,b0b080c2-97a9-49aa-a35b-d65996116f34,True,,,BI-Team-POCs,Active,Workspace
+,,,829ae08c-eaed-46cf-be41-1fc79543eb99,False,,,Fabric Capacity Metrics - powerfabricbrasil,Active,Workspace
+10A4518D-26BE-4651-ADC9-C8776A546844,Small,,e58c30e2-dc3e-4c20-8fda-f52a78f548cc,True,,,ws_douglas_teste,Active,Workspace
+,,,4a4bddf9-ec79-4d21-a7e7-b7ab860d647e,False,,,"Microsoft Fabric Capacity Metrics 16/12/2025, 11:42:19",Active,Workspace
+9cfec7c6-a80f-45f7-8126-70c697fd61a5,Small,,6e1c099c-7300-4881-87a7-a366eb9c8f02,True,,,Embedded - Teste Capacidade,Active,Workspace
+04aee2e9-e5cb-48af-a3cd-5c4056903379,Small,,ab8f49b2-7940-4a5b-ab4f-bc957d56b173,True,,,Embedded - Teste Capacidade DEV,Active,Workspace
+,,,82a2ffd1-bda9-4da6-9311-da4a0d06a021,False,,,PersonalWorkspace Power Teams (powerteams@powertuning.com.br),Active,Personal
+e232f505-f7cf-4e4d-9d6e-eb391bfb006a,Small,,495b1272-45c1-498b-a000-22bebbe30266,True,,,Test - Accumed,Active,Workspace
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUK352NLH3AAANE2DMU2YUFNORMQ",ffed1d83-769e-4e0a-a92e-5924523908f9,False,,,PersonalWorkspace ac7e7d81-7499-4183-a37a-7193f75fe011 OneDrive,Active,Personal
+,,"PBIX in OneDrive Folder
+DriveId: b!aJ9sTCmwe0Sqg0n5EhsqullfQkdTkSJCoIQx7KWZZMXBVKrOwSlHRZqTMXCPwYz3
+ItemId: 01BKE7SUK352NLH3AAANE2DMU2YUFNORMQ",0f7a968f-8330-4b53-b887-a9106215a6a1,False,,,PersonalWorkspace 52147998-abd3-4ad0-9989-350538db2175 OneDrive,Active,Personal
+,,,95830467-1b5d-4a9b-962a-cba9a0f158ce,False,,,PersonalWorkspace Adriane Belle (adriane.belle@powertuning.com.br),Active,Personal
+31BAF9D1-D0C7-4324-8DAC-4D484C3B7521,Small,,b3fda9cc-c96e-46db-9909-2406f6ab662c,True,,,Treinamento - Power BI,Active,Workspace
+e232f505-f7cf-4e4d-9d6e-eb391bfb006a,Small,,addce342-d6e7-4087-9052-dafd2264bdb5,True,,,power_tuning_zero,Active,Workspace
+,,Workspace for TOTVS ETL processes,7e9126a2-a5a1-449b-b355-360187d651ff,False,,,wk_totvs_etl,Active,Workspace
+603E02A9-0553-49FD-9724-3E2F807BB680,Small,,3c22b3b6-40ac-4171-b9ff-5d05eea4b330,True,,,Teste Ambiente Jdemito,Active,Workspace
+,,,31b21292-00a2-421a-ba14-457d4843acdc,False,,,PersonalWorkspace Carlos Machel,Active,Personal
+,,,57d69bb9-bb12-4ff3-8df3-cdf6d9d7fff8,False,,,PersonalWorkspace Talles Paiva,Active,Personal
+,,,a4a9e466-e946-43a2-8c26-1d4e4462e07d,,,,,Not found,
+,,,6a25bd69-3cf1-4708-9d49-bb5a231f9e79,,,,,Not found,
+,,,ef4da3bc-df3f-43c8-bca3-93f41648fef9,,,,,Not found,
+,,,589eab22-a94c-4f6c-9135-cab86190b428,,,,,Not found,
+,,,0f49cf4f-f6bf-4e3b-bf92-c334d5ab7f1a,,,,,Not found,
+,,,870d7d0d-4880-494c-a34f-795c9e5f6365,,,,,Not found,
+,,,87151870-df96-4e73-9116-d9a2b57a7815,,,,,Not found,
+,,,30d6dac5-7b0b-4734-a715-1bef2d7cbe45,,,,,Not found,
+,,,aa340c58-c03a-4c81-850b-0d59144fce4c,,,,,Not found,
+,,,d8fc3ec5-bd15-436e-adb8-6c34f4af54c8,,,,,Not found,
+,,,d4981ab4-2f7b-4d39-9559-912ed1232f1c,,,,,Not found,
+,,,f601598a-a8b0-43b9-9cc9-f7cf08427e81,,,,,Not found,
+,,,ab2f2ff9-a1e8-495c-90aa-19ac78363946,,,,,Not found,
+,,,122d10c7-4901-44a7-81fd-cf8231c4fa10,,,,,Not found,
+,,,a118bb79-c0dd-49b6-a3f5-1a9a60bf3b93,,,,,Not found,

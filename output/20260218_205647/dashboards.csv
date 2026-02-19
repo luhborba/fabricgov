@@ -1,0 +1,66 @@
+displayName,id,isReadOnly,tags,tiles,workspace_id,workspace_name
+Dashboard - 1 Relatório Só,295fe40e-df58-43e5-857a-ea31bf6f0adf,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Dashboard - Vários relatórios,338250f1-9109-4123-931d-611bed1dacb6,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Dash Teste,bfeeefe2-a45f-4606-a243-9dbc444ce5ca,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Sales Canada.pbix,04758d5e-28a7-4fbe-91e1-071e3e581893,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Sales World.pbix,44705b4d-1b8d-4ea2-8d74-05fedcc545f6,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Sales Diferente.pbix,58da0469-bea4-4ad9-952c-6d01409c2eed,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Teste Q&A,df0940e8-40a5-41e3-b91e-d61f821d772f,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Dash Teste SSAS,0c4b36a2-b223-4cec-b3e5-b2edf5d339bc,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Comercial.pbix,d138972a-2c30-4670-b17d-463b45baa73d,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Modelo Vendas e Entregas RLS.pbix,7ff042cc-0b01-45fd-a869-6b48e7b17cfd,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Cubo - Custos IA.pbix,28d493eb-1868-40cb-aacc-fa7a042187d3,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Athena.pbix,5ba8201b-d214-447f-a6af-b92d23330c59,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Cerati - Status Pedidos IA.pbix,813ff153-0b27-4a7d-83b0-728ef66015d9,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Cerati - Faturamento IA.pbix,bc859e5f-ee8a-4f39-bfc3-a2eb38233ea2,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+arquivo01.pbix,44c470a1-15aa-4ac3-9189-5c08b5cde85f,False,[],[],d397e342-a1a0-47e4-94ee-acd6f23ddc52,BI
+Horus Price.pbix,21b51012-079d-4106-9e90-a03ddc7bb82b,False,[],[],b1b01635-0245-489d-98fd-39f3a126389a,Rafael 0308
+R_Churn.pbix,d73e4beb-cc37-4983-8f02-243055a145bc,False,[],[],41587bdf-74b1-4981-9723-47a11f1c989e,Comercial BI
+Gestão NPS.pbix,9ff1ae8e-ab0e-47a7-94ed-6dc6f4ceba11,False,[],[],41587bdf-74b1-4981-9723-47a11f1c989e,Comercial BI
+Power Alerts.pbix,906983fb-2423-473f-99be-24535665b7f7,False,[],[],016301fa-5208-47b2-b948-af7919be1446,Team Leader
+Teste,1ef1bfa9-6665-40b3-a02d-0cd76184d759,False,[],[],08a96a82-1109-448d-9c21-d5caf6477305,BI (1)
+Vendas Tempo Real,91e1fbea-c2ab-4265-85f9-d59c10b9a70c,False,[],[],74a5f3ad-2085-46cd-9756-9930459351e4,PersonalWorkspace Dirceu Resende (dirceu.resende@powertuning.com.br)
+Painel teste live,2e9bd3d1-8737-40c7-8406-44b74559a23d,False,[],[],74a5f3ad-2085-46cd-9756-9930459351e4,PersonalWorkspace Dirceu Resende (dirceu.resende@powertuning.com.br)
+Demonstrações contábeis _ ROOT_3.pbix,ef61ca85-0fee-47b1-9013-a699d7fcaef8,False,[],[],7c653238-aaf9-43bd-b835-47b7f4c1ab39,PersonalWorkspace Aderb Breda (aderb.breda@powertuning.com.br)
+Demonstrações contábeis _ ROOT_V1.pbix,8f6b9a5e-f804-4c1e-ba5d-29eef7f8c3a2,False,[],[],7c653238-aaf9-43bd-b835-47b7f4c1ab39,PersonalWorkspace Aderb Breda (aderb.breda@powertuning.com.br)
+Opportunity Analysis Sample,bfc5c2bb-419d-4b84-93bf-9d922bdbf339,False,[],[],67fb0ee1-1aaf-4a8d-a42e-140c0de8a6bb,PersonalWorkspace Jeniffer Karen (jeniffer.karen@powertuning.com.br)
+Teste Dash 2,022d970b-78ca-47fb-af0c-3a3268ed3b82,False,[],[],b353b7a3-cb59-4aa3-93f9-5f90f0136bc5,Workspace Premium
+Faturamento Dia.pbix,6fb5e20c-8628-463b-8f3e-baf9864def74,False,[],[],2acbd2aa-6739-41d4-9514-79414e1d6350,Fabric
+Teste Dash,46b14c5a-56fc-4c21-834c-6ea5be64dc7a,False,[],[],20784450-2dc0-4656-81e9-6aafcbb71bf0,Teste RLS
+Teste Dash 3,b72e298c-b51a-481d-b2c9-4262a29d21d4,False,[],[],c7773101-b991-4ab1-a3e4-32538569424e,Teste Dashboard
+Arquivo LabSoft.pbix,19399a95-65c0-4143-bd41-86952ef2fba3,False,[],[],dce43a3f-0d57-4ec2-ad51-3cbdb955dc6a,LabSoft
+teste_dashboard.pbix,8f027c6c-eaf9-416f-be66-9603de82687e,False,[],[],e57f59e7-f423-4262-9ceb-c36797ac4824,PersonalWorkspace Yan Marostegan (yan.marostegan@powertuning.com.br)
+Demandas da Noite 01.xlsx,a1b0a826-708b-4cdc-a907-0e277a00e718,False,[],[],e57f59e7-f423-4262-9ceb-c36797ac4824,PersonalWorkspace Yan Marostegan (yan.marostegan@powertuning.com.br)
+Demonstrações Mensais - PWT.pbix,a2e6b580-e25c-4d22-ab57-9103754040df,False,[],[],3e4c11d8-53c4-4f70-b5ed-1feade29d853,Financeiro Dev
+Atendimento Laboratorial - Teste Capacidade.pbix,6739d8ea-8e7e-4cfd-9607-387e80fd7c02,False,[],[],0673fc18-3954-4486-8b2a-24d8c02f4261,Teste Fabric F2 - SSAS
+Comissão por Loja.pbix,b0e8f23b-7985-4fc1-a064-45859c2c919a,False,[],[],69592d3f-e0f8-481f-bcd5-34c9fe91b130,PersonalWorkspace Daniel Pedro (daniel.pedro@powertuning.com.br)
+Analise_de_Nucleos_FR.pbix,dee57594-7771-4934-b0fa-e23a85bf1231,False,[],[],69592d3f-e0f8-481f-bcd5-34c9fe91b130,PersonalWorkspace Daniel Pedro (daniel.pedro@powertuning.com.br)
+Analise_de_Nucleos_FR_04.06.pbix,8f2ab9c2-16f4-4734-b2a2-c5550c0d547f,False,[],[],69592d3f-e0f8-481f-bcd5-34c9fe91b130,PersonalWorkspace Daniel Pedro (daniel.pedro@powertuning.com.br)
+Sales Report.pbix,89adc9ac-40f1-429f-90a7-8b8f2264a6f5,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+Fabricland Academy.pbix,3e3483ec-dccd-4d67-8766-8358aeec5e4d,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+testeconexão.pbix,c1e401d1-275b-42a0-bf47-9e0174585d40,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+teste rls dinamica power embedded.pbix,537f1548-dc05-40c2-a1ff-7d4fa470e404,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+Employee Hiring and History - Design.pbix,c0fbfb4e-eda4-4932-95e2-d1e1f2406d02,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+AnaliseVarejo.pbix,d0e02db1-08d2-4a58-b03a-6f941af54e87,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+World Champs 26 - Week 2 Starter File.pbix,64568578-3833-4bab-9887-34a8b0c59b2f,False,[],[],8aeb1ec9-e64e-429b-a8b5-8009a24b3702,Demos Power Embedded
+Fabricland Academy.pbix,3e333c7e-8412-46b6-80f1-fbbaf461ce1d,False,[],[],d1d3715e-6d9e-4884-8256-d18fcb93ddaf,PersonalWorkspace Nayara Hellen (nayara.hellen@powertuning.com.br)
+Fabricland Academy - Copia.pbix,d0095e02-d7dd-4afd-9574-f1d38cf8e05e,False,[],[],d1d3715e-6d9e-4884-8256-d18fcb93ddaf,PersonalWorkspace Nayara Hellen (nayara.hellen@powertuning.com.br)
+Fabricland Academy - sem medidas.pbix,b1aecacb-79b4-4eb6-8a25-5b58b9d2cb2a,False,[],[],d1d3715e-6d9e-4884-8256-d18fcb93ddaf,PersonalWorkspace Nayara Hellen (nayara.hellen@powertuning.com.br)
+Employee Hiring and History - Design.pbix,5943016e-d7f5-40f5-9936-6cd6e88203e1,False,[],[],d1d3715e-6d9e-4884-8256-d18fcb93ddaf,PersonalWorkspace Nayara Hellen (nayara.hellen@powertuning.com.br)
+RH.pbix,25d0df71-ebad-4398-b9be-ab1d2d78bc27,False,[],[],790b70ce-9bdc-4553-8f94-a255b9a8eab6,Validacao
+Comercial.pbix,03907d1c-084a-4b55-9593-3bcf831b4d7a,False,[],[],790b70ce-9bdc-4553-8f94-a255b9a8eab6,Validacao
+Comercial.pbix,d46b7cc7-4394-42d2-b435-73c4cc004220,False,[],[],04f8972f-4049-4f7d-9a4d-c11f126d2979,WP - Administração - Teste
+Financeiro.pbix,20d0b1a6-505f-4aa3-944f-b540304c2871,False,[],[],04f8972f-4049-4f7d-9a4d-c11f126d2979,WP - Administração - Teste
+Comercial - IA.pbix,49cd8c4a-6f4e-45e1-a674-1b5a2e4e86a0,False,[],[],8a9a6a75-a967-43b3-8758-087f25c8a2bb,Teste
+Curso BI.pbix,db4e8af7-9f6d-494a-bd8f-512e310d5777,False,[],[],8a9a6a75-a967-43b3-8758-087f25c8a2bb,Teste
+Comercial.pbix,ecda242f-5ad2-4421-a90c-31954d02c42b,False,[],[],3eaf9017-7743-468f-bd1a-45ee61cb213d,Charlison 
+Revenue Opportunities (1).pbix,bbd31948-dbb7-4a0f-b0e8-455aff1ae199,False,[],[],3eaf9017-7743-468f-bd1a-45ee61cb213d,Charlison 
+Arquivo02.pbix,9349ffe0-e98c-4c59-9221-428fce065e59,False,[],[],04fb7f5e-f73e-48e2-8f9a-de9924f17fd0,Treinamento Power BI
+TestePainel,02701a1f-108f-4f38-b835-ee4b7254e59e,False,[],[],7bc78b94-4f7c-46b3-9dd7-82caae1aad18,Teste-LucianoBorba
+Demo 01.pbix,2a754130-4c8e-42d6-80a1-0e1edc46de3a,False,[],[],2ec42e4b-c4f2-415d-a94b-479638a19f1d,Teste Capacidade Paga
+MARKETING - Segmentação de Representantes.pbix,45191efa-d1b5-4cb9-ac4d-2c398f0f0770,False,[],[],725575ab-19ad-4abd-9f6b-85de3becd443,Power Embedded - Clientes
+MARKETING - Segmentação de Representantes.pbix,6be9f104-acbb-4c83-addc-72d118601442,False,[],[],33582011-1f91-4a98-a2ed-7b5b02e999d6,Nova Workspace
+ReportAula03.pbix,9fbcde7e-f474-404e-9ea3-69814f328736,False,[],[],33582011-1f91-4a98-a2ed-7b5b02e999d6,Nova Workspace
+Power Monitor Interno.pbix,158708c1-e6fe-45cd-8a03-9b152d54baa7,False,[],[],33582011-1f91-4a98-a2ed-7b5b02e999d6,Nova Workspace
+Atendimento Laboratorial.pbix,a980befd-925a-402e-baae-ba0a22476cfd,False,[],[],6e1c099c-7300-4881-87a7-a366eb9c8f02,Embedded - Teste Capacidade
+Atendimento Laboratorial.pbix,95e0eaa6-75cf-4da7-bd47-8cec8487e72e,False,[],[],ab8f49b2-7940-4a5b-ab4f-bc957d56b173,Embedded - Teste Capacidade DEV

@@ -1,0 +1,87 @@
+======================================================================
+FABRICGOV - LOG DE EXECUÇÃO
+======================================================================
+
+PROGRESSO:
+----------------------------------------------------------------------
+[20:56:23] Listando workspaces do tenant...
+[20:56:24] Encontrados 302 workspaces
+[20:56:24] Dividido em 4 lote(s) de até 100 workspaces
+[20:56:24] 
+--- Lote 1/4 (100 workspaces) ---
+[20:56:24] Iniciando scan do lote 1/4...
+[20:56:24] Scan iniciado (id: e8a7d4b8-67d7-4f84-bcbd-a8d43e765bb9)
+[20:56:29] Lote 1/4 - Status: Succeeded (5s)
+[20:56:29] Coletando resultado do scan e8a7d4b8-67d7-4f84-bcbd-a8d43e765bb9...
+[20:56:29] ✓ Lote 1/4 concluído: 100 workspaces
+[20:56:29] 
+--- Lote 2/4 (100 workspaces) ---
+[20:56:29] Iniciando scan do lote 2/4...
+[20:56:30] Scan iniciado (id: ee10fb61-34d4-4740-a1dd-a3fb986264a5)
+[20:56:35] Lote 2/4 - Status: Succeeded (5s)
+[20:56:35] Coletando resultado do scan ee10fb61-34d4-4740-a1dd-a3fb986264a5...
+[20:56:35] ✓ Lote 2/4 concluído: 100 workspaces
+[20:56:35] 
+--- Lote 3/4 (100 workspaces) ---
+[20:56:35] Iniciando scan do lote 3/4...
+[20:56:35] Scan iniciado (id: a72592ce-4dc4-430e-b39d-a89fdb758eaf)
+[20:56:41] Lote 3/4 - Status: Succeeded (5s)
+[20:56:41] Coletando resultado do scan a72592ce-4dc4-430e-b39d-a89fdb758eaf...
+[20:56:41] ✓ Lote 3/4 concluído: 100 workspaces
+[20:56:41] 
+--- Lote 4/4 (2 workspaces) ---
+[20:56:41] Iniciando scan do lote 4/4...
+[20:56:41] Scan iniciado (id: 99ea1e28-fe3b-4dee-8199-30625afeb562)
+[20:56:46] Lote 4/4 - Status: Succeeded (5s)
+[20:56:46] Coletando resultado do scan 99ea1e28-fe3b-4dee-8199-30625afeb562...
+[20:56:47] ✓ Lote 4/4 concluído: 2 workspaces
+[20:56:47] 
+Extraindo e agrupando artefatos...
+[20:56:47] 
+✓ Coleta concluída: 302 workspaces, 1368 itens em 23.8s
+
+======================================================================
+RESUMO:
+======================================================================
+Total de workspaces: 302
+Total de itens: 1368
+Duração: 23.81s
+Lotes processados: 4
+
+ARTEFATOS ENCONTRADOS:
+----------------------------------------------------------------------
+  reports                                777
+  datasets                               506
+  dashboards                              65
+  warehouses                              12
+  dataflows                                6
+  datamarts                                2
+
+TIPOS DE ARTEFATOS NÃO ENCONTRADOS:
+----------------------------------------------------------------------
+  datasourceInstances
+  deploymentPipelines
+  eventstreams
+  graphqlApis
+  kqlDatabases
+  kqlQuerysets
+  lakehouses
+  mirroredDatabases
+  mirroredWarehouses
+  misconfiguredDatasourceInstances
+  mlExperiments
+  mlModels
+  notebooks
+  paginatedReports
+  reflex
+  semanticModels
+  sparkJobDefinitions
+  sqlDatabases
+  sqlEndpoints
+  variableLibraries
+  workbooks
+
+======================================================================
+Arquivos exportados em: output/20260218_205647
+Formato: CSV
+======================================================================
