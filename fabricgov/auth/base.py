@@ -1,4 +1,5 @@
 from typing import Protocol, runtime_checkable
+from fabricgov.exceptions import AuthenticationError
 
 @runtime_checkable
 class AuthProvider(Protocol):
@@ -22,6 +23,24 @@ class AuthProvider(Protocol):
         """
         ...
     
-class AuthenticationError(Exception):
-    """Exceção personalizada para erros de autenticação."""
-    pass
+@runtime_checkable
+class AuthProvider(Protocol):
+    """
+    Contrato que todo provedor de autenticação deve respeitar.
+    """
+
+    def get_token(self, scope: str) -> str:
+        """
+        Retorna um Bearer token válido para o scope informado.
+
+        Args:
+            scope: URL do scope OAuth2.
+                   Ex: "https://api.fabric.microsoft.com/.default"
+
+        Returns:
+            Token de acesso como string.
+
+        Raises:
+            AuthenticationError: se não for possível obter o token.
+        """
+        ...
