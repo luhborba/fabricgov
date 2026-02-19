@@ -1,5 +1,6 @@
 import msal
-from fabricgov.auth.base import AuthProvider, AuthenticationError
+from fabricgov.auth.base import AuthProvider
+from fabricgov.exceptions import AuthenticationError
 
 class DeviceFlowAuth:
     """
@@ -9,11 +10,19 @@ class DeviceFlowAuth:
     def __init__(self, tenant_id: str, client_id: str) -> None:
         self._tenant_id = tenant_id
         self._client_id = client_id
-        self._app = msal.PublicClientApplication(
-            client_id=client_id,
-            authority=f"https://login.microsoftonline.com/{tenant_id}",
-            validate_authority=False,
-        )
+        
+        try:
+            self._app = msal.PublicClientApplication(
+                client_id=client_id,
+                authority=f"https://login.microsoftonline.com/{tenant_id}",
+                validate_authority=False,
+            )
+        except ValueError as e:
+            raise AuthenticationError(
+                f"Falha ao inicializar autenticação.\n"
+                f"Tenant ID inválido ou inacessível: {tenant_id}\n"
+                f"Detalhe: {str(e)}"
+            )
     
     def get_token(self, scope: str) -> str:
         """

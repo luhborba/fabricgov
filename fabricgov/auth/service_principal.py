@@ -1,7 +1,8 @@
 import os
 import msal
 from dotenv import load_dotenv
-from fabricgov.auth.base import AuthProvider, AuthenticationError
+from fabricgov.auth.base import AuthProvider
+from fabricgov.exceptions import AuthenticationError
 
 
 class ServicePrincipalAuth:
@@ -14,12 +15,21 @@ class ServicePrincipalAuth:
         self._tenant_id = tenant_id
         self._client_id = client_id
         self._client_secret = client_secret
-        self._app = msal.ConfidentialClientApplication(
-            client_id=client_id,
-            client_credential=client_secret,
-            authority=f"https://login.microsoftonline.com/{tenant_id}",
-            validate_authority=False,
-        )
+        
+        try:
+            self._app = msal.ConfidentialClientApplication(
+                client_id=client_id,
+                client_credential=client_secret,
+                authority=f"https://login.microsoftonline.com/{tenant_id}",
+                validate_authority=False,
+            )
+        except ValueError as e:
+            # MSAL lança ValueError quando tenant_id é inválido
+            raise AuthenticationError(
+                f"Falha ao inicializar autenticação.\n"
+                f"Tenant ID inválido ou inacessível: {tenant_id}\n"
+                f"Detalhe: {str(e)}"
+            )
 
     @classmethod
     def from_params(

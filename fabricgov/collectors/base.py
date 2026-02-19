@@ -58,65 +58,139 @@ class BaseCollector(ABC):
     # ── HTTP helpers ──────────────────────────────────────────────────────
 
     def _get(
-        self,
-        endpoint: str,
-        scope: str,
-        params: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """
-        Faz um GET request com retry automático e rate limiting.
+            self,
+            endpoint: str,
+            scope: str,
+            params: dict[str, Any] | None = None,
+        ) -> dict[str, Any]:
+            """
+            Faz um GET request com retry automático e tratamento de erros.
 
-        Args:
-            endpoint: Path do endpoint (ex: "/v1/workspaces")
-            scope: OAuth2 scope para obter o token
-            params: Query parameters opcionais
+            Args:
+                endpoint: Path do endpoint (ex: "/v1/workspaces")
+                scope: OAuth2 scope para obter o token
+                params: Query parameters opcionais
 
-        Returns:
-            Resposta JSON como dict
+            Returns:
+                Resposta JSON como dict
 
-        Raises:
-            httpx.HTTPStatusError: se todas as tentativas falharem
-        """
-        url = f"{self._base_url}{endpoint}"
-        token = self._auth.get_token(scope)
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-        }
+            Raises:
+                BadRequestError: 400 - payload mal formado
+                UnauthorizedError: 401 - token inválido
+                ForbiddenError: 403 - sem permissões
+                NotFoundError: 404 - recurso não existe
+                TooManyRequestsError: 429 - rate limit (após retries)
+                InternalServerError: 500 - erro do servidor (após retries)
+                ServiceUnavailableError: 503 - serviço indisponível (após retries)
+            """
+            from fabricgov.exceptions import (
+                BadRequestError, UnauthorizedError, ForbiddenError,
+                NotFoundError, TooManyRequestsError, InternalServerError,
+                ServiceUnavailableError
+            )
 
-        for attempt in range(self._max_retries):
-            try:
-                time.sleep(self._request_delay)  # rate limiting básico
-                response = self._client.get(url, headers=headers, params=params)
-                response.raise_for_status()
-                return response.json()
+            url = f"{self._base_url}{endpoint}"
+            token = self._auth.get_token(scope)
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            }
 
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429:  # Too Many Requests
-                    # Exponential backoff
-                    delay = self._retry_delay * (2 ** attempt)
-                    time.sleep(delay)
-                    continue
-                elif e.response.status_code >= 500:  # Server errors
+            last_exception = None
+
+            for attempt in range(self._max_retries):
+                try:
+                    time.sleep(self._request_delay)
+                    response = self._client.get(url, headers=headers, params=params)
+                    response.raise_for_status()
+                    return response.json()
+
+                except httpx.HTTPStatusError as e:
+                    status = e.response.status_code
+                    response_text = e.response.text
+                    
+                    # Erros 4xx — não faz retry (exceto 429)
+                    if status == 400:
+                        raise BadRequestError(
+                            message="Requisição mal formada",
+                            status_code=400,
+                            endpoint=endpoint,
+                            response_body=response_text,
+                        )
+                    elif status == 401:
+                        raise UnauthorizedError(
+                            message="Token inválido ou expirado. Verifique as credenciais.",
+                            status_code=401,
+                            endpoint=endpoint,
+                            response_body=response_text,
+                        )
+                    elif status == 403:
+                        raise ForbiddenError(
+                            message="Acesso negado. O Service Principal precisa de permissões de Fabric Administrator.",
+                            status_code=403,
+                            endpoint=endpoint,
+                            response_body=response_text,
+                        )
+                    elif status == 404:
+                        raise NotFoundError(
+                            message="Recurso não encontrado",
+                            status_code=404,
+                            endpoint=endpoint,
+                            response_body=response_text,
+                        )
+                    elif status == 429:
+                        # Rate limit — retry com backoff exponencial
+                        if attempt < self._max_retries - 1:
+                            delay = self._retry_delay * (2 ** attempt)
+                            time.sleep(delay)
+                            continue
+                        raise TooManyRequestsError(
+                            message=f"Rate limit atingido após {self._max_retries} tentativas",
+                            status_code=429,
+                            endpoint=endpoint,
+                            response_body=response_text,
+                        )
+                    elif status >= 500:
+                        # Erros de servidor — retry
+                        if attempt < self._max_retries - 1:
+                            delay = self._retry_delay * (2 ** attempt)
+                            time.sleep(delay)
+                            last_exception = e
+                            continue
+                        if status == 503:
+                            raise ServiceUnavailableError(
+                                message=f"Serviço indisponível após {self._max_retries} tentativas",
+                                status_code=503,
+                                endpoint=endpoint,
+                                response_body=response_text,
+                            )
+                        else:
+                            raise InternalServerError(
+                                message=f"Erro interno do servidor após {self._max_retries} tentativas",
+                                status_code=status,
+                                endpoint=endpoint,
+                                response_body=response_text,
+                            )
+                    else:
+                        # Outros 4xx — não faz retry
+                        raise
+
+                except (httpx.TimeoutException, httpx.ConnectError) as e:
+                    last_exception = e
                     if attempt < self._max_retries - 1:
                         delay = self._retry_delay * (2 ** attempt)
                         time.sleep(delay)
                         continue
-                raise  # Client errors (4xx) não fazem retry
+                    raise ServiceUnavailableError(
+                        message=f"Timeout ou erro de conexão após {self._max_retries} tentativas: {str(e)}",
+                        status_code=503,
+                        endpoint=endpoint,
+                        response_body=None,
+                    )
 
-            except (httpx.TimeoutException, httpx.ConnectError) as e:
-                if attempt < self._max_retries - 1:
-                    delay = self._retry_delay * (2 ** attempt)
-                    time.sleep(delay)
-                    continue
-                raise
-
-        # Se chegou aqui, todas as tentativas falharam
-        raise httpx.HTTPStatusError(
-            f"Falha após {self._max_retries} tentativas",
-            request=response.request,
-            response=response,
-        )
+            # Se chegou aqui, todas as tentativas falharam
+            if last_exception:
+                raise last_exception
 
     def _paginate(
         self,
