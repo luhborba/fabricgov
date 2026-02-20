@@ -1,0 +1,194 @@
+# Changelog
+
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+---
+
+## [Unreleased]
+
+### Planejado
+- CLI via Click (`fabricgov assess`, `fabricgov auth`)
+- CapacityConsumptionCollector (métricas via DAX queries)
+- Assessment orchestrator (executa múltiplos coletores em sequência)
+- Suporte a Azure Key Vault para credenciais
+- Testes de integração completos
+
+---
+
+## [0.2.0] - 2026-02-20
+
+### Added
+- **Checkpoint system** para coletas resumíveis após rate limit
+  - Módulo `fabricgov/checkpoint.py` para gerenciar checkpoints
+  - Salva progresso a cada 50/100 itens processados
+  - Retoma coleta de onde parou em execuções subsequentes
+- **WorkspaceAccessCollector** com checkpoint
+  - Coleta roles (Admin, Member, Contributor, Viewer) em workspaces
+  - Filtragem automática de Personal Workspaces
+  - Suporte a checkpoint via parâmetro `checkpoint_file`
+  - Fail fast ao detectar rate limit (não tenta 5x)
+- **ReportAccessCollector** com checkpoint
+  - Coleta permissões (Owner, Read, ReadWrite, etc.) em reports
+  - Filtragem automática de reports em Personal Workspaces
+  - Suporte a checkpoint via parâmetro `checkpoint_file`
+- **CheckpointSavedException** em `fabricgov/exceptions.py`
+  - Exceção lançada ao salvar checkpoint por rate limit
+  - Contém informações de progresso e caminho do checkpoint
+- **Scripts de coleta independentes** em `tests/manual/`
+  - `collect_inventory.py` - Coleta inventário e salva JSON
+  - `collect_workspace_access.py` - Coleta acessos de workspaces com checkpoint
+  - `collect_report_access.py` - Coleta acessos de reports com checkpoint
+- **FileExporter** agora detecta e exporta estruturas de access collectors
+  - Suporte a `workspace_access` e `workspace_access_errors`
+  - Suporte a `report_access` e `report_access_errors`
+
+### Changed
+- Access collectors agora param imediatamente ao detectar 429 (fail fast)
+- Personal Workspaces são filtrados antes de fazer chamadas à API
+- Estratégia de retry: ao invés de tentar 5x com pausa de 30s, salva checkpoint e encerra
+- Coleta de acessos pode ser executada de forma isolada (usa `inventory_result.json`)
+
+### Fixed
+- Rate limit handling agora não prende terminal por horas
+- Personal Workspaces não causam mais 404 errors desnecessários
+
+### Documentation
+- Documentação completa de WorkspaceAccessCollector em `docs/collectors.md`
+- Documentação completa de ReportAccessCollector em `docs/collectors.md`
+- Seção sobre limitações de rate limit e Personal Workspaces
+- Exemplos de uso com checkpoint
+- Casos de uso práticos (auditoria, workspaces órfãos, etc.)
+
+---
+
+## [0.1.0] - 2026-02-19
+
+### Added
+- **Módulo de autenticação** (`fabricgov/auth/`)
+  - `ServicePrincipalAuth` - Autenticação via client credentials
+    - Suporte a `.env` via `from_env()`
+    - Suporte a parâmetros diretos via `from_params()`
+  - `DeviceFlowAuth` - Autenticação interativa
+    - Multi-tenant automático (usa endpoint `/common`)
+    - Client ID público do Azure CLI como padrão
+    - Cache de token entre execuções
+  - `AuthProvider` protocol para desacoplamento
+- **Módulo de coletores** (`fabricgov/collectors/`)
+  - `BaseCollector` - Classe base abstrata
+    - Retry automático com exponential backoff (429, 500, 503)
+    - Rate limiting configurável (`request_delay`)
+    - Paginação automática via `continuationToken`
+    - Timeout configurável
+  - `WorkspaceInventoryCollector` - Inventário completo via Admin Scan API
+    - Batching automático (100 workspaces por lote)
+    - Polling assíncrono com feedback de progresso
+    - Extração de 27+ tipos de artefatos
+    - Agregação de datasources (instances + misconfigured)
+    - Testado: 302 workspaces, 1367 itens em ~24s
+- **Módulo de exportadores** (`fabricgov/exporters/`)
+  - `FileExporter` - Exporta para JSON ou CSV
+    - Estrutura timestampada: `output/YYYYMMDD_HHMMSS/`
+    - `log.txt` com progresso completo
+    - `summary.json` sempre em JSON
+    - Arquivos individuais por tipo de artefato (só os com dados)
+    - CSV com achatamento de objetos aninhados
+- **Exceções customizadas** (`fabricgov/exceptions.py`)
+  - Hierarquia completa: `FabricGovError` (base)
+  - Erros HTTP específicos: `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `TooManyRequestsError`, `InternalServerError`, `ServiceUnavailableError`
+  - `AuthenticationError` para falhas de autenticação
+  - Mensagens de erro com contexto (status, endpoint, response body)
+- **Documentação completa** (`docs/`)
+  - `README.md` - Overview, instalação, quick start, roadmap
+  - `docs/authentication.md` - Guia completo de Service Principal e Device Flow
+  - `docs/collectors.md` - Documentação do WorkspaceInventoryCollector
+  - `docs/exporters.md` - Guia do FileExporter com exemplos de integração
+  - `docs/contributing.md` - Como contribuir, convenções, adicionar coletores
+- **Testes** (`tests/`)
+  - Unit tests do módulo `auth` (19 testes)
+  - Testes manuais organizados em `tests/manual/`
+  - Fixtures e mocks para MSAL
+- **Configuração do projeto**
+  - Poetry para gerenciamento de dependências
+  - `.gitignore` configurado (output/, checkpoints, .env)
+  - Estrutura de pastas organizada
+
+### Dependencies
+- `msal ^1.34.0` - Autenticação Microsoft
+- `httpx ^0.28.1` - Cliente HTTP
+- `python-dotenv ^1.0.1` - Leitura de .env
+- `pytest ^8.3.4` - Framework de testes
+- `pytest-mock ^3.14.0` - Mocks para testes
+
+### Documentation
+- README principal com badges, quick start e roadmap
+- Guia de autenticação (SP + Device Flow) com exemplos completos
+- Guia de coletores com casos de uso práticos
+- Guia de exportadores com exemplos de integração (Pandas, Power BI, Azure)
+- Guia de contribuição com convenções e templates
+
+### Performance
+- WorkspaceInventoryCollector: 302 workspaces em ~24 segundos
+- Batching otimizado para Admin Scan API
+- Zero throttling observado em testes com tenant real
+
+### Security
+- Suporte a Service Principal com permissions mínimas
+- Device Flow com MFA support automático
+- Credenciais via .env (não hardcoded)
+- Validação de tenant_id no __init__ (catch early)
+
+---
+
+## [0.0.1] - 2026-02-18
+
+### Added
+- Estrutura inicial do projeto
+- Configuração do Poetry
+- Estrutura de pastas (`fabricgov/auth`, `fabricgov/collectors`, etc.)
+- Arquivo `pyproject.toml` com dependências base
+
+---
+
+## Convenções de Commit
+
+Este projeto segue [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - Nova funcionalidade
+- `fix:` - Correção de bug
+- `docs:` - Mudanças na documentação
+- `refactor:` - Refatoração sem mudar funcionalidade
+- `test:` - Adiciona ou corrige testes
+- `chore:` - Tarefas de manutenção (build, CI, etc.)
+
+**Exemplos:**
+```
+feat(auth): add DeviceFlowAuth with multi-tenant support
+fix(collectors): handle 404 errors in Personal Workspaces
+docs(collectors): add rate limit guidance and examples
+refactor(checkpoint): move logic into collectors
+test(auth): add unit tests for ServicePrincipalAuth
+chore(deps): update msal to 1.35.0
+```
+
+---
+
+## Tipos de Mudanças
+
+- **Added** - Novas funcionalidades
+- **Changed** - Mudanças em funcionalidades existentes
+- **Deprecated** - Funcionalidades que serão removidas
+- **Removed** - Funcionalidades removidas
+- **Fixed** - Correções de bugs
+- **Security** - Correções de vulnerabilidades
+
+---
+
+## Links Úteis
+
+- [Repositório GitHub](https://github.com/luhborba/fabricgov)
+- [Documentação](docs/)
+- [Issues](https://github.com/luhborba/fabricgov/issues)
+- [Pull Requests](https://github.com/luhborba/fabricgov/pulls)
