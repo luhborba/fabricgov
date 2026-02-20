@@ -14,10 +14,12 @@ O **fabricgov** automatiza a coleta de dados de governança em ambientes Microso
 
 **Principais funcionalidades:**
 - 🔍 Inventário completo de workspaces e 27+ tipos de artefatos
+- 🔐 Coleta de acessos (roles em workspaces, permissões em reports)
+- 💾 Sistema de checkpoint para coletas resumíveis em ambientes grandes
 - 🔐 Dois modos de autenticação: Service Principal e Device Flow (interativo)
 - 📊 Export em JSON ou CSV com estrutura timestampada
 - ⚡ Batching automático e progress feedback em tempo real
-- 🛡️ Tratamento robusto de erros HTTP e retry com backoff exponencial
+- 🛡️ Tratamento robusto de erros HTTP e rate limiting
 
 ---
 
@@ -81,7 +83,7 @@ print(f"✓ Arquivos exportados em: {output_path}")
 **Output:**
 ```
 output/
-└── 20260219_120000/
+└── 20260220_120000/
     ├── log.txt
     ├── summary.json
     ├── workspaces.json
@@ -107,8 +109,9 @@ auth = DeviceFlowAuth()
 ## 📚 Documentação Completa
 
 - **[Guia de Autenticação](docs/authentication.md)** — Service Principal, Device Flow, permissões necessárias
-- **[Coletores Disponíveis](docs/collectors.md)** — WorkspaceInventoryCollector, parâmetros, outputs
+- **[Coletores Disponíveis](docs/collectors.md)** — WorkspaceInventoryCollector, Access Collectors, exemplos
 - **[Exportadores](docs/exporters.md)** — Formatos JSON e CSV, estrutura de arquivos
+- **[Limitações Técnicas](docs/limitations.md)** — Rate limits, Personal Workspaces, performance
 - **[Contribuindo](docs/contributing.md)** — Como contribuir com o projeto
 
 ---
@@ -122,9 +125,12 @@ fabricgov/
 │   └── device_flow.py
 ├── collectors/         # Coletores de dados
 │   ├── base.py         # BaseCollector (retry, paginação, rate limiting)
-│   └── workspace_inventory.py
+│   ├── workspace_inventory.py
+│   ├── workspace_access.py
+│   └── report_access.py
 ├── exporters/          # Exportação de resultados
 │   └── file_exporter.py
+├── checkpoint.py       # Sistema de checkpoint
 └── exceptions.py       # Exceções customizadas
 ```
 
@@ -132,12 +138,13 @@ fabricgov/
 - **Desacoplamento:** Coletores não conhecem a implementação de auth
 - **Extensibilidade:** Novos coletores herdam retry/paginação do BaseCollector
 - **Rastreabilidade:** Cada execução gera pasta timestampada + log completo
+- **Resiliência:** Sistema de checkpoint permite retomar coletas interrompidas
 
 ---
 
 ## 🔧 Coletores Disponíveis
 
-### WorkspaceInventoryCollector
+### ✅ WorkspaceInventoryCollector
 
 Coleta inventário completo via Admin Scan API.
 
@@ -149,9 +156,53 @@ Coleta inventário completo via Admin Scan API.
 **Características:**
 - Batching automático (100 workspaces por lote)
 - Polling assíncrono com feedback de progresso
-- Metadados completos de cada artefato (id, name, createdBy, modifiedBy, etc.)
+- Metadados completos de cada artefato
 
 > 📘 Veja [docs/collectors.md](docs/collectors.md) para exemplos detalhados.
+
+---
+
+### ✅ WorkspaceAccessCollector
+
+Coleta roles de acesso (Admin, Member, Contributor, Viewer) em workspaces.
+
+**O que coleta:**
+- Roles em workspaces (Admin, Member, Contributor, Viewer)
+- Usuários e Service Principals com acesso
+- Filtragem automática de Personal Workspaces
+
+**Características:**
+- Sistema de checkpoint para coletas resumíveis
+- Fail fast ao detectar rate limit (não trava terminal)
+- Suporta execução em múltiplas sessões
+
+**Limitações:**
+- Rate limit: ~200 requests/hora
+- Tenants grandes requerem múltiplas execuções
+
+> 📘 Veja [docs/collectors.md](docs/collectors.md) e [docs/limitations.md](docs/limitations.md)
+
+---
+
+### ✅ ReportAccessCollector
+
+Coleta permissões de acesso (Owner, Read, ReadWrite, etc.) em reports.
+
+**O que coleta:**
+- Permissões em reports (Owner, Read, ReadWrite, ReadCopy, ReadReshare, ReadExplore)
+- Usuários e Service Principals com acesso
+- Filtragem automática de reports em Personal Workspaces
+
+**Características:**
+- Sistema de checkpoint para coletas resumíveis
+- Fail fast ao detectar rate limit
+- Processa centenas de reports em múltiplas sessões
+
+**Performance:**
+- ~663 reports processados em 4 execuções (~5 horas com pausas)
+- 8849 acessos coletados em tenant real
+
+> 📘 Veja [docs/collectors.md](docs/collectors.md) e [docs/limitations.md](docs/limitations.md)
 
 ---
 
@@ -161,7 +212,7 @@ Coleta inventário completo via Admin Scan API.
 ```json
 {
   "total_workspaces": 302,
-  "total_items": 1367,
+  "total_items": 1368,
   "items_by_type": {
     "reports": 777,
     "datasets": 506,
@@ -175,24 +226,93 @@ Coleta inventário completo via Admin Scan API.
 }
 ```
 
-### Log.txt (trecho)
+### Workspace Access
+```json
+{
+  "total_workspaces": 302,
+  "personal_workspaces_skipped": 186,
+  "workspaces_processed": 116,
+  "total_access_entries": 382,
+  "users_count": 48,
+  "service_principals_count": 7,
+  "roles_breakdown": {
+    "Admin": 263,
+    "Member": 9,
+    "Viewer": 15,
+    "Contributor": 7
+  }
+}
 ```
-======================================================================
-FABRICGOV - LOG DE EXECUÇÃO
-======================================================================
 
-PROGRESSO:
-----------------------------------------------------------------------
-[16:33:36] Listando workspaces do tenant...
-[16:33:36] Encontrados 302 workspaces
-[16:33:36] Dividido em 4 lote(s) de até 100 workspaces
-[16:33:36] 
---- Lote 1/4 (100 workspaces) ---
-[16:33:36] Iniciando scan do lote 1/4...
-[16:33:37] Scan iniciado (id: a7590fb0-...)
-[16:33:42] Lote 1/4 - Status: Succeeded (5s)
-...
+### Report Access
+```json
+{
+  "total_reports": 777,
+  "personal_workspaces_reports_skipped": 114,
+  "reports_processed": 663,
+  "total_access_entries": 8849,
+  "users_count": 54,
+  "service_principals_count": 7,
+  "permissions_breakdown": {
+    "Owner": 7950,
+    "Read": 230,
+    "ReadCopy": 164,
+    "ReadReshare": 15
+  }
+}
 ```
+
+---
+
+## 🚀 Coleta com Checkpoint (Ambientes Grandes)
+
+Para tenants com muitos workspaces/reports, o sistema de checkpoint permite coleta em múltiplas sessões:
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import ReportAccessCollector
+from fabricgov.exceptions import CheckpointSavedException
+import json
+
+# Carrega inventário
+with open("output/inventory_result.json") as f:
+    inventory_result = json.load(f)
+
+auth = ServicePrincipalAuth.from_env()
+
+try:
+    collector = ReportAccessCollector(
+        auth=auth,
+        inventory_result=inventory_result,
+        checkpoint_file="output/checkpoint_report_access.json"
+    )
+    result = collector.collect()
+    print("✓ Coleta completa!")
+    
+except CheckpointSavedException as e:
+    print(f"⏹️  Interrompido: {e.progress}")
+    print("Execute novamente após ~1 hora para retomar")
+```
+
+**Workflow:**
+```bash
+# Execução 1 (10:00) - processa 200 reports
+poetry run python collect_report_access.py
+# ⏹️ Rate limit - aguarde 1h
+
+# Execução 2 (11:30) - processa mais 200 reports  
+poetry run python collect_report_access.py
+# ⏹️ Rate limit - aguarde 1h
+
+# Execução 3 (13:00) - processa mais 200 reports
+poetry run python collect_report_access.py
+# ⏹️ Rate limit - aguarde 1h
+
+# Execução 4 (14:30) - completa os últimos 63
+poetry run python collect_report_access.py
+# ✓ Coleta completa!
+```
+
+> 📘 Veja [docs/limitations.md](docs/limitations.md) para detalhes sobre rate limiting.
 
 ---
 
@@ -206,14 +326,19 @@ A biblioteca trata automaticamente os principais erros HTTP:
 | 401 Unauthorized | `UnauthorizedError` | Valida credenciais |
 | 403 Forbidden | `ForbiddenError` | Indica falta de permissões Admin |
 | 404 Not Found | `NotFoundError` | Recurso não existe |
-| 429 Rate Limit | `TooManyRequestsError` | Retry com exponential backoff |
+| 429 Rate Limit | `TooManyRequestsError` | Salva checkpoint e encerra (fail fast) |
 | 500 Server Error | `InternalServerError` | Retry automático |
 | 503 Unavailable | `ServiceUnavailableError` | Retry com delay |
+
+**Personal Workspaces:**
+- Automaticamente filtrados antes de fazer chamadas à API
+- Evita 404 errors desnecessários
+- Reduz consumo de rate limit
 
 Todas as exceções incluem:
 - Status HTTP
 - Endpoint que falhou
-- Response body (primeiros 500 chars)
+- Response body (primeiros 200 chars)
 
 ---
 
@@ -226,48 +351,71 @@ poetry run pytest tests/ -v
 
 # Só unit tests (sem integração)
 poetry run pytest tests/ -v -m "not integration"
-
-# Testes de integração (requerem credenciais reais)
-poetry run pytest tests/ -v -m integration
 ```
 
 ### Testes Manuais
 ```bash
 # Inventário via Service Principal
-poetry run python tests/manual/test_inventory_sp.py
+poetry run python tests/manual/collect_inventory.py
 
-# Inventário via Device Flow
-poetry run python tests/manual/test_inventory_device_flow.py
+# Acessos de workspaces com checkpoint
+poetry run python tests/manual/collect_workspace_access.py
 
-# Tratamento de erros
-poetry run python tests/manual/test_errors_sp_errada.py
+# Acessos de reports com checkpoint
+poetry run python tests/manual/collect_report_access.py
 ```
+
+---
+
+## ⚠️ Limitações Conhecidas
+
+### Rate Limiting
+- APIs Admin têm limite de ~200 requests/hora (não documentado)
+- Tenants grandes requerem múltiplas execuções com pausas de ~1h30min
+- Sistema de checkpoint permite retomar coleta de onde parou
+
+### Personal Workspaces
+- Personal Workspaces não suportam APIs de usuários
+- Filtrados automaticamente pelos access collectors
+- Tipicamente 30-60% dos workspaces em tenants corporativos
+
+### Performance
+- 200 workspaces: ~10 minutos (sem pausas)
+- 663 reports: ~5 horas (4 execuções com pausas de 1h30min)
+- 2000+ itens: requer coleta agendada ou distribuída
+
+> 📘 Veja [docs/limitations.md](docs/limitations.md) para lista completa.
 
 ---
 
 ## 🗺️ Roadmap
 
-### ✅ v0.1 (Atual)
-- [x] Autenticação (SP + Device Flow)
-- [x] BaseCollector (retry, paginação, rate limiting)
-- [x] WorkspaceInventoryCollector
-- [x] FileExporter (JSON + CSV)
-- [x] Tratamento de erros HTTP
+### ✅ v0.2 (Atual) - 2026-02-20
+- [x] WorkspaceAccessCollector com checkpoint
+- [x] ReportAccessCollector com checkpoint
+- [x] Sistema de checkpoint para coletas resumíveis
+- [x] Fail fast em rate limit
+- [x] Filtragem automática de Personal Workspaces
+- [x] Scripts de coleta independentes
+- [x] Documentação de limitações
 
-### 🚧 v0.2 (Próximo)
+### 🚧 v0.3 (Próximo)
 - [ ] CapacityConsumptionCollector (via DAX queries)
-- [ ] SecurityAccessCollector (roles + permissões)
-- [ ] RefreshMonitoringCollector
-- [ ] ConnectionsCollector
+- [ ] Sample mode para assessments rápidos
+- [ ] SecurityAccessCollector para datasets/dashboards
+- [ ] Estimativa de tempo restante em coletas
 
-### 📋 v0.3
+### 📋 v0.4
 - [ ] CLI via Click (`fabricgov assess`, `fabricgov auth`)
+- [ ] Progress bars visuais
 - [ ] Assessment orchestrator (múltiplos coletores)
+- [ ] Suporte a Azure Key Vault
 
 ### 🎯 v1.0
-- [ ] Documentação completa
-- [ ] Testes de integração
+- [ ] Testes de integração completos
+- [ ] Report templates (HTML, Word, PDF)
 - [ ] Publicação no PyPI
+- [ ] Documentação completa de API
 
 ---
 
@@ -290,8 +438,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para de
 ## 👤 Autor
 
 **Luciano Borba**  
-Consultor de Data Engineering especializado em Microsoft Fabric 
-
+Consultor de Data Engineering especializado em Microsoft Fabric  
+Power Tuning
 
 ---
 
