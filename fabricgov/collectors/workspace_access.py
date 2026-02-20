@@ -1,42 +1,36 @@
 from typing import Any, Callable
-import time
+from pathlib import Path
 from fabricgov.auth.base import AuthProvider
 from fabricgov.collectors.base import BaseCollector
-from fabricgov.exceptions import TooManyRequestsError
+from fabricgov.checkpoint import Checkpoint
+from fabricgov.exceptions import TooManyRequestsError, CheckpointSavedException
 
 
 class WorkspaceAccessCollector(BaseCollector):
     """
-    Coleta roles de acesso em workspaces via API Admin.
+    Coleta roles de acesso em workspaces via API Admin com suporte a checkpoint.
     
-    Para cada workspace encontrado no inventory, faz:
-    GET /v1.0/myorg/admin/groups/{groupId}/users
-    
-    API: https://learn.microsoft.com/rest/api/power-bi/admin/groups-get-group-users-as-admin
-    
-    Estratégia de rate limit:
-    - Ao detectar 429, pausa 30s e tenta novamente
-    - Até 5 tentativas com pausa antes de registrar erro
-    
-    Uso:
-        inventory_result = inventory_collector.collect()
+    Uso com checkpoint (recomendado para ambientes grandes):
         collector = WorkspaceAccessCollector(
             auth=auth,
             inventory_result=inventory_result,
-            progress_callback=lambda msg: print(msg)
+            checkpoint_file="output/checkpoint_workspace_access.json"
         )
-        result = collector.collect()
+        
+        try:
+            result = collector.collect()
+        except CheckpointSavedException as e:
+            print(f"⏹️  {e.progress} - Execute novamente após 1 hora")
     """
 
     POWERBI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
-    MAX_RATE_LIMIT_RETRIES = 5
-    RATE_LIMIT_SLEEP = 30
 
     def __init__(
         self,
         auth: AuthProvider,
         inventory_result: dict[str, Any],
         progress_callback: Callable[[str], None] | None = None,
+        checkpoint_file: str | Path | None = None,
         **kwargs
     ):
         """
@@ -44,6 +38,7 @@ class WorkspaceAccessCollector(BaseCollector):
             auth: Provedor de autenticação
             inventory_result: Resultado do WorkspaceInventoryCollector
             progress_callback: Função chamada a cada update de progresso
+            checkpoint_file: Caminho do checkpoint (habilita modo incremental)
         """
         super().__init__(
             auth=auth,
@@ -52,17 +47,17 @@ class WorkspaceAccessCollector(BaseCollector):
         )
         self._inventory_result = inventory_result
         self._progress = progress_callback or (lambda msg: None)
+        self._checkpoint = Checkpoint(checkpoint_file) if checkpoint_file else None
 
     def collect(self) -> dict[str, Any]:
         """
-        Coleta roles de acesso em todos os workspaces (exceto Personal Workspaces).
+        Coleta roles de acesso em workspaces.
         
         Returns:
-            {
-                "workspace_access": [...],
-                "workspace_access_errors": [...],
-                "summary": {...}
-            }
+            Resultado completo ou parcial (se retomando de checkpoint)
+            
+        Raises:
+            CheckpointSavedException: Quando rate limit interrompe coleta e salva checkpoint
         """
         workspaces = self._inventory_result.get("workspaces", [])
         
@@ -72,135 +67,203 @@ class WorkspaceAccessCollector(BaseCollector):
             if not (ws.get("name") or "").startswith("PersonalWorkspace")
         ]
         
+        # Carrega checkpoint se existir
+        processed_ids = set()
+        workspace_access = []
+        errors = []
+        
+        if self._checkpoint and self._checkpoint.exists():
+            checkpoint_data = self._checkpoint.load()
+            processed_ids = set(checkpoint_data.get("processed_ids", []))
+            partial_data = checkpoint_data.get("partial_data", {})
+            workspace_access = partial_data.get("workspace_access", [])
+            errors = partial_data.get("workspace_access_errors", [])
+            
+            self._progress(f"♻️  Checkpoint detectado: {checkpoint_data['progress']}")
+            self._progress(f"   Retomando coleta...")
+        
+        # Filtra workspaces já processados
+        workspaces_to_process = [
+            ws for ws in filtered_workspaces
+            if ws.get("id") not in processed_ids
+        ]
+        
         skipped_personal = len(workspaces) - len(filtered_workspaces)
-        workspaces_to_process = len(filtered_workspaces)
+        already_processed = len(processed_ids)
+        to_process = len(workspaces_to_process)
+        total_expected = len(filtered_workspaces)
         
         self._progress(f"Total de workspaces: {len(workspaces)}")
         self._progress(f"Personal Workspaces ignorados: {skipped_personal}")
-        self._progress(f"Workspaces a processar: {workspaces_to_process}")
-        self._progress(f"Coletando acessos...")
-
-        workspace_access = []
+        if already_processed > 0:
+            self._progress(f"Já processados (checkpoint): {already_processed}")
+        self._progress(f"A processar nesta execução: {to_process}")
+        
+        if to_process == 0:
+            self._progress("✓ Todos os workspaces já foram processados!")
+            return self._build_result(
+                workspace_access, errors, len(workspaces),
+                skipped_personal, total_expected, len(processed_ids)
+            )
+        
+        # Coleta acessos
         users_set = set()
         service_principals_set = set()
         roles_counter = {}
         workspaces_with_users = 0
-        errors = []
-        rate_limit_pauses = 0
-
-        for idx, workspace in enumerate(filtered_workspaces, start=1):
+        
+        for idx, workspace in enumerate(workspaces_to_process, start=1):
             workspace_id = workspace.get("id")
             workspace_name = workspace.get("name")
-
+            
             if idx % 50 == 0:
-                self._progress(f"Processando workspace {idx}/{workspaces_to_process}...")
-
-            # Tenta até MAX_RATE_LIMIT_RETRIES vezes com pausa ao detectar 429
-            success = False
-            for retry_attempt in range(self.MAX_RATE_LIMIT_RETRIES):
-                try:
-                    # GET /v1.0/myorg/admin/groups/{groupId}/users
-                    response = self._get(
-                        endpoint=f"/v1.0/myorg/admin/groups/{workspace_id}/users",
-                        scope=self.POWERBI_SCOPE,
-                    )
-
-                    users = response.get("value", [])
-
-                    if users:
-                        workspaces_with_users += 1
-
-                    for user in users:
-                        email = user.get("emailAddress")
-                        identifier = user.get("identifier")
-                        principal_type = user.get("principalType", "User")
-                        role = user.get("groupUserAccessRight", "Unknown")
-
-                        workspace_access.append({
-                            "workspace_id": workspace_id,
-                            "workspace_name": workspace_name,
-                            "user_email": email,
-                            "user_identifier": identifier,
-                            "principal_type": principal_type,
-                            "role": role,
-                        })
-
-                        # Contabiliza usuários únicos
-                        if principal_type == "User":
-                            users_set.add(identifier)
-                        elif principal_type == "App":
-                            service_principals_set.add(identifier)
-
-                        # Contabiliza roles
-                        roles_counter[role] = roles_counter.get(role, 0) + 1
-
-                    success = True
-                    break  # Sucesso, sai do loop de retry
-
-                except TooManyRequestsError as e:
-                    if retry_attempt < self.MAX_RATE_LIMIT_RETRIES - 1:
-                        rate_limit_pauses += 1
-                        self._progress(
-                            f"⚠️  Rate limit no workspace {idx} (tentativa {retry_attempt + 1}/{self.MAX_RATE_LIMIT_RETRIES}). "
-                            f"Pausando {self.RATE_LIMIT_SLEEP}s..."
-                        )
-                        time.sleep(self.RATE_LIMIT_SLEEP)
-                        continue
-                    else:
-                        # Esgotou todas as tentativas
-                        error_detail = {
-                            "workspace_id": workspace_id,
-                            "workspace_name": workspace_name,
-                            "error_type": "TooManyRequestsError",
-                            "error_message": f"Rate limit persistiu após {self.MAX_RATE_LIMIT_RETRIES} tentativas",
-                            "status_code": 429,
-                        }
-                        errors.append(error_detail)
-                        break
-
-                except Exception as e:
-                    error_detail = {
+                self._progress(f"Processando workspace {idx}/{to_process}...")
+            
+            try:
+                # GET users do workspace
+                response = self._get(
+                    endpoint=f"/v1.0/myorg/admin/groups/{workspace_id}/users",
+                    scope=self.POWERBI_SCOPE,
+                )
+                
+                users = response.get("value", [])
+                
+                if users:
+                    workspaces_with_users += 1
+                
+                for user in users:
+                    email = user.get("emailAddress")
+                    identifier = user.get("identifier")
+                    principal_type = user.get("principalType", "User")
+                    role = user.get("groupUserAccessRight", "Unknown")
+                    
+                    workspace_access.append({
                         "workspace_id": workspace_id,
                         "workspace_name": workspace_name,
-                        "error_type": type(e).__name__,
-                        "error_message": str(e),
-                    }
+                        "user_email": email,
+                        "user_identifier": identifier,
+                        "principal_type": principal_type,
+                        "role": role,
+                    })
                     
-                    if hasattr(e, 'status_code'):
-                        error_detail["status_code"] = e.status_code
-                    if hasattr(e, 'response_body'):
-                        error_detail["response_body"] = e.response_body[:200]
+                    if principal_type == "User":
+                        users_set.add(identifier)
+                    elif principal_type == "App":
+                        service_principals_set.add(identifier)
                     
-                    errors.append(error_detail)
-                    break
-
-        self._progress(
-            f"✓ Coleta concluída: {len(workspace_access)} acessos em "
-            f"{workspaces_with_users}/{workspaces_to_process} workspaces"
-        )
-
-        if rate_limit_pauses > 0:
-            self._progress(f"⏸️  Total de pausas por rate limit: {rate_limit_pauses}")
-
+                    roles_counter[role] = roles_counter.get(role, 0) + 1
+                
+                processed_ids.add(workspace_id)
+                
+                # Salva checkpoint a cada 50 workspaces
+                if self._checkpoint and len(processed_ids) % 50 == 0:
+                    self._save_checkpoint(
+                        processed_ids, workspace_access, errors,
+                        already_processed + idx, total_expected
+                    )
+            
+            except TooManyRequestsError as e:
+                # Rate limit - salva checkpoint e interrompe
+                self._progress(f"⚠️  Rate limit atingido no workspace {idx}")
+                self._save_checkpoint(
+                    processed_ids, workspace_access, errors,
+                    len(processed_ids), total_expected
+                )
+                
+                raise CheckpointSavedException(
+                    checkpoint_file=str(self._checkpoint.checkpoint_file),
+                    progress=f"{len(processed_ids)}/{total_expected}",
+                    processed_count=len(processed_ids),
+                    total_count=total_expected,
+                )
+            
+            except Exception as e:
+                # Outros erros - registra e continua
+                errors.append({
+                    "workspace_id": workspace_id,
+                    "workspace_name": workspace_name,
+                    "error_type": type(e).__name__,
+                    "error_message": str(e),
+                })
+                if hasattr(e, 'status_code'):
+                    errors[-1]["status_code"] = e.status_code
+                if hasattr(e, 'response_body'):
+                    errors[-1]["response_body"] = e.response_body[:200]
+                
+                processed_ids.add(workspace_id)
+                continue
+        
+        # Coleta completa - remove checkpoint
+        if self._checkpoint:
+            self._checkpoint.clear()
+            self._progress("🗑️  Checkpoint removido (coleta completa)")
+        
+        self._progress(f"✓ Coleta concluída: {len(workspace_access)} acessos coletados")
         if errors:
             self._progress(f"⚠️  {len(errors)} workspaces com erro")
-
-        # Monta summary
-        summary = {
-            "total_workspaces": len(workspaces),
-            "personal_workspaces_skipped": skipped_personal,
-            "workspaces_processed": workspaces_to_process,
-            "workspaces_with_users": workspaces_with_users,
-            "total_access_entries": len(workspace_access),
-            "users_count": len(users_set),
-            "service_principals_count": len(service_principals_set),
-            "roles_breakdown": roles_counter,
-            "rate_limit_pauses": rate_limit_pauses,
-            "errors_count": len(errors),
-        }
-
+        
+        return self._build_result(
+            workspace_access, errors, len(workspaces),
+            skipped_personal, total_expected, workspaces_with_users
+        )
+    
+    def _save_checkpoint(
+        self,
+        processed_ids: set[str],
+        workspace_access: list[dict],
+        errors: list[dict],
+        current: int,
+        total: int
+    ) -> None:
+        """Salva checkpoint no disco."""
+        self._checkpoint.save(
+            processed_ids=processed_ids,
+            partial_data={
+                "workspace_access": workspace_access,
+                "workspace_access_errors": errors,
+            },
+            progress=f"{current}/{total}"
+        )
+        self._progress(f"💾 Checkpoint salvo: {current}/{total}")
+    
+    def _build_result(
+        self,
+        workspace_access: list[dict],
+        errors: list[dict],
+        total_workspaces: int,
+        skipped_personal: int,
+        workspaces_processed: int,
+        workspaces_with_users: int
+    ) -> dict[str, Any]:
+        """Monta resultado final."""
+        users_set = set()
+        service_principals_set = set()
+        roles_counter = {}
+        
+        for access in workspace_access:
+            identifier = access.get("user_identifier")
+            principal_type = access.get("principal_type")
+            role = access.get("role")
+            
+            if principal_type == "User":
+                users_set.add(identifier)
+            elif principal_type == "App":
+                service_principals_set.add(identifier)
+            
+            roles_counter[role] = roles_counter.get(role, 0) + 1
+        
         return {
             "workspace_access": workspace_access,
             "workspace_access_errors": errors,
-            "summary": summary,
+            "summary": {
+                "total_workspaces": total_workspaces,
+                "personal_workspaces_skipped": skipped_personal,
+                "workspaces_processed": workspaces_processed,
+                "workspaces_with_users": workspaces_with_users,
+                "total_access_entries": len(workspace_access),
+                "users_count": len(users_set),
+                "service_principals_count": len(service_principals_set),
+                "roles_breakdown": roles_counter,
+                "errors_count": len(errors),
+            }
         }
