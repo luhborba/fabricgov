@@ -77,3 +77,34 @@ class InternalServerError(FabricAPIError):
 class ServiceUnavailableError(FabricAPIError):
     """Erro 503 - serviço temporariamente indisponível."""
     pass
+
+class CheckpointSavedException(FabricGovError):
+    """
+    Exceção lançada quando checkpoint é salvo após rate limit.
+    Sinaliza que a coleta foi interrompida e pode ser retomada.
+    
+    Attributes:
+        checkpoint_file: Caminho do arquivo de checkpoint
+        progress: String de progresso (ex: "200/663")
+        processed_count: Número de itens já processados
+        total_count: Total de itens a processar
+    """
+    
+    def __init__(
+        self,
+        checkpoint_file: str,
+        progress: str,
+        processed_count: int,
+        total_count: int,
+    ):
+        self.checkpoint_file = checkpoint_file
+        self.progress = progress
+        self.processed_count = processed_count
+        self.total_count = total_count
+        message = (
+            f"Coleta interrompida por rate limit.\n"
+            f"Checkpoint salvo em: {checkpoint_file}\n"
+            f"Progresso: {progress} ({processed_count}/{total_count})\n"
+            f"Execute novamente após ~1 hora para retomar."
+        )
+        super().__init__(message)
