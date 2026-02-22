@@ -100,6 +100,28 @@ class FileExporter:
             if isinstance(errors, list) and len(errors) > 0:
                 self._export_artifact(run_dir, "report_access_errors", errors)
             return
+        
+        if "dataset_access" in result:
+            items = result["dataset_access"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "dataset_access", items)
+            
+            # Exporta erros se houver
+            errors = result.get("dataset_access_errors", [])
+            if isinstance(errors, list) and len(errors) > 0:
+                self._export_artifact(run_dir, "dataset_access_errors", errors)
+            return
+        
+        if "dataflow_access" in result:
+            items = result["dataflow_access"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "dataflow_access", items)
+            
+            # Exporta erros se houver
+            errors = result.get("dataflow_access_errors", [])
+            if isinstance(errors, list) and len(errors) > 0:
+                self._export_artifact(run_dir, "dataflow_access_errors", errors)
+            return
 
         # Caso 2: WorkspaceInventoryCollector (múltiplas chaves)
         artifact_keys = [k for k in result.keys() if k not in ["summary"]]
