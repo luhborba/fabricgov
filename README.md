@@ -400,14 +400,15 @@ poetry run python tests/manual/collect_report_access.py
 - [x] Documentação de limitações
 
 ### 🚧 v0.3 (Próximo)
-- [ ] CapacityConsumptionCollector (via DAX queries)
-- [ ] Sample mode para assessments rápidos
-- [ ] SecurityAccessCollector para datasets/dashboards
-- [ ] Estimativa de tempo restante em coletas
-
-### 📋 v0.4
 - [ ] CLI via Click (`fabricgov assess`, `fabricgov auth`)
 - [ ] Progress bars visuais
+- [ ] SecurityAccessCollector para datasets/dataflows
+- [ ] Estimativa de tempo restante em coletas
+- [ ] Primeira Versão no Pypi
+
+### 📋 v0.4
+- [ ] Criar Página no MKDocs para exemplos de uso e documentação completa para o usuário.
+- [ ] CapacityConsumptionCollector (via DAX queries)
 - [ ] Assessment orchestrator (múltiplos coletores)
 - [ ] Suporte a Azure Key Vault
 
