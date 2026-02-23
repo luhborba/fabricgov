@@ -274,25 +274,34 @@ class WorkspaceInventoryCollector(BaseCollector):
             "dataflows",
             "datamarts",
             "workbooks",
-            "lakehouses",
+            "Lakehouse",
             "warehouses",
-            "notebooks",
+            "Notebook",
             "sparkJobDefinitions",
             "mlModels",
             "mlExperiments",
+            "SQLDatabase",
+            "KQLDashboard",
             "kqlDatabases",
             "kqlQuerysets",
             "eventstreams",
             "reflex",
             "semanticModels",
-            "sqlEndpoints",
-            "mirroredDatabases",
+            "SQLAnalyticsEndpoint",
+            "MirroredAzureDatabricksCatalog",
+            "MirroredDatabase",
             "mirroredWarehouses",
             "graphqlApis",
             "sqlDatabases",
             "variableLibraries",
             "paginatedReports",
             "deploymentPipelines",
+            "DataPipeline",
+            "Environment",
+            "Exploration",
+            "DataAgent",
+            "OrgApp",
+            
         ]
 
         # Inicializa estrutura de output
@@ -346,11 +355,12 @@ class WorkspaceInventoryCollector(BaseCollector):
         """Retorna estrutura vazia quando não há workspaces."""
         artifact_types = [
             "dashboards", "datasets", "reports", "dataflows", "datamarts",
-            "workbooks", "lakehouses", "warehouses", "notebooks", "sparkJobDefinitions",
-            "mlModels", "mlExperiments", "kqlDatabases", "kqlQuerysets", "eventstreams",
-            "reflex", "semanticModels", "sqlEndpoints", "mirroredDatabases",
+            "workbooks", "Lakehouse", "warehouses", "Notebook", "sparkJobDefinitions",
+            "mlModels", "mlExperiments","KQLDashboard", "kqlDatabases", "kqlQuerysets", "eventstreams",
+            "reflex", "semanticModels", "sqlEndpoints", "MirroredDatabase",
             "mirroredWarehouses", "graphqlApis", "sqlDatabases", "variableLibraries",
-            "paginatedReports", "deploymentPipelines",
+            "paginatedReports", "deploymentPipelines","MirroredAzureDatabricksCatalog","DataPipeline",
+            "SQLDatabase","SQLAnalyticsEndpoint","Environment","DataAgent","Exploration","OrgApp",
         ]
         
         empty = {
