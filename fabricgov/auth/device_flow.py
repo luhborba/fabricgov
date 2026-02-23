@@ -1,4 +1,7 @@
 import msal
+import json
+from pathlib import Path
+from datetime import datetime, timedelta
 from fabricgov.auth.base import AuthProvider
 from fabricgov.exceptions import AuthenticationError
 
@@ -51,6 +54,56 @@ class DeviceFlowAuth:
                 f"Detalhe: {str(e)}"
             )
 
+    def _get_cache_file(self) -> Path:
+        """Retorna o caminho do arquivo de cache."""
+        return Path.home() / ".fabricgov_token_cache.json"
+    
+    def _load_cache(self) -> dict | None:
+        """
+        Carrega token do cache se ainda for válido.
+        
+        Returns:
+            dict com access_token e expires_at, ou None se inválido/inexistente
+        """
+        cache_file = self._get_cache_file()
+        
+        if not cache_file.exists():
+            return None
+        
+        try:
+            with open(cache_file, "r") as f:
+                cache = json.load(f)
+            
+            # Verifica se token ainda é válido
+            expires_at = datetime.fromisoformat(cache.get("expires_at", ""))
+            if datetime.now() < expires_at:
+                return cache
+            
+        except Exception:
+            pass
+        
+        return None
+    
+    def _save_cache(self, access_token: str, expires_in: int) -> None:
+        """
+        Salva token no cache.
+        
+        Args:
+            access_token: Token JWT
+            expires_in: Tempo de vida em segundos
+        """
+        cache_file = self._get_cache_file()
+        
+        expires_at = datetime.now() + timedelta(seconds=expires_in - 300)  # 5min de margem
+        
+        cache = {
+            "access_token": access_token,
+            "expires_at": expires_at.isoformat()
+        }
+        
+        with open(cache_file, "w") as f:
+            json.dump(cache, f, indent=2)
+
     def get_token(self, scope: str) -> str:
         """
         Inicia Device Flow e aguarda autenticação do usuário.
@@ -71,7 +124,12 @@ class DeviceFlowAuth:
         Raises:
             AuthenticationError: se o flow expirar ou for cancelado.
         """
-        # Tenta reusar token em cache
+        # Tenta usar cache local primeiro (arquivo .fabricgov_token_cache.json)
+        cached = self._load_cache()
+        if cached:
+            return cached["access_token"]
+        
+        # Tenta reusar token em cache do MSAL
         accounts = self._app.get_accounts()
         if accounts:
             result = self._app.acquire_token_silent(
@@ -79,6 +137,7 @@ class DeviceFlowAuth:
                 account=accounts[0]
             )
             if result and "access_token" in result:
+                self._save_cache(result["access_token"], result.get("expires_in", 3600))
                 return result["access_token"]
 
         # Inicia novo Device Flow
@@ -105,6 +164,7 @@ class DeviceFlowAuth:
         result = self._app.acquire_token_by_device_flow(flow)
 
         if "access_token" in result:
+            self._save_cache(result["access_token"], result.get("expires_in", 3600))
             return result["access_token"]
 
         error       = result.get("error", "unknown_error")
@@ -114,4 +174,3 @@ class DeviceFlowAuth:
             f"Erro: {error}\n"
             f"Detalhe: {description}"
         )
-    
