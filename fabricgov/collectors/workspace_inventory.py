@@ -1,9 +1,11 @@
-from typing import Callable, Any
+from typing import Callable, Any, TYPE_CHECKING
 import time
 from datetime import datetime
 from fabricgov.auth.base import AuthProvider
 from fabricgov.collectors.base import BaseCollector
 
+if TYPE_CHECKING:
+    from fabricgov.progress import ProgressManager
 
 class WorkspaceInventoryCollector(BaseCollector):
     """
@@ -30,6 +32,7 @@ class WorkspaceInventoryCollector(BaseCollector):
         self,
         auth: AuthProvider,
         progress_callback: Callable[[str], None] | None = None,
+        progress_manager: "ProgressManager | None" = None,  # ← NOVO
         poll_interval: int = 5,
         max_poll_time: int = 600,
         **kwargs
@@ -38,6 +41,7 @@ class WorkspaceInventoryCollector(BaseCollector):
         Args:
             auth: Provedor de autenticação
             progress_callback: função(msg: str) chamada a cada update de progresso
+            progress_manager: ProgressManager do rich (opcional, para progress bars)
             poll_interval: segundos entre verificações de status do scan
             max_poll_time: timeout máximo em segundos por scan
         """
@@ -47,6 +51,7 @@ class WorkspaceInventoryCollector(BaseCollector):
             **kwargs
         )
         self._progress = progress_callback or (lambda msg: None)
+        self._progress_manager = progress_manager  # ← NOVO
         self._poll_interval = poll_interval
         self._max_poll_time = max_poll_time
         
@@ -96,9 +101,20 @@ class WorkspaceInventoryCollector(BaseCollector):
 
         # Etapa 3: Processa cada lote
         all_workspaces_raw = []
+        
+        # Cria task geral se tem progress manager
+        overall_task_id = None
+        if self._progress_manager:
+            overall_task_id = self._progress_manager.add_task(
+                "[cyan]Processando lotes de workspaces...",
+                total=total_batches
+            )
+        
         for batch_num, batch_ids in enumerate(batches, start=1):
-            self._progress(f"\n--- Lote {batch_num}/{total_batches} ({len(batch_ids)} workspaces) ---")
-            batch_result = self._scan_workspaces(batch_ids, batch_num, total_batches)
+            if not self._progress_manager:
+                self._progress(f"\n--- Lote {batch_num}/{total_batches} ({len(batch_ids)} workspaces) ---")
+            
+            batch_result = self._scan_workspaces(batch_ids, batch_num, total_batches, overall_task_id)
             all_workspaces_raw.extend(batch_result)
 
         # Etapa 4: Extrai e agrupa artefatos por tipo
@@ -154,7 +170,8 @@ class WorkspaceInventoryCollector(BaseCollector):
         self,
         workspace_ids: list[str],
         batch_num: int,
-        total_batches: int
+        total_batches: int,
+        overall_task_id: int | None = None  
     ) -> list[dict[str, Any]]:
         """
         Executa scan assíncrono de um lote de workspaces.
@@ -163,25 +180,41 @@ class WorkspaceInventoryCollector(BaseCollector):
             workspace_ids: lista de até 100 workspace IDs
             batch_num: número do lote atual (para logging)
             total_batches: total de lotes (para logging)
+            overall_task_id: ID da task de progresso geral (opcional)
         
         Returns:
             Lista de workspaces com metadados completos
         """
-        # POST /workspaces/getInfo - inicia scan
-        self._progress(f"Iniciando scan do lote {batch_num}/{total_batches}...")
+        # Só imprime se NÃO tem progress manager
+        if not self._progress_manager:
+            self._progress(f"Iniciando scan do lote {batch_num}/{total_batches}...")
+        
         scan_response = self._post_scan(workspace_ids)
         scan_id = scan_response["id"]
-        self._progress(f"Scan iniciado (id: {scan_id})")
+        
+        if not self._progress_manager:
+            self._progress(f"Scan iniciado (id: {scan_id})")
 
-        # Polling até scan completar
-        self._wait_for_scan(scan_id, batch_num, total_batches)
+        # Polling até scan completar (passa overall_task_id)
+        self._wait_for_scan(scan_id, batch_num, total_batches, overall_task_id)
 
-        # GET /scanResult/{scanId} - coleta resultado
-        self._progress(f"Coletando resultado do scan {scan_id}...")
+        # Coleta resultado
+        if not self._progress_manager:
+            self._progress(f"Coletando resultado do scan {scan_id}...")
+        
         result = self._get_scan_result(scan_id)
         
         workspaces = result.get("workspaces", [])
-        self._progress(f"✓ Lote {batch_num}/{total_batches} concluído: {len(workspaces)} workspaces")
+        
+        # Avança a barra após completar o lote
+        if self._progress_manager and overall_task_id is not None:
+            self._progress_manager.update(
+                overall_task_id,
+                advance=1,
+                description=f"[green]✓ Lote {batch_num}/{total_batches} concluído ({len(workspaces)} workspaces)"
+            )
+        else:
+            self._progress(f"✓ Lote {batch_num}/{total_batches} concluído: {len(workspaces)} workspaces")
         
         return workspaces
 
@@ -209,15 +242,18 @@ class WorkspaceInventoryCollector(BaseCollector):
         response.raise_for_status()
         return response.json()
 
-    def _wait_for_scan(self, scan_id: str, batch_num: int, total_batches: int) -> None:
+    def _wait_for_scan(
+        self,
+        scan_id: str,
+        batch_num: int,
+        total_batches: int,
+        overall_task_id: int | None = None  # ← NOVO
+    ) -> None:
         """
         Polling em GET /scanStatus/{scanId} até status = Succeeded.
-        
-        Raises:
-            TimeoutError: se exceder max_poll_time
-            RuntimeError: se scan falhar
         """
         elapsed = 0
+        
         while elapsed < self._max_poll_time:
             time.sleep(self._poll_interval)
             elapsed += self._poll_interval
@@ -228,7 +264,15 @@ class WorkspaceInventoryCollector(BaseCollector):
             )
             status = status_response.get("status")
             
-            self._progress(f"Lote {batch_num}/{total_batches} - Status: {status} ({elapsed}s)")
+            # Atualiza apenas descrição (não o progresso)
+            if self._progress_manager and overall_task_id is not None:
+                self._progress_manager.update(
+                    overall_task_id,
+                    advance=0,  # Não avança ainda
+                    description=f"[cyan]Lote {batch_num}/{total_batches} - {status} ({elapsed}s)"
+                )
+            else:
+                self._progress(f"Lote {batch_num}/{total_batches} - Status: {status} ({elapsed}s)")
 
             if status == "Succeeded":
                 return
