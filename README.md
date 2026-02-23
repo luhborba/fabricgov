@@ -227,7 +227,6 @@ MIT License - veja [LICENSE](LICENSE)
 ## 👤 Autor
 
 **Luciano Borba** — Consultor Data Engineering  
-Power Tuning
 
 ---
 
