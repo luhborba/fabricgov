@@ -13,13 +13,13 @@ from fabricgov.collectors import (
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
 from fabricgov.config import get_auth_preference, require_auth  
+from fabricgov.progress import ProgressManager, create_progress_callback
 
 
 @click.group()
 def collect():
     """Comandos de coleta de dados"""
     pass
-
 
 def progress_callback(msg: str):
     """Callback para exibir progresso"""
@@ -30,13 +30,14 @@ def progress_callback(msg: str):
 @collect.command()
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
-def inventory(format, output):
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
+def inventory(format, output, progress):
     """
     Coleta inventário completo de workspaces e artefatos
     
     Exemplo:
         fabricgov collect inventory
-        fabricgov collect inventory --format json --output /tmp/data
+        fabricgov collect inventory --no-progress
     """
     click.echo("="*70)
     click.echo("COLETA DE INVENTÁRIO")
@@ -45,11 +46,15 @@ def inventory(format, output):
     try:
         auth = get_auth_provider()
         
-        collector = WorkspaceInventoryCollector(
-            auth=auth,
-            progress_callback=progress_callback
-        )
-        result = collector.collect()
+        with ProgressManager(enabled=progress) as pm:
+            progress_callback = create_progress_callback(pm)
+            
+            collector = WorkspaceInventoryCollector(
+                auth=auth,
+                progress_callback=progress_callback,
+                progress_manager=pm if progress else None  
+            )
+            result = collector.collect()
         
         # Salva inventory_result.json
         inventory_path = Path(output) / "inventory_result.json"
