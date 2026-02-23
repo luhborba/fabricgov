@@ -217,5 +217,6 @@ __marimo__/
 
 # Output Local
 output/
+output/.auth_config.json
 
 PROJECT_SUMMARY.md
