@@ -2,7 +2,7 @@ import click
 import json
 from pathlib import Path
 from datetime import datetime
-from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.auth import ServicePrincipalAuth, DeviceFlowAuth
 from fabricgov.collectors import (
     WorkspaceInventoryCollector,
     WorkspaceAccessCollector,
@@ -12,6 +12,7 @@ from fabricgov.collectors import (
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
+from fabricgov.config import get_auth_preference, require_auth  
 
 
 @click.group()
@@ -42,7 +43,7 @@ def inventory(format, output):
     click.echo("="*70)
     
     try:
-        auth = ServicePrincipalAuth.from_env()
+        auth = get_auth_provider()
         
         collector = WorkspaceInventoryCollector(
             auth=auth,
@@ -101,7 +102,7 @@ def workspace_access(format, output, resume):
         inventory_result = json.load(f)
     
     try:
-        auth = ServicePrincipalAuth.from_env()
+        auth = get_auth_provider()
         
         checkpoint_file = Path(output) / "checkpoint_workspace_access.json" if resume else None
         
@@ -165,7 +166,7 @@ def report_access(format, output, resume):
         inventory_result = json.load(f)
     
     try:
-        auth = ServicePrincipalAuth.from_env()
+        auth = get_auth_provider()
         
         checkpoint_file = Path(output) / "checkpoint_report_access.json" if resume else None
         
@@ -228,7 +229,7 @@ def dataset_access(format, output, resume):
         inventory_result = json.load(f)
     
     try:
-        auth = ServicePrincipalAuth.from_env()
+        auth = get_auth_provider()
         
         checkpoint_file = Path(output) / "checkpoint_dataset_access.json" if resume else None
         
@@ -291,7 +292,7 @@ def dataflow_access(format, output, resume):
         inventory_result = json.load(f)
     
     try:
-        auth = ServicePrincipalAuth.from_env()
+        auth = get_auth_provider()
         
         checkpoint_file = Path(output) / "checkpoint_dataflow_access.json" if resume else None
         
@@ -374,3 +375,24 @@ def all_access(format, output, resume):
     click.echo("="*70)
     click.echo("✅ TODAS AS COLETAS CONCLUÍDAS")
     click.echo("="*70)
+
+def get_auth_provider():
+    """
+    Retorna o AuthProvider baseado na última autenticação utilizada.
+    
+    Raises:
+        RuntimeError: Se nenhuma autenticação foi configurada
+    """
+    require_auth()  # Valida se já autenticou
+    
+    method = get_auth_preference()
+    
+    if method == "service_principal":
+        return ServicePrincipalAuth.from_env()
+    elif method == "device_flow":
+        return DeviceFlowAuth()
+    else:
+        raise RuntimeError(
+            "❌ Método de autenticação inválido!\n"
+            "   Execute 'fabricgov auth clear' e autentique novamente"
+        )
