@@ -1,9 +1,27 @@
 [tool.poetry]
 name = "fabricgov"
-version = "0.1.0"
-description = "Framework de governança de ambientes Microsoft Fabric"
+version = "0.3.0"
+description = "Biblioteca Python para extralçao automatizada de dados para governança em Microsoft Fabric"
 authors = ["Luciano Borba <luhborbafilho@gmail.com>"]
+license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/luhborba/fabricgov"
+repository = "https://github.com/luhborba/fabricgov"
+documentation = "https://github.com/luhborba/fabricgov/tree/main/docs"
+keywords = ["microsoft-fabric", "power-bi", "governance", "data-engineering", "assessment"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+]
+
+include = ["CHANGELOG.md", "LICENSE"]
+
 packages = [{include = "fabricgov"}]
 
 [tool.poetry.dependencies]
