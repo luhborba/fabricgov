@@ -768,6 +768,364 @@ print(f"⚠️  {len(too_many_owners)} reports com mais de 3 Owners")
 
 ---
 
+## 📊 DatasetAccessCollector
+
+Extrai permissões de acesso (Read, ReadWrite, Build, etc.) em datasets via Power BI Admin API.
+
+### O que coleta
+
+- **Permissões em datasets:** Read, ReadWrite, Build, Reshare
+- **Usuários:** email, identifier, principal type
+- **Service Principals:** Apps com acesso aos datasets
+
+**Filtragem automática:**
+- Datasets em Personal Workspaces são ignorados (não suportam API de usuários)
+
+---
+
+### Como funciona
+
+**Pré-requisito:**
+Requer o resultado do `WorkspaceInventoryCollector` para obter a lista de dataset IDs.
+
+**Fluxo:**
+1. Recebe o `inventory_result` do WorkspaceInventoryCollector
+2. Filtra datasets de Personal Workspaces (workspace_name começa com "PersonalWorkspace")
+3. Para cada dataset:
+   - **GET** `/v1.0/myorg/admin/datasets/{datasetId}/users`
+   - Coleta lista de usuários e permissões
+   - Se detectar **429 Rate Limit**: pausa 30s e tenta novamente (até 5x)
+4. Agrega resultados e gera summary
+
+---
+
+### Parâmetros do Construtor
+```python
+DatasetAccessCollector(
+    auth: AuthProvider,                          # Obrigatório
+    inventory_result: dict[str, Any],            # Obrigatório
+    progress_callback: Callable[[str], None] | None = None,
+    checkpoint_file: str | Path | None = None,   # Opcional (habilita checkpoint)
+    **kwargs                                     # Passa para BaseCollector
+)
+```
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `auth` | `AuthProvider` | ServicePrincipalAuth ou DeviceFlowAuth |
+| `inventory_result` | `dict` | Resultado do WorkspaceInventoryCollector.collect() |
+| `progress_callback` | `Callable` | Função chamada a cada update de progresso |
+| `checkpoint_file` | `str\|Path` | Caminho do checkpoint (habilita modo incremental) |
+
+---
+
+### Uso Básico
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import (
+    WorkspaceInventoryCollector,
+    DatasetAccessCollector
+)
+
+auth = ServicePrincipalAuth.from_env()
+
+# Passo 1: Coleta inventário
+inventory_collector = WorkspaceInventoryCollector(auth=auth)
+inventory_result = inventory_collector.collect()
+
+# Passo 2: Coleta acessos de datasets
+access_collector = DatasetAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result,
+    checkpoint_file="output/checkpoint_dataset_access.json"
+)
+access_result = access_collector.collect()
+
+print(f"Total de acessos: {access_result['summary']['total_access_entries']}")
+print(f"Datasets processados: {access_result['summary']['datasets_processed']}")
+```
+
+---
+
+### Estrutura do Output
+```python
+{
+  "dataset_access": [
+    {
+      "dataset_id": "dataset-123",
+      "dataset_name": "Sales Data",
+      "workspace_id": "abc-123",
+      "workspace_name": "Marketing Analytics",
+      "user_email": "user@company.com",
+      "user_identifier": "user-guid",
+      "principal_type": "User",
+      "permission": "Read"  # Read, ReadWrite, Build, Reshare
+    }
+  ],
+  "dataset_access_errors": [...],
+  "summary": {
+    "total_datasets": 506,
+    "personal_workspaces_datasets_skipped": 180,
+    "datasets_processed": 326,
+    "datasets_with_users": 250,
+    "total_access_entries": 1200,
+    "users_count": 80,
+    "service_principals_count": 5,
+    "permissions_breakdown": {
+      "Read": 800,
+      "ReadWrite": 300,
+      "Build": 80,
+      "Reshare": 20
+    },
+    "errors_count": 2
+  }
+}
+```
+
+---
+
+### Performance
+
+**Tenant de referência (506 datasets):**
+- **Datasets filtrados:** 326 (180 em Personal Workspaces ignorados)
+- **Tempo de execução:** ~10-20 minutos (depende de rate limiting)
+- **Acessos coletados:** ~1200 entradas
+- **Checkpoint interval:** a cada 100 datasets
+
+---
+
+### Limitações e Rate Limiting
+
+#### Rate Limit da API
+
+A API `GET /admin/datasets/{datasetId}/users` tem **limite de ~200 requests/hora** (não documentado oficialmente).
+
+**Mesma estratégia dos outros access collectors:**
+- Ao detectar `429`, salva checkpoint e encerra
+- Retoma de onde parou em próxima execução
+
+**Estimativa de tempo:**
+- 200 datasets: ~10 minutos (pode bater rate limit)
+- 500 datasets: ~30-60 minutos (com pausas)
+
+---
+
+#### Datasets em Personal Workspaces
+
+**Datasets em Personal Workspaces não suportam a API de usuários.**
+
+**Comportamento:**
+- Retornam `404 Not Found` ou `429 Too Many Requests`
+- São **automaticamente filtrados** pelo coletor antes de fazer chamadas
+
+**Exemplo de log:**
+```
+Total de datasets: 506
+Datasets em Personal Workspaces ignorados: 180
+A processar nesta execução: 326
+```
+
+---
+
+### Casos de Uso
+
+#### 1. Datasets compartilhados externamente
+```python
+result = access_collector.collect()
+
+external_shares = [
+    access for access in result['dataset_access']
+    if not access['user_email'].endswith('@yourcompany.com')
+]
+
+print(f"Datasets compartilhados externamente: {len(external_shares)}")
+```
+
+#### 2. Datasets com permissão Build (alto privilégio)
+```python
+result = access_collector.collect()
+
+build_permissions = [
+    access for access in result['dataset_access']
+    if access['permission'] == 'Build'
+]
+
+print(f"⚠️  {len(build_permissions)} usuários com permissão Build")
+```
+
+---
+
+## 🌊 DataflowAccessCollector
+
+Extrai permissões de acesso em dataflows via Power BI Admin API.
+
+### O que coleta
+
+- **Permissões em dataflows:** Owner, User
+- **Usuários:** email, identifier, principal type
+- **Service Principals:** Apps com acesso aos dataflows
+
+**Filtragem automática:**
+- Dataflows em Personal Workspaces são ignorados (não suportam API de usuários)
+
+---
+
+### Como funciona
+
+**Pré-requisito:**
+Requer o resultado do `WorkspaceInventoryCollector` para obter a lista de dataflow IDs.
+
+**Fluxo:**
+1. Recebe o `inventory_result` do WorkspaceInventoryCollector
+2. Filtra dataflows de Personal Workspaces (workspace_name começa com "PersonalWorkspace")
+3. Para cada dataflow:
+   - **GET** `/v1.0/myorg/admin/dataflows/{dataflowId}/users`
+   - Coleta lista de usuários e permissões
+   - Se detectar **429 Rate Limit**: salva checkpoint e encerra
+4. Agrega resultados e gera summary
+
+---
+
+### Parâmetros do Construtor
+```python
+DataflowAccessCollector(
+    auth: AuthProvider,                          # Obrigatório
+    inventory_result: dict[str, Any],            # Obrigatório
+    progress_callback: Callable[[str], None] | None = None,
+    checkpoint_file: str | Path | None = None,   # Opcional (habilita checkpoint)
+    **kwargs                                     # Passa para BaseCollector
+)
+```
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `auth` | `AuthProvider` | ServicePrincipalAuth ou DeviceFlowAuth |
+| `inventory_result` | `dict` | Resultado do WorkspaceInventoryCollector.collect() |
+| `progress_callback` | `Callable` | Função chamada a cada update de progresso |
+| `checkpoint_file` | `str\|Path` | Caminho do checkpoint (habilita modo incremental) |
+
+---
+
+### Uso Básico
+```python
+from fabricgov.auth import ServicePrincipalAuth
+from fabricgov.collectors import (
+    WorkspaceInventoryCollector,
+    DataflowAccessCollector
+)
+
+auth = ServicePrincipalAuth.from_env()
+
+# Passo 1: Coleta inventário
+inventory_collector = WorkspaceInventoryCollector(auth=auth)
+inventory_result = inventory_collector.collect()
+
+# Passo 2: Coleta acessos de dataflows
+access_collector = DataflowAccessCollector(
+    auth=auth,
+    inventory_result=inventory_result,
+    checkpoint_file="output/checkpoint_dataflow_access.json"
+)
+access_result = access_collector.collect()
+
+print(f"Total de acessos: {access_result['summary']['total_access_entries']}")
+print(f"Dataflows processados: {access_result['summary']['dataflows_processed']}")
+```
+
+---
+
+### Estrutura do Output
+```python
+{
+  "dataflow_access": [
+    {
+      "dataflow_id": "dataflow-123",
+      "dataflow_name": "Customer ETL",
+      "workspace_id": "abc-123",
+      "workspace_name": "Marketing Analytics",
+      "user_email": "user@company.com",
+      "user_identifier": "user-guid",
+      "principal_type": "User",
+      "permission": "Owner"  # Owner, User
+    }
+  ],
+  "dataflow_access_errors": [...],
+  "summary": {
+    "total_dataflows": 6,
+    "personal_workspaces_dataflows_skipped": 2,
+    "dataflows_processed": 4,
+    "dataflows_with_users": 3,
+    "total_access_entries": 12,
+    "users_count": 5,
+    "service_principals_count": 1,
+    "permissions_breakdown": {
+      "Owner": 8,
+      "User": 4
+    },
+    "errors_count": 0
+  }
+}
+```
+
+---
+
+### Performance
+
+**Tenant de referência (6 dataflows):**
+- **Dataflows filtrados:** 4 (2 em Personal Workspaces ignorados)
+- **Tempo de execução:** ~2 minutos
+- **Acessos coletados:** ~12 entradas
+- **Checkpoint interval:** a cada 50 dataflows
+
+**Nota:** Dataflows são menos comuns que reports/datasets, então rate limit raramente é problema.
+
+---
+
+### Limitações e Rate Limiting
+
+#### Rate Limit da API
+
+A API `GET /admin/dataflows/{dataflowId}/users` tem **limite de ~200 requests/hora** (não documentado oficialmente).
+
+**Mesma estratégia dos outros collectors:**
+- Ao detectar `429`, salva checkpoint e encerra
+- Retoma de onde parou em próxima execução
+
+---
+
+#### Dataflows em Personal Workspaces
+
+**Dataflows em Personal Workspaces não suportam a API de usuários.**
+
+**Comportamento:**
+- Retornam `404 Not Found` ou `429 Too Many Requests`
+- São **automaticamente filtrados** pelo coletor antes de fazer chamadas
+
+---
+
+### Casos de Uso
+
+#### 1. Dataflows sem owner (órfãos)
+```python
+from collections import defaultdict
+
+result = access_collector.collect()
+
+dataflow_owners = defaultdict(list)
+for access in result['dataflow_access']:
+    if access['permission'] == 'Owner':
+        dataflow_owners[access['dataflow_id']].append(access['user_email'])
+
+orphaned = [
+    df_id for df_id, owners in dataflow_owners.items()
+    if len(owners) == 0
+]
+
+print(f"⚠️  {len(orphaned)} dataflows sem owner")
+```
+
+---
+
 ## 📊 Exemplo Completo: Coleta de Inventário + Acessos
 ```python
 from fabricgov.auth import ServicePrincipalAuth
