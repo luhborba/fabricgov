@@ -20,7 +20,7 @@ pytest-httpx = "^0.30"
 pytest-mock = "^3.15.1"
 
 [tool.poetry.scripts]
-fabricgov = "fabricgov.cli:main"
+fabricgov = "fabricgov.cli.main:cli"
 
 [build-system]
 requires = ["poetry-core"]
