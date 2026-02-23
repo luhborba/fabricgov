@@ -26,10 +26,11 @@
 
 ## 📦 Instalação
 ```bash
-# Clone e instala
-git clone https://github.com/luhborba/fabricgov.git
-cd fabricgov
-poetry install
+# Via pip (recomendado)
+pip install fabricgov
+
+# Ou via Poetry
+poetry add fabricgov
 
 # CLI fica disponível
 fabricgov --help
