@@ -10,11 +10,58 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Planejado
-- CLI via Click (`fabricgov assess`, `fabricgov auth`)
 - CapacityConsumptionCollector (métricas via DAX queries)
 - Assessment orchestrator (executa múltiplos coletores em sequência)
 - Suporte a Azure Key Vault para credenciais
 - Testes de integração completos
+- Progress bars visuais
+- Primeira versão no PyPI
+
+---
+
+## [0.3.0] - 2026-02-25
+
+### Added
+- **CLI completo via Click** (`fabricgov` command)
+  - `fabricgov auth test` — testa credenciais Service Principal
+  - `fabricgov auth device` — autenticação interativa Device Flow
+  - `fabricgov collect inventory` — coleta inventário de workspaces
+  - `fabricgov collect workspace-access` — coleta roles em workspaces
+  - `fabricgov collect report-access` — coleta permissões em reports
+  - `fabricgov collect dataset-access` — coleta permissões em datasets
+  - `fabricgov collect dataflow-access` — coleta permissões em dataflows
+  - `fabricgov collect all-access` — coleta todos os acessos em sequência
+  - Flags: `--format json|csv`, `--output DIR`, `--resume/--no-resume`
+  - Progress callbacks com timestamps
+  - Tratamento de erros user-friendly
+- **DatasetAccessCollector** com checkpoint
+  - Coleta permissões em datasets via API Admin
+  - API: `GET /v1.0/myorg/admin/datasets/{datasetId}/users`
+  - Filtragem automática de Personal Workspaces
+  - Checkpoint a cada 100 datasets
+  - Fail fast em rate limit
+- **DataflowAccessCollector** com checkpoint
+  - Coleta permissões em dataflows via API Admin
+  - API: `GET /v1.0/myorg/admin/dataflows/{dataflowId}/users`
+  - Filtragem automática de Personal Workspaces
+  - Checkpoint a cada 50 dataflows
+  - Fail fast em rate limit
+- Scripts de teste manual:
+  - `tests/manual/collect_dataset_access.py`
+  - `tests/manual/collect_dataflow_access.py`
+
+### Changed
+- FileExporter agora detecta e exporta `dataset_access` e `dataflow_access`
+- Padronização de comandos CLI: todos access collectors usam sufixo `-access`
+- Entry point configurado: `fabricgov` disponível após `poetry install`
+- Roadmap reorganizado: v0.3 foca em CLI e collectors, v0.4 em docs e capacity
+
+### Dependencies
+- Adicionado `click ^8.1.0` para CLI
+
+### Documentation
+- Comandos CLI documentados com exemplos
+- Help integrado em todos os comandos (`--help`)
 
 ---
 
