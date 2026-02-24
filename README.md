@@ -192,9 +192,9 @@ output/
 - [x] DatasetAccessCollector
 - [x] DataflowAccessCollector
 - [x] 5 collectors com checkpoint
-- [ ] Estimativa de tempo restante em coletas
-- [ ] Primeira Versão no Pypi
-- [ ] Progress bars visuais
+- [x] Estimativa de tempo restante em coletas
+- [x] Primeira Versão no Pypi
+- [x] Progress bars visuais
 
 ### 🚧 v0.4.0 (Próximo)
 - [ ] MkDocs para documentação
@@ -203,7 +203,6 @@ output/
 - [ ] Azure Key Vault support
 
 ### 🎯 v1.0.0
-- [ ] Primeira versão no PyPI
 - [ ] Testes de integração completos
 - [ ] Report templates (HTML, Word, PDF)
 
