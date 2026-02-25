@@ -4,6 +4,8 @@ from fabricgov.collectors.workspace_access import WorkspaceAccessCollector
 from fabricgov.collectors.report_access import ReportAccessCollector
 from fabricgov.collectors.dataset_access import DatasetAccessCollector
 from fabricgov.collectors.dataflow_access import DataflowAccessCollector
+from fabricgov.collectors.refresh_history import RefreshHistoryCollector
+from fabricgov.collectors.refresh_schedule import RefreshScheduleCollector  
 
 __all__ = [
     "BaseCollector",
@@ -12,4 +14,6 @@ __all__ = [
     "ReportAccessCollector",
     "DatasetAccessCollector",
     "DataflowAccessCollector",
+    "RefreshHistoryCollector",
+    "RefreshScheduleCollector",  
 ]
