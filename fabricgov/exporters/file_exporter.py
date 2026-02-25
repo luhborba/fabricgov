@@ -122,6 +122,23 @@ class FileExporter:
             if isinstance(errors, list) and len(errors) > 0:
                 self._export_artifact(run_dir, "dataflow_access_errors", errors)
             return
+        
+        if "refresh_history" in result:
+            items = result["refresh_history"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "refresh_history", items)
+            
+            # Exporta erros se houver
+            errors = result.get("refresh_history_errors", [])
+            if isinstance(errors, list) and len(errors) > 0:
+                self._export_artifact(run_dir, "refresh_history_errors", errors)
+            return
+
+        if "refresh_schedules" in result:
+            items = result["refresh_schedules"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "refresh_schedules", items)
+            return
 
         # Caso 2: WorkspaceInventoryCollector (múltiplas chaves)
         artifact_keys = [k for k in result.keys() if k not in ["summary"]]
