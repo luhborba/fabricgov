@@ -11,14 +11,17 @@ def auth():
 
 
 @auth.command()
-def test():
+def sp():
     """
-    Testa credenciais do Service Principal configuradas no .env
+    Testa credenciais do Service Principal (.env)
+    
+    Lê credenciais de FABRICGOV_TENANT_ID, FABRICGOV_CLIENT_ID
+    e FABRICGOV_CLIENT_SECRET do arquivo .env
     
     Exemplo:
-        fabricgov auth test
+        fabricgov auth sp
     """
-    click.echo("🔐 Testando credenciais...")
+    click.echo("🔐 Testando Service Principal...")
     
     try:
         auth = ServicePrincipalAuth.from_env()
@@ -42,7 +45,10 @@ def test():
 @auth.command()
 def device():
     """
-    Inicia autenticação interativa via Device Flow
+    Autenticação interativa via Device Flow
+    
+    Abre o browser para autenticação com sua conta Microsoft.
+    Suporta MFA automaticamente.
     
     Exemplo:
         fabricgov auth device
@@ -70,7 +76,8 @@ def device():
     except Exception as e:
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
-    
+
+
 @auth.command()
 def clear():
     """
@@ -99,7 +106,7 @@ def clear():
         
         click.echo()
         click.echo("✅ Autenticação limpa!")
-        click.echo("   Execute 'fabricgov auth test' ou 'fabricgov auth device' para autenticar novamente")
+        click.echo("   Execute 'fabricgov auth sp' ou 'fabricgov auth device' para autenticar novamente")
         
     except Exception as e:
         click.echo(f"❌ Erro ao limpar: {e}", err=True)
