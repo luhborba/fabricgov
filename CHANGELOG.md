@@ -7,19 +7,41 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [Unreleased]
+## [0.4.0] - 2026-02-24
 
-### Planejado
-- CapacityConsumptionCollector (métricas via DAX queries)
-- Assessment orchestrator (executa múltiplos coletores em sequência)
-- Suporte a Azure Key Vault para credenciais
-- Testes de integração completos
-- Progress bars visuais
-- Primeira versão no PyPI
+### Added
+- **RefreshHistoryCollector** — coleta histórico de execuções
+  - Datasets: `GET /v1.0/myorg/admin/datasets/{datasetId}/refreshes`
+  - Dataflows: `GET /v1.0/myorg/admin/dataflows/{dataflowId}/transactions`
+  - Checkpoint support (every 50 artifacts)
+  - Configurable history limit (default: 100 refreshes per artifact)
+  - Filters Personal Workspaces automatically
+  - Calculates duration in seconds for each refresh
+- **RefreshScheduleCollector** — extrai agendamentos do inventory
+  - No API calls (reads from Admin Scan data)
+  - Supports datasets and dataflows
+  - Returns schedule configuration (enabled, days, times, timezone)
+- **CLI commands for refresh data:**
+  - `fabricgov collect refresh-history` — coleta histórico
+  - `fabricgov collect refresh-schedules` — extrai agendamentos
+  - `fabricgov collect all-refresh` — executa ambos
+- **Scripts de teste manual:**
+  - `tests/manual/collect_refresh_history.py`
+  - `tests/manual/collect_refresh_schedules.py`
 
----
+### Changed
+- **CLI: Renamed `fabricgov auth test` to `fabricgov auth sp`** (more explicit)
+- **CLI: Improved main help** with structured examples and categories
+- **CLI: Separated `all-access` from `all-refresh`**
+  - `all-access` — only access collectors (workspace, report, dataset, dataflow)
+  - `all-refresh` — only refresh data (history + schedules)
+- **FileExporter** now detects and exports `refresh_history` and `refresh_schedules`
 
-## [0.3.0] - 2026-02-25
+### Documentation
+- Updated roadmap in README.md with v0.4.0 complete
+- Reorganized future milestones (v0.5.0 through v1.0.0)
+
+## [0.3.0] - 2026-02-23
 
 ### Added
 - **CLI completo via Click** (`fabricgov` command)
