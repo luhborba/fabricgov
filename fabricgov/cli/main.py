@@ -2,39 +2,45 @@ import click
 from fabricgov.cli.auth import auth
 from fabricgov.cli.collect import collect
 
+__version__ = "0.3.3"
+
 
 @click.group()
-@click.version_option(version="0.3.0", prog_name="fabricgov")
+@click.version_option(version=__version__, prog_name="fabricgov")
 def cli():
     """
-    fabricgov - Biblioteca Python para assessment automatizado de governança em Microsoft Fabric
+    fabricgov - Assessment automatizado de governança em Microsoft Fabric
     
-    Comandos disponíveis:
+    \b
+    🔐 Autenticação:
+      fabricgov auth sp       # Service Principal (.env)
+      fabricgov auth device   # Device Flow (interativo)
+      fabricgov auth clear    # Limpa autenticação
     
-      auth     - Comandos de autenticação
-      collect  - Comandos de coleta de dados
+    \b
+    📊 Coleta de Dados:
+      fabricgov collect inventory          # Inventário completo
+      fabricgov collect workspace-access   # Roles em workspaces
+      fabricgov collect report-access      # Permissões em reports
+      fabricgov collect dataset-access     # Permissões em datasets
+      fabricgov collect dataflow-access    # Permissões em dataflows
+      fabricgov collect refresh-history    # Histórico de refreshes
+      fabricgov collect refresh-schedules  # Agendamentos configurados
     
-    Exemplos:
+    \b
+    ⚡ Atalhos:
+      fabricgov collect all-access   # Todos os access collectors
+      fabricgov collect all-refresh  # Refresh history + schedules
     
-      # Testa credenciais
-      fabricgov auth test
-      
-      # Coleta inventário
-      fabricgov collect inventory
-      
-      # Coleta acessos de workspaces
-      fabricgov collect workspace-access
-      
-      # Coleta todos os acessos
-      fabricgov collect all-access
+    \b
+    📖 Documentação: https://github.com/luhborba/fabricgov
     """
     pass
 
 
-# Registra subcomandos
 cli.add_command(auth)
 cli.add_command(collect)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     cli()

@@ -9,6 +9,8 @@ from fabricgov.collectors import (
     ReportAccessCollector,
     DatasetAccessCollector,
     DataflowAccessCollector,
+    RefreshHistoryCollector,      
+    RefreshScheduleCollector,      
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -335,6 +337,130 @@ def dataflow_access(format, output, resume):
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+@collect.command('refresh-history')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--limit', default=100, help='Número máximo de refreshes por artefato')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
+def refresh_history(format, output, resume, limit, progress):
+    """
+    Coleta histórico de execuções (refreshes) de datasets e dataflows
+    
+    Exemplo:
+        fabricgov collect refresh-history
+        fabricgov collect refresh-history --limit 50
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE HISTÓRICO DE REFRESHES")
+    click.echo("="*70)
+    
+    inventory_path = Path(output) / "inventory_result.json"
+    if not inventory_path.exists():
+        click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        raise click.Abort()
+    
+    with open(inventory_path, "r", encoding="utf-8") as f:
+        inventory_result = json.load(f)
+    
+    try:
+        auth = get_auth_provider()
+        
+        checkpoint_file = Path(output) / "checkpoint_refresh_history.json" if resume else None
+        
+        with ProgressManager(enabled=progress) as pm:
+            progress_callback = create_progress_callback(pm)
+            
+            collector = RefreshHistoryCollector(
+                auth=auth,
+                inventory_result=inventory_result,
+                progress_callback=progress_callback,
+                checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
+                history_limit=limit
+            )
+            
+            result = collector.collect()
+        
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+        
+        click.echo(f"\n✓ Refresh history exportado em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        click.echo(f"Total de refreshes: {len(result['refresh_history'])}")
+        click.echo(f"Erros: {len(result['refresh_history_errors'])}")
+        click.echo("="*70)
+        
+    except CheckpointSavedException as e:
+        click.echo("\n" + "="*70)
+        click.echo("COLETA INTERROMPIDA")
+        click.echo("="*70)
+        click.echo(f"⏹️  {e.progress} artefatos processados")
+        click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
+        click.echo(f"⏰ Aguarde ~1 hora e execute novamente")
+        click.echo("="*70)
+        raise click.Abort()
+    
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
+
+@collect.command('refresh-schedules')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+def refresh_schedules(format, output):
+    """
+    Extrai agendamentos de refreshes do inventário (não faz chamadas à API)
+    
+    Exemplo:
+        fabricgov collect refresh-schedules
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE SCHEDULES DE REFRESHES")
+    click.echo("="*70)
+    
+    inventory_path = Path(output) / "inventory_result.json"
+    if not inventory_path.exists():
+        click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        raise click.Abort()
+    
+    with open(inventory_path, "r", encoding="utf-8") as f:
+        inventory_result = json.load(f)
+    
+    try:
+        auth = get_auth_provider()
+        
+        def progress_callback(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+        
+        collector = RefreshScheduleCollector(
+            auth=auth,
+            inventory_result=inventory_result,
+            progress_callback=progress_callback
+        )
+        
+        result = collector.collect()
+        
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+        
+        click.echo(f"\n✓ Refresh schedules exportado em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        click.echo(f"Total de schedules: {len(result['refresh_schedules'])}")
+        
+        summary = result['summary']
+        click.echo(f"Habilitados: {summary['schedules_enabled']}")
+        click.echo(f"Desabilitados: {summary['schedules_disabled']}")
+        click.echo("="*70)
+        
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
 
 @collect.command('all-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
@@ -379,6 +505,60 @@ def all_access(format, output, resume):
     
     click.echo("="*70)
     click.echo("✅ TODAS AS COLETAS CONCLUÍDAS")
+    click.echo("="*70)
+
+@collect.command('all-refresh')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--limit', default=100, help='Número máximo de refreshes por artefato (history)')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
+def all_refresh(format, output, resume, limit, progress):
+    """
+    Coleta TODOS os dados de refresh (history + schedules)
+    
+    Executa:
+    1. refresh-history (com checkpoint)
+    2. refresh-schedules (rápido, sem API)
+    
+    Exemplo:
+        fabricgov collect all-refresh
+        fabricgov collect all-refresh --limit 50
+    """
+    click.echo("="*70)
+    click.echo("COLETA COMPLETA DE REFRESH DATA")
+    click.echo("="*70)
+    click.echo()
+    
+    # 1. Refresh History
+    click.echo(f"▶️  Iniciando coleta: Refresh History")
+    click.echo("-"*70)
+    
+    ctx = click.get_current_context()
+    ctx.invoke(
+        refresh_history,
+        format=format,
+        output=output,
+        resume=resume,
+        limit=limit,
+        progress=progress
+    )
+    
+    click.echo()
+    
+    # 2. Refresh Schedules
+    click.echo(f"▶️  Iniciando coleta: Refresh Schedules")
+    click.echo("-"*70)
+    
+    ctx.invoke(
+        refresh_schedules,
+        format=format,
+        output=output
+    )
+    
+    click.echo()
+    click.echo("="*70)
+    click.echo("✅ COLETA DE REFRESH DATA CONCLUÍDA")
     click.echo("="*70)
 
 def get_auth_provider():
