@@ -187,7 +187,7 @@ output/
 
 ## 🗺️ Roadmap
 
-### ✅ v0.3.0 (Atual) - 2026-02-25
+### ✅ v0.3.0 (Atual) - 2026-02-23
 - [x] CLI completo (`fabricgov` command)
 - [x] DatasetAccessCollector
 - [x] DataflowAccessCollector
@@ -196,15 +196,26 @@ output/
 - [x] Primeira Versão no Pypi
 - [x] Progress bars visuais
 
-### 🚧 v0.4.0 (Próximo)
-- [ ] MkDocs para documentação
-- [ ] CapacityConsumptionCollector (DAX queries)
-- [ ] Assessment orchestrator
-- [ ] Azure Key Vault support
+### ✅ v0.4.0 (Atual) - 2026-02-24
+- [x] RefreshHistoryCollector (histórico de execuções)
+- [x] RefreshScheduleCollector (agendamentos configurados)
+- [x] CLI: `fabricgov collect refresh-history`
+- [x] CLI: `fabricgov collect refresh-schedules`
+- [x] CLI: `fabricgov collect all-refresh`
+- [x] CLI: `fabricgov auth sp` (renomeado de `auth test`)
+
+### ✅ v0.5.0 
+- [ ] CLI: Orquetradros de Chamada Full
+- [ ] Progress bars visuais nos coletores além do inventário
+
+### ✅ v0.6.0 
+- [ ] Integração com KeyVault
+
+### ✅ v0.7.0 
+- [ ] Report HTML
 
 ### 🎯 v1.0.0
-- [ ] Testes de integração completos
-- [ ] Report templates (HTML, Word, PDF)
+- [ ] MkDocs para documentação
 
 > 📘 [Ver changelog completo →](CHANGELOG.md)
 
