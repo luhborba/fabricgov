@@ -239,6 +239,8 @@ output/
 - [x] Progress bars visuais nos coletores de acesso e refresh
 
 ### 🎯 v0.6.0
+- [ ] Atualização de Documentação interna
+- [ ] Criação de Documentação em Inglês
 - [ ] Integração com KeyVault
 
 ### 🎯 v0.7.0
