@@ -18,8 +18,24 @@ from fabricgov.collectors import (
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
-from fabricgov.config import get_auth_preference, require_auth  
+from fabricgov.config import get_auth_preference, require_auth
 from fabricgov.progress import ProgressManager, create_progress_callback
+from fabricgov.cli.session import (
+    load_session,
+    save_session,
+    clear_session,
+    create_new_session,
+    mark_step_completed,
+    mark_step_checkpointed,
+    mark_step_failed,
+    get_step_status,
+    find_pending_checkpoints,
+    is_session_complete,
+)
+
+# Sinal para o orquestrador 'all' distinguir checkpoint de erro real.
+# Setado para True antes de raise click.Abort() quando é CheckpointSavedException.
+_checkpoint_abort: bool = False
 
 
 @click.group()
@@ -27,53 +43,57 @@ def collect():
     """Comandos de coleta de dados"""
     pass
 
+
 def progress_callback(msg: str):
     """Callback para exibir progresso"""
     timestamp = datetime.now().strftime('%H:%M:%S')
     click.echo(f"[{timestamp}] {msg}")
 
 
+# ── inventory ────────────────────────────────────────────────────────────────
+
 @collect.command()
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
-def inventory(format, output, progress):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def inventory(format, output, progress, run_dir):
     """
     Coleta inventário completo de workspaces e artefatos
-    
+
     Exemplo:
         fabricgov collect inventory
         fabricgov collect inventory --no-progress
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE INVENTÁRIO")
     click.echo("="*70)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         with ProgressManager(enabled=progress) as pm:
-            progress_callback = create_progress_callback(pm)
-            
+            cb = create_progress_callback(pm)
+
             collector = WorkspaceInventoryCollector(
                 auth=auth,
-                progress_callback=progress_callback,
-                progress_manager=pm if progress else None  
+                progress_callback=cb,
+                progress_manager=pm if progress else None
             )
             result = collector.collect()
-        
+
         # Salva inventory_result.json
         inventory_path = Path(output) / "inventory_result.json"
         inventory_path.parent.mkdir(parents=True, exist_ok=True)
         with open(inventory_path, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
-        
+
         click.echo(f"\n✓ Inventário salvo em: {inventory_path}")
-        
-        # Exporta em CSV/JSON
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"✓ Arquivos exportados em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("INVENTÁRIO CONCLUÍDO")
@@ -81,55 +101,59 @@ def inventory(format, output, progress):
         click.echo(f"Total de workspaces: {result['summary']['total_workspaces']}")
         click.echo(f"Total de itens: {result['summary']['total_items']}")
         click.echo("="*70)
-        
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+
+# ── workspace-access ─────────────────────────────────────────────────────────
 
 @collect.command('workspace-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
-def workspace_access(format, output, resume):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def workspace_access(format, output, resume, run_dir):
     """
     Coleta roles de acesso em workspaces
-    
+
     Exemplo:
         fabricgov collect workspace-access
         fabricgov collect workspace-access --no-resume
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE ACESSOS EM WORKSPACES")
     click.echo("="*70)
-    
-    # Carrega inventário
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         checkpoint_file = Path(output) / "checkpoint_workspace_access.json" if resume else None
-        
+
         collector = WorkspaceAccessCollector(
             auth=auth,
             inventory_result=inventory_result,
             progress_callback=progress_callback,
             checkpoint_file=str(checkpoint_file) if checkpoint_file else None
         )
-        
+
         result = collector.collect()
-        
-        # Exporta resultado
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Workspace access exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
@@ -137,7 +161,7 @@ def workspace_access(format, output, resume):
         click.echo(f"Total de acessos: {len(result['workspace_access'])}")
         click.echo(f"Erros: {len(result['workspace_access_errors'])}")
         click.echo("="*70)
-        
+
     except CheckpointSavedException as e:
         click.echo("\n" + "="*70)
         click.echo("COLETA INTERROMPIDA")
@@ -146,53 +170,60 @@ def workspace_access(format, output, resume):
         click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
         click.echo(f"⏰ Aguarde ~1 hora e execute novamente para retomar")
         click.echo("="*70)
+        _checkpoint_abort = True
         raise click.Abort()
-    
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+
+# ── report-access ─────────────────────────────────────────────────────────────
 
 @collect.command('report-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
-def report_access(format, output, resume):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def report_access(format, output, resume, run_dir):
     """
     Coleta permissões de acesso em reports
-    
+
     Exemplo:
         fabricgov collect report-access
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE ACESSOS EM REPORTS")
     click.echo("="*70)
-    
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         checkpoint_file = Path(output) / "checkpoint_report_access.json" if resume else None
-        
+
         collector = ReportAccessCollector(
             auth=auth,
             inventory_result=inventory_result,
             progress_callback=progress_callback,
             checkpoint_file=str(checkpoint_file) if checkpoint_file else None
         )
-        
+
         result = collector.collect()
-        
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Report access exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
@@ -200,7 +231,7 @@ def report_access(format, output, resume):
         click.echo(f"Total de acessos: {len(result['report_access'])}")
         click.echo(f"Erros: {len(result['report_access_errors'])}")
         click.echo("="*70)
-        
+
     except CheckpointSavedException as e:
         click.echo("\n" + "="*70)
         click.echo("COLETA INTERROMPIDA")
@@ -209,53 +240,60 @@ def report_access(format, output, resume):
         click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
         click.echo(f"⏰ Aguarde ~1 hora e execute novamente")
         click.echo("="*70)
+        _checkpoint_abort = True
         raise click.Abort()
-    
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+
+# ── dataset-access ────────────────────────────────────────────────────────────
 
 @collect.command('dataset-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
-def dataset_access(format, output, resume):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def dataset_access(format, output, resume, run_dir):
     """
     Coleta permissões de acesso em datasets
-    
+
     Exemplo:
         fabricgov collect dataset-access
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE ACESSOS EM DATASETS")
     click.echo("="*70)
-    
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         checkpoint_file = Path(output) / "checkpoint_dataset_access.json" if resume else None
-        
+
         collector = DatasetAccessCollector(
             auth=auth,
             inventory_result=inventory_result,
             progress_callback=progress_callback,
             checkpoint_file=str(checkpoint_file) if checkpoint_file else None
         )
-        
+
         result = collector.collect()
-        
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Dataset access exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
@@ -263,7 +301,7 @@ def dataset_access(format, output, resume):
         click.echo(f"Total de acessos: {len(result['dataset_access'])}")
         click.echo(f"Erros: {len(result['dataset_access_errors'])}")
         click.echo("="*70)
-        
+
     except CheckpointSavedException as e:
         click.echo("\n" + "="*70)
         click.echo("COLETA INTERROMPIDA")
@@ -272,53 +310,60 @@ def dataset_access(format, output, resume):
         click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
         click.echo(f"⏰ Aguarde ~1 hora e execute novamente")
         click.echo("="*70)
+        _checkpoint_abort = True
         raise click.Abort()
-    
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+
+# ── dataflow-access ───────────────────────────────────────────────────────────
 
 @collect.command('dataflow-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
-def dataflow_access(format, output, resume):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def dataflow_access(format, output, resume, run_dir):
     """
     Coleta permissões de acesso em dataflows
-    
+
     Exemplo:
         fabricgov collect dataflow-access
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE ACESSOS EM DATAFLOWS")
     click.echo("="*70)
-    
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         checkpoint_file = Path(output) / "checkpoint_dataflow_access.json" if resume else None
-        
+
         collector = DataflowAccessCollector(
             auth=auth,
             inventory_result=inventory_result,
             progress_callback=progress_callback,
             checkpoint_file=str(checkpoint_file) if checkpoint_file else None
         )
-        
+
         result = collector.collect()
-        
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Dataflow access exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
@@ -326,7 +371,7 @@ def dataflow_access(format, output, resume):
         click.echo(f"Total de acessos: {len(result['dataflow_access'])}")
         click.echo(f"Erros: {len(result['dataflow_access_errors'])}")
         click.echo("="*70)
-        
+
     except CheckpointSavedException as e:
         click.echo("\n" + "="*70)
         click.echo("COLETA INTERROMPIDA")
@@ -335,11 +380,16 @@ def dataflow_access(format, output, resume):
         click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
         click.echo(f"⏰ Aguarde ~1 hora e execute novamente")
         click.echo("="*70)
+        _checkpoint_abort = True
         raise click.Abort()
-    
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
+
+
+# ── refresh-history ───────────────────────────────────────────────────────────
 
 @collect.command('refresh-history')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
@@ -347,47 +397,50 @@ def dataflow_access(format, output, resume):
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
 @click.option('--limit', default=100, help='Número máximo de refreshes por artefato')
 @click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
-def refresh_history(format, output, resume, limit, progress):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def refresh_history(format, output, resume, limit, progress, run_dir):
     """
     Coleta histórico de execuções (refreshes) de datasets e dataflows
-    
+
     Exemplo:
         fabricgov collect refresh-history
         fabricgov collect refresh-history --limit 50
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE HISTÓRICO DE REFRESHES")
     click.echo("="*70)
-    
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
+
         checkpoint_file = Path(output) / "checkpoint_refresh_history.json" if resume else None
-        
+
         with ProgressManager(enabled=progress) as pm:
-            progress_callback = create_progress_callback(pm)
-            
+            cb = create_progress_callback(pm)
+
             collector = RefreshHistoryCollector(
                 auth=auth,
                 inventory_result=inventory_result,
-                progress_callback=progress_callback,
+                progress_callback=cb,
                 checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
                 history_limit=limit
             )
-            
+
             result = collector.collect()
-        
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Refresh history exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
@@ -395,7 +448,7 @@ def refresh_history(format, output, resume, limit, progress):
         click.echo(f"Total de refreshes: {len(result['refresh_history'])}")
         click.echo(f"Erros: {len(result['refresh_history_errors'])}")
         click.echo("="*70)
-        
+
     except CheckpointSavedException as e:
         click.echo("\n" + "="*70)
         click.echo("COLETA INTERROMPIDA")
@@ -404,73 +457,85 @@ def refresh_history(format, output, resume, limit, progress):
         click.echo(f"💾 Checkpoint: {e.checkpoint_file}")
         click.echo(f"⏰ Aguarde ~1 hora e execute novamente")
         click.echo("="*70)
+        _checkpoint_abort = True
         raise click.Abort()
-    
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
 
+# ── refresh-schedules ─────────────────────────────────────────────────────────
+
 @collect.command('refresh-schedules')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
-def refresh_schedules(format, output):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def refresh_schedules(format, output, run_dir):
     """
     Extrai agendamentos de refreshes do inventário (não faz chamadas à API)
-    
+
     Exemplo:
         fabricgov collect refresh-schedules
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE SCHEDULES DE REFRESHES")
     click.echo("="*70)
-    
+
     inventory_path = Path(output) / "inventory_result.json"
     if not inventory_path.exists():
         click.echo("❌ Erro: Execute 'fabricgov collect inventory' primeiro!", err=True)
+        _checkpoint_abort = False
         raise click.Abort()
-    
+
     with open(inventory_path, "r", encoding="utf-8") as f:
         inventory_result = json.load(f)
-    
+
     try:
         auth = get_auth_provider()
-        
-        def progress_callback(msg: str):
+
+        def _progress(msg: str):
             timestamp = datetime.now().strftime('%H:%M:%S')
             click.echo(f"[{timestamp}] {msg}")
-        
+
         collector = RefreshScheduleCollector(
             auth=auth,
             inventory_result=inventory_result,
-            progress_callback=progress_callback
+            progress_callback=_progress
         )
-        
+
         result = collector.collect()
-        
-        exporter = FileExporter(format=format, output_dir=output)
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
-        
+
         click.echo(f"\n✓ Refresh schedules exportado em: {output_path}")
         click.echo("\n" + "="*70)
         click.echo("COLETA CONCLUÍDA")
         click.echo("="*70)
         click.echo(f"Total de schedules: {len(result['refresh_schedules'])}")
-        
+
         summary = result['summary']
         click.echo(f"Habilitados: {summary['schedules_enabled']}")
         click.echo(f"Desabilitados: {summary['schedules_disabled']}")
         click.echo("="*70)
-        
+
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
+
+
+# ── domains ───────────────────────────────────────────────────────────────────
 
 @collect.command('domains')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--non-empty-only', is_flag=True, default=False, help='Apenas domínios com workspaces contendo itens')
-def domains(format, output, non_empty_only):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def domains(format, output, non_empty_only, run_dir):
     """
     Coleta todos os domínios do tenant
 
@@ -478,6 +543,7 @@ def domains(format, output, non_empty_only):
         fabricgov collect domains
         fabricgov collect domains --non-empty-only
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE DOMÍNIOS")
     click.echo("="*70)
@@ -497,7 +563,7 @@ def domains(format, output, non_empty_only):
 
         result = collector.collect()
 
-        exporter = FileExporter(format=format, output_dir=output)
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
 
         click.echo(f"\n✓ Domínios exportados em: {output_path}")
@@ -512,14 +578,18 @@ def domains(format, output, non_empty_only):
         click.echo("="*70)
 
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
 
+# ── tags ──────────────────────────────────────────────────────────────────────
+
 @collect.command('tags')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
-def tags(format, output):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def tags(format, output, run_dir):
     """
     Coleta todas as tags do tenant
 
@@ -527,6 +597,7 @@ def tags(format, output):
         fabricgov collect tags
         fabricgov collect tags --format json
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE TAGS")
     click.echo("="*70)
@@ -545,7 +616,7 @@ def tags(format, output):
 
         result = collector.collect()
 
-        exporter = FileExporter(format=format, output_dir=output)
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
 
         click.echo(f"\n✓ Tags exportadas em: {output_path}")
@@ -559,14 +630,18 @@ def tags(format, output):
         click.echo("="*70)
 
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
 
+# ── capacities ────────────────────────────────────────────────────────────────
+
 @collect.command('capacities')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
-def capacities(format, output):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def capacities(format, output, run_dir):
     """
     Coleta todas as capacidades do tenant
 
@@ -574,6 +649,7 @@ def capacities(format, output):
         fabricgov collect capacities
         fabricgov collect capacities --format json
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE CAPACIDADES")
     click.echo("="*70)
@@ -592,7 +668,7 @@ def capacities(format, output):
 
         result = collector.collect()
 
-        exporter = FileExporter(format=format, output_dir=output)
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
 
         click.echo(f"\n✓ Capacidades exportadas em: {output_path}")
@@ -608,14 +684,18 @@ def capacities(format, output):
         click.echo("="*70)
 
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
 
+# ── workloads ─────────────────────────────────────────────────────────────────
+
 @collect.command('workloads')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
-def workloads(format, output):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def workloads(format, output, run_dir):
     """
     Coleta workloads de capacidades Gen1 (P-SKU, A-SKU)
 
@@ -626,6 +706,7 @@ def workloads(format, output):
         fabricgov collect workloads
         fabricgov collect workloads --format json
     """
+    global _checkpoint_abort
     click.echo("="*70)
     click.echo("COLETA DE WORKLOADS")
     click.echo("="*70)
@@ -637,13 +718,11 @@ def workloads(format, output):
             timestamp = datetime.now().strftime('%H:%M:%S')
             click.echo(f"[{timestamp}] {msg}")
 
-        # Passo 1: busca capacidades
         _progress("Buscando capacidades do tenant...")
         capacity_collector = CapacityCollector(auth=auth)
         capacities_result = capacity_collector.collect()
         _progress(f"  {capacities_result['summary']['total_capacities']} capacidades encontradas")
 
-        # Passo 2: coleta workloads
         collector = WorkloadCollector(
             auth=auth,
             capacities_result=capacities_result,
@@ -652,7 +731,7 @@ def workloads(format, output):
 
         result = collector.collect()
 
-        exporter = FileExporter(format=format, output_dir=output)
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
 
         click.echo(f"\n✓ Workloads exportados em: {output_path}")
@@ -670,21 +749,70 @@ def workloads(format, output):
         click.echo("="*70)
 
     except Exception as e:
+        _checkpoint_abort = False
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
 
+
+# ── all-infrastructure ────────────────────────────────────────────────────────
+
+@collect.command('all-infrastructure')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def all_infrastructure(format, output, run_dir):
+    """
+    Coleta TODA a infraestrutura do tenant (domains, tags, capacities, workloads)
+
+    Executa em sequência:
+    1. domains
+    2. tags
+    3. capacities
+    4. workloads
+
+    Exemplo:
+        fabricgov collect all-infrastructure
+        fabricgov collect all-infrastructure --format json
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE INFRAESTRUTURA DO TENANT")
+    click.echo("="*70)
+    click.echo()
+
+    ctx = click.get_current_context()
+
+    steps = [
+        (domains,     "Domínios"),
+        (tags,        "Tags"),
+        (capacities,  "Capacidades"),
+        (workloads,   "Workloads"),
+    ]
+
+    for fn, label in steps:
+        click.echo(f"▶️  Iniciando coleta: {label}")
+        click.echo("-"*70)
+        ctx.invoke(fn, format=format, output=output, run_dir=run_dir)
+        click.echo()
+
+    click.echo("="*70)
+    click.echo("✅ INFRAESTRUTURA COLETADA")
+    click.echo("="*70)
+
+
+# ── all-access ────────────────────────────────────────────────────────────────
 
 @collect.command('all-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
-def all_access(format, output, resume):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def all_access(format, output, resume, run_dir):
     """
     Coleta TODOS os acessos (workspace, report, dataset, dataflow)
-    
+
     Executa todos os collectors de acesso em sequência.
     Se algum bater rate limit, para e instrui a retomar.
-    
+
     Exemplo:
         fabricgov collect all-access
     """
@@ -692,32 +820,35 @@ def all_access(format, output, resume):
     click.echo("COLETA DE TODOS OS ACESSOS")
     click.echo("="*70)
     click.echo()
-    
+
     collectors_to_run = [
         ('workspace-access', 'Workspaces'),
         ('report-access', 'Reports'),
         ('dataset-access', 'Datasets'),
         ('dataflow-access', 'Dataflows'),
     ]
-    
+
+    ctx = click.get_current_context()
     for cmd_name, label in collectors_to_run:
         click.echo(f"▶️  Iniciando coleta: {label}")
         click.echo("-"*70)
-        
-        # Invoca o comando correspondente
-        ctx = click.get_current_context()
+
         ctx.invoke(
             globals()[cmd_name.replace('-', '_')],
             format=format,
             output=output,
-            resume=resume
+            resume=resume,
+            run_dir=run_dir,
         )
-        
+
         click.echo()
-    
+
     click.echo("="*70)
     click.echo("✅ TODAS AS COLETAS CONCLUÍDAS")
     click.echo("="*70)
+
+
+# ── all-refresh ───────────────────────────────────────────────────────────────
 
 @collect.command('all-refresh')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
@@ -725,14 +856,15 @@ def all_access(format, output, resume):
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
 @click.option('--limit', default=100, help='Número máximo de refreshes por artefato (history)')
 @click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
-def all_refresh(format, output, resume, limit, progress):
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def all_refresh(format, output, resume, limit, progress, run_dir):
     """
     Coleta TODOS os dados de refresh (history + schedules)
-    
+
     Executa:
     1. refresh-history (com checkpoint)
     2. refresh-schedules (rápido, sem API)
-    
+
     Exemplo:
         fabricgov collect all-refresh
         fabricgov collect all-refresh --limit 50
@@ -741,49 +873,348 @@ def all_refresh(format, output, resume, limit, progress):
     click.echo("COLETA COMPLETA DE REFRESH DATA")
     click.echo("="*70)
     click.echo()
-    
-    # 1. Refresh History
+
+    ctx = click.get_current_context()
+
     click.echo(f"▶️  Iniciando coleta: Refresh History")
     click.echo("-"*70)
-    
-    ctx = click.get_current_context()
+
     ctx.invoke(
         refresh_history,
         format=format,
         output=output,
         resume=resume,
         limit=limit,
-        progress=progress
+        progress=progress,
+        run_dir=run_dir,
     )
-    
+
     click.echo()
-    
-    # 2. Refresh Schedules
+
     click.echo(f"▶️  Iniciando coleta: Refresh Schedules")
     click.echo("-"*70)
-    
+
     ctx.invoke(
         refresh_schedules,
         format=format,
-        output=output
+        output=output,
+        run_dir=run_dir,
     )
-    
+
     click.echo()
     click.echo("="*70)
     click.echo("✅ COLETA DE REFRESH DATA CONCLUÍDA")
     click.echo("="*70)
 
+
+# ── status ────────────────────────────────────────────────────────────────────
+
+@collect.command('status')
+@click.option('--output', default='output', help='Diretório de output')
+def status(output):
+    """
+    Mostra o status da sessão de coleta atual e checkpoints pendentes.
+
+    Exemplo:
+        fabricgov collect status
+        fabricgov collect status --output meu_output
+    """
+    SEP = "═" * 70
+    session = load_session(output)
+    pending = find_pending_checkpoints(output)
+
+    click.echo(SEP)
+    click.echo("STATUS DA SESSÃO DE COLETA")
+    click.echo(SEP)
+
+    if session:
+        run_dir = session.get("run_dir", "—")
+        started = session.get("started_at", "—")
+        steps = session.get("steps", {})
+
+        # Determina status geral
+        statuses = [s.get("status", "not_started") for s in steps.values()]
+        if all(s == "completed" for s in statuses):
+            overall = "CONCLUÍDA"
+        elif any(s == "checkpointed" for s in statuses):
+            overall = "INTERROMPIDA (checkpoint pendente)"
+        elif any(s == "failed" for s in statuses):
+            overall = "COM ERRO"
+        else:
+            overall = "EM ANDAMENTO"
+
+        click.echo(f"Pasta:      {run_dir}")
+        click.echo(f"Iniciada:   {started}")
+        click.echo(f"Status:     {overall}")
+        click.echo()
+        click.echo("Passos:")
+
+        icons = {
+            "completed":   "✅",
+            "checkpointed": "⏹️ ",
+            "failed":      "❌",
+            "not_started": "⏳",
+        }
+        labels = {
+            "inventory":          "inventory          ",
+            "all-infrastructure": "all-infrastructure ",
+            "all-access":         "all-access         ",
+            "all-refresh":        "all-refresh        ",
+        }
+
+        for step in ["inventory", "all-infrastructure", "all-access", "all-refresh"]:
+            info = steps.get(step, {})
+            st = info.get("status", "not_started")
+            icon = icons.get(st, "⏳")
+            label = labels.get(step, step)
+            detail = ""
+            if st == "completed":
+                detail = f"concluído {info.get('completed_at', '')}"
+            elif st == "checkpointed":
+                detail = f"interrompido {info.get('checkpointed_at', '')}"
+            elif st == "failed":
+                detail = f"erro: {info.get('error', '')}"
+            click.echo(f"  {icon} {label} {detail}")
+    else:
+        click.echo("Nenhuma sessão ativa encontrada.")
+
+    if pending:
+        click.echo()
+        click.echo("Checkpoints detectados:")
+        for cp in pending:
+            click.echo(f"  💾 {cp}")
+
+    if session or pending:
+        click.echo()
+        click.echo("Para retomar: fabricgov collect all --resume")
+    else:
+        click.echo()
+        click.echo("✅ Nenhuma sessão ativa. Nenhum checkpoint pendente.")
+
+    click.echo(SEP)
+
+
+# ── all ───────────────────────────────────────────────────────────────────────
+
+@collect.command('all')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--resume/--no-resume', default=True, help='Retomar sessão anterior se existir')
+@click.option('--limit', default=100, help='Número máximo de refreshes por artefato (history)')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
+def all_collect(format, output, resume, limit, progress):
+    """
+    Coleta TUDO em uma única sessão (inventory → infrastructure → access → refresh).
+
+    Usa uma pasta única para todos os outputs. Se algum passo bater rate limit,
+    salva o checkpoint e continua para o próximo passo. Execute novamente com
+    --resume para completar os passos interrompidos.
+
+    Exemplo:
+        fabricgov collect all
+        fabricgov collect all --resume
+        fabricgov collect all --no-resume   # inicia sessão do zero
+        fabricgov collect all --limit 50
+    """
+    global _checkpoint_abort
+
+    click.echo("=" * 70)
+    click.echo("COLETA COMPLETA DO TENANT")
+    click.echo("=" * 70)
+
+    # ── Carrega ou cria sessão ────────────────────────────────────────────────
+    existing = load_session(output) if resume else None
+
+    if existing and resume:
+        session = existing
+        run_dir = session["run_dir"]
+        click.echo(f"▶️  Retomando sessão: {run_dir}")
+    else:
+        session = create_new_session(output, format)
+        run_dir = session["run_dir"]
+        save_session(output, session)
+        click.echo(f"▶️  Nova sessão: {run_dir}")
+
+    click.echo()
+    ctx = click.get_current_context()
+
+    # ── Passo 1: inventory (crítico) ──────────────────────────────────────────
+    step = "inventory"
+    if get_step_status(session, step) == "completed":
+        click.echo(f"⏭️  {step}: já concluído, pulando.")
+    else:
+        click.echo(f"{'='*70}")
+        click.echo(f"▶️  PASSO 1: INVENTORY")
+        click.echo(f"{'='*70}")
+        _checkpoint_abort = False
+        try:
+            ctx.invoke(
+                inventory,
+                format=format,
+                output=output,
+                progress=progress,
+                run_dir=run_dir,
+            )
+            mark_step_completed(session, step)
+            save_session(output, session)
+        except click.Abort:
+            mark_step_failed(session, step)
+            save_session(output, session)
+            click.echo("\n❌ Inventory falhou. Não é possível continuar sem o inventário.")
+            raise
+
+    click.echo()
+
+    # ── Passo 2: all-infrastructure (independente, rápido) ───────────────────
+    step = "all-infrastructure"
+    if get_step_status(session, step) == "completed":
+        click.echo(f"⏭️  {step}: já concluído, pulando.")
+    else:
+        click.echo(f"{'='*70}")
+        click.echo(f"▶️  PASSO 2: INFRAESTRUTURA")
+        click.echo(f"{'='*70}")
+        _checkpoint_abort = False
+        try:
+            ctx.invoke(
+                all_infrastructure,
+                format=format,
+                output=output,
+                run_dir=run_dir,
+            )
+            mark_step_completed(session, step)
+            save_session(output, session)
+        except click.Abort:
+            mark_step_failed(session, step, "erro durante coleta de infraestrutura")
+            save_session(output, session)
+            click.echo("\n⚠️  Infraestrutura falhou, continuando com os próximos passos...")
+
+    click.echo()
+
+    # ── Passo 3: all-access (pode checkpointar) ───────────────────────────────
+    step = "all-access"
+    step_status = get_step_status(session, step)
+    if step_status == "completed":
+        click.echo(f"⏭️  {step}: já concluído, pulando.")
+    else:
+        click.echo(f"{'='*70}")
+        click.echo(f"▶️  PASSO 3: ACESSOS")
+        click.echo(f"{'='*70}")
+        _checkpoint_abort = False
+        # Se checkpointed E --resume, passa resume=True para retomar checkpoint interno
+        inner_resume = resume and step_status == "checkpointed"
+        try:
+            ctx.invoke(
+                all_access,
+                format=format,
+                output=output,
+                resume=inner_resume,
+                run_dir=run_dir,
+            )
+            mark_step_completed(session, step)
+            save_session(output, session)
+        except click.Abort:
+            if _checkpoint_abort:
+                _checkpoint_abort = False
+                mark_step_checkpointed(session, step)
+                save_session(output, session)
+                click.echo("\n⏩  all-access interrompido por rate limit. Continuando para all-refresh...")
+            else:
+                mark_step_failed(session, step, "erro inesperado")
+                save_session(output, session)
+                click.echo("\n⚠️  all-access falhou com erro. Continuando para all-refresh...")
+
+    click.echo()
+
+    # ── Passo 4: all-refresh (pode checkpointar) ──────────────────────────────
+    step = "all-refresh"
+    step_status = get_step_status(session, step)
+    if step_status == "completed":
+        click.echo(f"⏭️  {step}: já concluído, pulando.")
+    else:
+        click.echo(f"{'='*70}")
+        click.echo(f"▶️  PASSO 4: REFRESH")
+        click.echo(f"{'='*70}")
+        _checkpoint_abort = False
+        inner_resume = resume and step_status == "checkpointed"
+        try:
+            ctx.invoke(
+                all_refresh,
+                format=format,
+                output=output,
+                resume=inner_resume,
+                limit=limit,
+                progress=progress,
+                run_dir=run_dir,
+            )
+            mark_step_completed(session, step)
+            save_session(output, session)
+        except click.Abort:
+            if _checkpoint_abort:
+                _checkpoint_abort = False
+                mark_step_checkpointed(session, step)
+                save_session(output, session)
+                click.echo("\n⏩  all-refresh interrompido por rate limit.")
+            else:
+                mark_step_failed(session, step, "erro inesperado")
+                save_session(output, session)
+                click.echo("\n⚠️  all-refresh falhou com erro.")
+
+    click.echo()
+
+    # ── Resumo final ──────────────────────────────────────────────────────────
+    click.echo("=" * 70)
+    click.echo("RESUMO DA SESSÃO")
+    click.echo("=" * 70)
+    click.echo(f"Pasta: {run_dir}")
+    click.echo()
+
+    has_pending = False
+    for s in ["inventory", "all-infrastructure", "all-access", "all-refresh"]:
+        st = get_step_status(session, s)
+        if st == "completed":
+            icon = "✅"
+        elif st == "checkpointed":
+            icon = "⏹️ "
+            has_pending = True
+        elif st == "failed":
+            icon = "❌"
+            has_pending = True
+        else:
+            icon = "⏳"
+            has_pending = True
+        click.echo(f"  {icon} {s}")
+
+    click.echo()
+
+    if is_session_complete(session):
+        click.echo("✅ COLETA COMPLETA CONCLUÍDA!")
+        clear_session(output)
+    else:
+        click.echo("⏹️  Sessão incompleta.")
+        pending = find_pending_checkpoints(output)
+        if pending:
+            click.echo("Checkpoints pendentes:")
+            for cp in pending:
+                click.echo(f"  💾 {cp}")
+        click.echo()
+        click.echo("Execute novamente para retomar: fabricgov collect all --resume")
+
+    click.echo("=" * 70)
+
+
+# ── auth provider ─────────────────────────────────────────────────────────────
+
 def get_auth_provider():
     """
     Retorna o AuthProvider baseado na última autenticação utilizada.
-    
+
     Raises:
         RuntimeError: Se nenhuma autenticação foi configurada
     """
     require_auth()  # Valida se já autenticou
-    
+
     method = get_auth_preference()
-    
+
     if method == "service_principal":
         return ServicePrincipalAuth.from_env()
     elif method == "device_flow":

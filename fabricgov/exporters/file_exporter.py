@@ -27,14 +27,18 @@ class FileExporter:
         self,
         format: Literal["json", "csv"] = "json",
         output_dir: str = "output",
+        run_dir: str | None = None,
     ):
         """
         Args:
             format: "json" ou "csv"
             output_dir: diretório raiz onde criar as pastas timestampadas
+            run_dir: se fornecido, usa este diretório diretamente (sem criar subfolder timestampado).
+                     Usado pelo comando 'all' para manter todos os outputs na mesma sessão.
         """
         self.format = format
         self.output_dir = Path(output_dir)
+        self._run_dir = Path(run_dir) if run_dir else None
 
     def export(
         self,
@@ -51,9 +55,12 @@ class FileExporter:
         Returns:
             Path da pasta criada (ex: output/20260219_163616/)
         """
-        # Cria pasta timestampada
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_dir = self.output_dir / timestamp
+        # Usa run_dir fixo (sessão 'all') ou cria pasta timestampada
+        if self._run_dir:
+            run_dir = self._run_dir
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            run_dir = self.output_dir / timestamp
         run_dir.mkdir(parents=True, exist_ok=True)
 
         # Exporta log.txt (se houver mensagens)
