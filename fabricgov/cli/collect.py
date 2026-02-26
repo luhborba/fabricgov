@@ -13,6 +13,7 @@ from fabricgov.collectors import (
     RefreshScheduleCollector,
     DomainCollector,
     TagCollector,
+    CapacityCollector,
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -554,6 +555,55 @@ def tags(format, output):
         click.echo(f"Total de tags:          {summary['total_tags']}")
         click.echo(f"Escopo Tenant:          {summary['tenant_tags']}")
         click.echo(f"Escopo Domain:          {summary['domain_tags']}")
+        click.echo("="*70)
+
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
+
+@collect.command('capacities')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+def capacities(format, output):
+    """
+    Coleta todas as capacidades do tenant
+
+    Exemplo:
+        fabricgov collect capacities
+        fabricgov collect capacities --format json
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE CAPACIDADES")
+    click.echo("="*70)
+
+    try:
+        auth = get_auth_provider()
+
+        def _progress(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+
+        collector = CapacityCollector(
+            auth=auth,
+            progress_callback=_progress,
+        )
+
+        result = collector.collect()
+
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+
+        click.echo(f"\n✓ Capacidades exportadas em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        summary = result['summary']
+        click.echo(f"Total de capacidades:   {summary['total_capacities']}")
+        click.echo(f"Ativas:                 {summary['active']}")
+        click.echo(f"Suspensas:              {summary['suspended']}")
+        if summary['skus']:
+            click.echo(f"SKUs: {summary['skus']}")
         click.echo("="*70)
 
     except Exception as e:

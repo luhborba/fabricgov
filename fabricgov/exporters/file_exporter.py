@@ -152,6 +152,12 @@ class FileExporter:
                 self._export_artifact(run_dir, "tags", items)
             return
 
+        if "capacities" in result:
+            items = result["capacities"]
+            if isinstance(items, list) and len(items) > 0:
+                self._export_artifact(run_dir, "capacities", items)
+            return
+
         # Caso 2: WorkspaceInventoryCollector (múltiplas chaves)
         artifact_keys = [k for k in result.keys() if k not in ["summary"]]
         for key in artifact_keys:
