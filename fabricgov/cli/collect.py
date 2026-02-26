@@ -14,6 +14,7 @@ from fabricgov.collectors import (
     DomainCollector,
     TagCollector,
     CapacityCollector,
+    WorkloadCollector,
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -604,6 +605,68 @@ def capacities(format, output):
         click.echo(f"Suspensas:              {summary['suspended']}")
         if summary['skus']:
             click.echo(f"SKUs: {summary['skus']}")
+        click.echo("="*70)
+
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
+
+@collect.command('workloads')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+def workloads(format, output):
+    """
+    Coleta workloads de capacidades Gen1 (P-SKU, A-SKU)
+
+    Busca as capacidades automaticamente e coleta os workloads de cada uma.
+    Capacidades Fabric (F-SKU) são ignoradas automaticamente.
+
+    Exemplo:
+        fabricgov collect workloads
+        fabricgov collect workloads --format json
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE WORKLOADS")
+    click.echo("="*70)
+
+    try:
+        auth = get_auth_provider()
+
+        def _progress(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+
+        # Passo 1: busca capacidades
+        _progress("Buscando capacidades do tenant...")
+        capacity_collector = CapacityCollector(auth=auth)
+        capacities_result = capacity_collector.collect()
+        _progress(f"  {capacities_result['summary']['total_capacities']} capacidades encontradas")
+
+        # Passo 2: coleta workloads
+        collector = WorkloadCollector(
+            auth=auth,
+            capacities_result=capacities_result,
+            progress_callback=_progress,
+        )
+
+        result = collector.collect()
+
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+
+        click.echo(f"\n✓ Workloads exportados em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        summary = result['summary']
+        click.echo(f"Capacidades processadas: {summary['capacities_processed']}")
+        click.echo(f"Ignoradas (Gen2):        {summary['capacities_skipped_gen2']}")
+        click.echo(f"Total de workloads:      {summary['total_workloads']}")
+        click.echo(f"Habilitados:             {summary['enabled']}")
+        click.echo(f"Desabilitados:           {summary['disabled']}")
+        if summary['errors']:
+            click.echo(f"Erros:                   {summary['errors']}")
         click.echo("="*70)
 
     except Exception as e:
