@@ -9,8 +9,9 @@ from fabricgov.collectors import (
     ReportAccessCollector,
     DatasetAccessCollector,
     DataflowAccessCollector,
-    RefreshHistoryCollector,      
-    RefreshScheduleCollector,      
+    RefreshHistoryCollector,
+    RefreshScheduleCollector,
+    DomainCollector,
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -461,6 +462,56 @@ def refresh_schedules(format, output):
     except Exception as e:
         click.echo(f"❌ Erro: {e}", err=True)
         raise click.Abort()
+
+@collect.command('domains')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--non-empty-only', is_flag=True, default=False, help='Apenas domínios com workspaces contendo itens')
+def domains(format, output, non_empty_only):
+    """
+    Coleta todos os domínios do tenant
+
+    Exemplo:
+        fabricgov collect domains
+        fabricgov collect domains --non-empty-only
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE DOMÍNIOS")
+    click.echo("="*70)
+
+    try:
+        auth = get_auth_provider()
+
+        def _progress(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+
+        collector = DomainCollector(
+            auth=auth,
+            progress_callback=_progress,
+            non_empty_only=non_empty_only,
+        )
+
+        result = collector.collect()
+
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+
+        click.echo(f"\n✓ Domínios exportados em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        summary = result['summary']
+        click.echo(f"Total de domínios:      {summary['total_domains']}")
+        click.echo(f"Domínios raiz:          {summary['root_domains']}")
+        click.echo(f"Subdomínios:            {summary['sub_domains']}")
+        click.echo(f"Com label padrão:       {summary['domains_with_default_label']}")
+        click.echo("="*70)
+
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
 
 @collect.command('all-access')
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
