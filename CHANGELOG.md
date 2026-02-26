@@ -7,6 +7,58 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.5.0] - 2026-02-26
+
+### Added
+- **DomainCollector** — coleta todos os domínios do tenant
+  - API: `GET https://api.fabric.microsoft.com/v1/admin/domains`
+  - Campos: `id`, `displayName`, `description`, `parentDomainId`, `defaultLabelId`
+  - Parâmetro `non_empty_only` para filtrar apenas domínios com workspaces ativos
+  - Summary com breakdown: root domains, sub-domains, domains com sensitivity label
+- **TagCollector** — coleta todas as tags do tenant
+  - API: `GET https://api.fabric.microsoft.com/v1/admin/tags`
+  - Suporta paginação via `continuationToken`
+  - Achata campo `scope` → `scope_type` e `scope_domain_id` para CSV-friendly output
+  - Summary com breakdown: tenant tags vs domain tags
+- **CapacityCollector** — coleta todas as capacidades do tenant
+  - API: `GET https://api.powerbi.com/v1.0/myorg/admin/capacities`
+  - Campos: `id`, `displayName`, `sku`, `state`, `region`, `admins`, `capacityUserAccessRight`, `tenantKeyId`
+  - Summary com breakdown por SKU e por região
+- **WorkloadCollector** — coleta workloads de capacidades Gen1
+  - API: `GET https://api.powerbi.com/v1.0/myorg/capacities/{capacityId}/Workloads`
+  - Relevante apenas para capacidades Premium P-SKU e Embedded A-SKU
+  - Ignora automaticamente capacidades Fabric F-SKU (Gen2 não suporta esta API)
+  - Captura erros por capacidade sem interromper coleta
+  - Campos: `capacity_id`, `capacity_name`, `capacity_sku`, `workload_name`, `state`, `max_memory_percentage`
+  - Summary com breakdown: enabled, disabled, unsupported, capacidades ignoradas Gen2
+- **CLI commands para infraestrutura:**
+  - `fabricgov collect domains` — coleta domínios (flag `--non-empty-only`)
+  - `fabricgov collect tags` — coleta tags
+  - `fabricgov collect capacities` — coleta capacidades
+  - `fabricgov collect workloads` — coleta workloads (busca capacidades automaticamente)
+  - `fabricgov collect all-infrastructure` — executa todos os 4 em sequência
+- **FileExporter** agora detecta e exporta `domains`, `tags`, `capacities`, `workloads` e `workloads_errors`
+- **FileExporter** parâmetro `run_dir` — reutiliza pasta existente (sem criar novo timestamp)
+- **CLI: `fabricgov collect all`** — orquestrador completo de uma sessão única
+  - Executa: inventory → all-infrastructure → all-access → all-refresh
+  - Mantém uma única pasta de output por sessão (`output/YYYYMMDD_HHMMSS/`)
+  - Se rate limit ocorrer em `all-access`, salva checkpoint e continua para `all-refresh`
+  - Flags: `--resume/--no-resume` (retoma sessão anterior), `--limit`, `--progress/--no-progress`
+- **CLI: `fabricgov collect status`** — diagnóstico da sessão ativa
+  - Exibe passo a passo (inventory, all-infrastructure, all-access, all-refresh) com ícones de status
+  - Detecta arquivos de checkpoint pendentes automaticamente
+  - Sugere `fabricgov collect all --resume` quando há pendências
+- **`session_state.json`** — controle de progresso por sessão
+  - Salvo em `output/session_state.json`
+  - Status por passo: `not_started`, `completed`, `checkpointed`, `failed`
+  - Removido automaticamente quando todos os passos concluem
+- **Progress bars visuais** nos coletores de acesso e refresh
+  - `WorkspaceAccessCollector`, `ReportAccessCollector`, `DatasetAccessCollector`, `DataflowAccessCollector`, `RefreshHistoryCollector`
+  - Parâmetro `progress_manager` (opcional) em todos os 5 collectors
+  - CLI flags `--progress/--no-progress` nos 5 comandos individuais e no `all-access`
+
+---
+
 ## [0.4.0] - 2026-02-24
 
 ### Added

@@ -1,9 +1,12 @@
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 from pathlib import Path
 from fabricgov.auth.base import AuthProvider
 from fabricgov.collectors.base import BaseCollector
 from fabricgov.checkpoint import Checkpoint
 from fabricgov.exceptions import TooManyRequestsError, CheckpointSavedException
+
+if TYPE_CHECKING:
+    from fabricgov.progress import ProgressManager
 
 
 class DataflowAccessCollector(BaseCollector):
@@ -40,6 +43,7 @@ class DataflowAccessCollector(BaseCollector):
         inventory_result: dict[str, Any],
         progress_callback: Callable[[str], None] | None = None,
         checkpoint_file: str | Path | None = None,
+        progress_manager: "ProgressManager | None" = None,
         **kwargs
     ):
         """
@@ -48,6 +52,7 @@ class DataflowAccessCollector(BaseCollector):
             inventory_result: Resultado do WorkspaceInventoryCollector
             progress_callback: Função chamada a cada update de progresso
             checkpoint_file: Caminho do checkpoint (habilita modo incremental)
+            progress_manager: ProgressManager do rich (opcional, para progress bars)
         """
         super().__init__(
             auth=auth,
@@ -57,6 +62,7 @@ class DataflowAccessCollector(BaseCollector):
         self._inventory_result = inventory_result
         self._progress = progress_callback or (lambda msg: None)
         self._checkpoint = Checkpoint(checkpoint_file) if checkpoint_file else None
+        self._progress_manager = progress_manager
 
     def collect(self) -> dict[str, Any]:
         """
@@ -120,14 +126,20 @@ class DataflowAccessCollector(BaseCollector):
         service_principals_set = set()
         permissions_counter = {}
         dataflows_with_users = 0
-        
+
+        task_id = -1
+        if self._progress_manager:
+            task_id = self._progress_manager.add_task("Dataflows", total=to_process)
+
         for idx, dataflow in enumerate(dataflows_to_process, start=1):
             dataflow_id = dataflow.get("objectId")
             dataflow_name = dataflow.get("name")
             workspace_id = dataflow.get("workspace_id")
             workspace_name = dataflow.get("workspace_name")
-            
-            if idx % 100 == 0:
+
+            if self._progress_manager:
+                self._progress_manager.update(task_id, advance=1)
+            elif idx % 100 == 0:
                 self._progress(f"Processando dataflow {idx}/{to_process}...")
             
             try:

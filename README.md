@@ -17,6 +17,8 @@
 **Principais features:**
 - 🔍 Inventário completo de workspaces e 27+ tipos de artefatos
 - 🔐 Coleta de acessos (workspaces, reports, datasets, dataflows)
+- 🔄 Histórico de refresh e agendamentos configurados
+- 🏢 Domínios, tags, capacidades e workloads do tenant
 - 💾 Sistema de checkpoint para tenants grandes (retoma de onde parou)
 - 📊 Export em JSON ou CSV
 - ⚡ CLI pronto para uso
@@ -54,7 +56,7 @@ FABRICGOV_CLIENT_SECRET=seu-client-secret
 ### 2. Use o CLI
 ```bash
 # Testa credenciais
-fabricgov auth test
+fabricgov auth sp
 
 # Coleta inventário
 fabricgov collect inventory
@@ -64,9 +66,18 @@ fabricgov collect workspace-access
 fabricgov collect report-access
 fabricgov collect dataset-access
 fabricgov collect dataflow-access
+fabricgov collect all-access   # todos os acessos de uma vez
 
-# Ou coleta tudo de uma vez
-fabricgov collect all-access
+# Coleta refresh
+fabricgov collect refresh-history
+fabricgov collect refresh-schedules
+fabricgov collect all-refresh   # histórico + agendamentos
+
+# Coleta infraestrutura
+fabricgov collect domains
+fabricgov collect tags
+fabricgov collect capacities
+fabricgov collect workloads
 ```
 
 **Flags disponíveis:**
@@ -105,6 +116,12 @@ exporter.export(result, [])
 | `ReportAccessCollector` | Permissões em reports | ✅ |
 | `DatasetAccessCollector` | Permissões em datasets | ✅ |
 | `DataflowAccessCollector` | Permissões em dataflows | ✅ |
+| `RefreshHistoryCollector` | Histórico de execuções de datasets e dataflows | — |
+| `RefreshScheduleCollector` | Agendamentos configurados (sem chamadas de API) | — |
+| `DomainCollector` | Domínios do tenant (hierarquia, sensitivity labels) | — |
+| `TagCollector` | Tags do tenant (escopo tenant ou domínio) | — |
+| `CapacityCollector` | Capacidades Premium/Fabric (SKU, região, admins) | — |
+| `WorkloadCollector` | Workloads de capacidades Gen1 (P-SKU, A-SKU) | — |
 
 > 📘 [Ver exemplos detalhados →](docs/collectors.md)
 
@@ -140,7 +157,7 @@ fabricgov collect report-access
 fabricgov/
 ├── cli/                # CLI via Click
 ├── auth/               # ServicePrincipalAuth + DeviceFlowAuth
-├── collectors/         # 5 collectors com checkpoint
+├── collectors/         # 11 collectors (access, refresh, infraestrutura)
 ├── exporters/          # JSON/CSV export
 ├── checkpoint.py       # Sistema de checkpoint
 └── exceptions.py       # Exceções customizadas
@@ -153,14 +170,21 @@ fabricgov/
 output/
 ├── inventory_result.json           # Reutilizável entre collectors
 ├── checkpoint_report_access.json   # Checkpoint (auto-removido ao completar)
-└── 20260225_143000/                # Timestamped folder
+└── 20260226_143000/                # Timestamped folder
     ├── summary.json
     ├── workspaces.csv
     ├── reports.csv
     ├── workspace_access.csv
     ├── report_access.csv
     ├── dataset_access.csv
-    └── dataflow_access.csv
+    ├── dataflow_access.csv
+    ├── refresh_history.csv
+    ├── refresh_schedules.csv
+    ├── domains.csv
+    ├── tags.csv
+    ├── capacities.csv
+    ├── workloads.csv
+    └── workloads_errors.csv
 ```
 
 ---
@@ -187,16 +211,14 @@ output/
 
 ## 🗺️ Roadmap
 
-### ✅ v0.3.0 (Atual) - 2026-02-23
+### ✅ v0.3.0 - 2026-02-23
 - [x] CLI completo (`fabricgov` command)
 - [x] DatasetAccessCollector
 - [x] DataflowAccessCollector
 - [x] 5 collectors com checkpoint
-- [x] Estimativa de tempo restante em coletas
 - [x] Primeira Versão no Pypi
-- [x] Progress bars visuais
 
-### ✅ v0.4.0 (Atual) - 2026-02-24
+### ✅ v0.4.0 - 2026-02-24
 - [x] RefreshHistoryCollector (histórico de execuções)
 - [x] RefreshScheduleCollector (agendamentos configurados)
 - [x] CLI: `fabricgov collect refresh-history`
@@ -204,14 +226,22 @@ output/
 - [x] CLI: `fabricgov collect all-refresh`
 - [x] CLI: `fabricgov auth sp` (renomeado de `auth test`)
 
-### ✅ v0.5.0 
-- [ ] CLI: Orquetradros de Chamada Full
-- [ ] Progress bars visuais nos coletores além do inventário
+### ✅ v0.5.0 (Atual)
+- [x] DomainCollector (domínios do tenant)
+- [x] TagCollector (tags do tenant)
+- [x] CapacityCollector (capacidades Premium/Fabric)
+- [x] WorkloadCollector (workloads de capacidades Gen1)
+- [x] CLI: `fabricgov collect domains/tags/capacities/workloads`
+- [x] 11 collectors no total
+- [x] CLI: Orquestradores `all-infrastructure`, `all-access`, `all-refresh`, `all`
+- [x] CLI: `fabricgov collect all` — coleta completa em sessão única com checkpoint
+- [x] CLI: `fabricgov collect status` — status da sessão e checkpoints pendentes
+- [x] Progress bars visuais nos coletores de acesso e refresh
 
-### ✅ v0.6.0 
+### 🎯 v0.6.0
 - [ ] Integração com KeyVault
 
-### ✅ v0.7.0 
+### 🎯 v0.7.0
 - [ ] Report HTML
 
 ### 🎯 v1.0.0

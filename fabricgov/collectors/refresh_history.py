@@ -1,10 +1,13 @@
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 from fabricgov.auth.base import AuthProvider
 from fabricgov.collectors.base import BaseCollector
 from fabricgov.checkpoint import Checkpoint
 from fabricgov.exceptions import TooManyRequestsError, CheckpointSavedException
+
+if TYPE_CHECKING:
+    from fabricgov.progress import ProgressManager
 
 
 class RefreshHistoryCollector(BaseCollector):
@@ -42,6 +45,7 @@ class RefreshHistoryCollector(BaseCollector):
         progress_callback: Callable[[str], None] | None = None,
         checkpoint_file: str | Path | None = None,
         history_limit: int = 100,
+        progress_manager: "ProgressManager | None" = None,
         **kwargs
     ):
         """
@@ -51,6 +55,7 @@ class RefreshHistoryCollector(BaseCollector):
             progress_callback: Função chamada a cada update de progresso
             checkpoint_file: Caminho do checkpoint (habilita modo incremental)
             history_limit: Número máximo de refreshes a coletar por artefato (padrão: 100)
+            progress_manager: ProgressManager do rich (opcional, para progress bars)
         """
         super().__init__(
             auth=auth,
@@ -61,6 +66,7 @@ class RefreshHistoryCollector(BaseCollector):
         self._progress = progress_callback or (lambda msg: None)
         self._checkpoint = Checkpoint(checkpoint_file) if checkpoint_file else None
         self._history_limit = history_limit
+        self._progress_manager = progress_manager
 
     def collect(self) -> dict[str, Any]:
         """
@@ -141,14 +147,20 @@ class RefreshHistoryCollector(BaseCollector):
             return self._build_result(refresh_history, errors, total_expected, already_processed)
         
         # Coleta histórico
+        task_id = -1
+        if self._progress_manager:
+            task_id = self._progress_manager.add_task("Artefatos (datasets + dataflows)", total=to_process)
+
         for idx, artifact in enumerate(artifacts_to_process, start=1):
             artifact_type = artifact["type"]
             artifact_id = artifact["id"]
             artifact_name = artifact["name"]
             workspace_id = artifact["workspace_id"]
             workspace_name = artifact["workspace_name"]
-            
-            if idx % 50 == 0:
+
+            if self._progress_manager:
+                self._progress_manager.update(task_id, advance=1)
+            elif idx % 50 == 0:
                 self._progress(f"Processando artefato {idx}/{to_process}...")
             
             try:

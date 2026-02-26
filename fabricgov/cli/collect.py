@@ -114,8 +114,9 @@ def inventory(format, output, progress, run_dir):
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
 @click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
-def workspace_access(format, output, resume, run_dir):
+def workspace_access(format, output, resume, progress, run_dir):
     """
     Coleta roles de acesso em workspaces
 
@@ -142,14 +143,18 @@ def workspace_access(format, output, resume, run_dir):
 
         checkpoint_file = Path(output) / "checkpoint_workspace_access.json" if resume else None
 
-        collector = WorkspaceAccessCollector(
-            auth=auth,
-            inventory_result=inventory_result,
-            progress_callback=progress_callback,
-            checkpoint_file=str(checkpoint_file) if checkpoint_file else None
-        )
+        with ProgressManager(enabled=progress) as pm:
+            cb = create_progress_callback(pm)
 
-        result = collector.collect()
+            collector = WorkspaceAccessCollector(
+                auth=auth,
+                inventory_result=inventory_result,
+                progress_callback=cb,
+                checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
+                progress_manager=pm if progress else None
+            )
+
+            result = collector.collect()
 
         exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
@@ -185,8 +190,9 @@ def workspace_access(format, output, resume, run_dir):
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
 @click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
-def report_access(format, output, resume, run_dir):
+def report_access(format, output, resume, progress, run_dir):
     """
     Coleta permissões de acesso em reports
 
@@ -212,14 +218,18 @@ def report_access(format, output, resume, run_dir):
 
         checkpoint_file = Path(output) / "checkpoint_report_access.json" if resume else None
 
-        collector = ReportAccessCollector(
-            auth=auth,
-            inventory_result=inventory_result,
-            progress_callback=progress_callback,
-            checkpoint_file=str(checkpoint_file) if checkpoint_file else None
-        )
+        with ProgressManager(enabled=progress) as pm:
+            cb = create_progress_callback(pm)
 
-        result = collector.collect()
+            collector = ReportAccessCollector(
+                auth=auth,
+                inventory_result=inventory_result,
+                progress_callback=cb,
+                checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
+                progress_manager=pm if progress else None
+            )
+
+            result = collector.collect()
 
         exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
@@ -255,8 +265,9 @@ def report_access(format, output, resume, run_dir):
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
 @click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
-def dataset_access(format, output, resume, run_dir):
+def dataset_access(format, output, resume, progress, run_dir):
     """
     Coleta permissões de acesso em datasets
 
@@ -282,14 +293,18 @@ def dataset_access(format, output, resume, run_dir):
 
         checkpoint_file = Path(output) / "checkpoint_dataset_access.json" if resume else None
 
-        collector = DatasetAccessCollector(
-            auth=auth,
-            inventory_result=inventory_result,
-            progress_callback=progress_callback,
-            checkpoint_file=str(checkpoint_file) if checkpoint_file else None
-        )
+        with ProgressManager(enabled=progress) as pm:
+            cb = create_progress_callback(pm)
 
-        result = collector.collect()
+            collector = DatasetAccessCollector(
+                auth=auth,
+                inventory_result=inventory_result,
+                progress_callback=cb,
+                checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
+                progress_manager=pm if progress else None
+            )
+
+            result = collector.collect()
 
         exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
@@ -325,8 +340,9 @@ def dataset_access(format, output, resume, run_dir):
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
 @click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
-def dataflow_access(format, output, resume, run_dir):
+def dataflow_access(format, output, resume, progress, run_dir):
     """
     Coleta permissões de acesso em dataflows
 
@@ -352,14 +368,18 @@ def dataflow_access(format, output, resume, run_dir):
 
         checkpoint_file = Path(output) / "checkpoint_dataflow_access.json" if resume else None
 
-        collector = DataflowAccessCollector(
-            auth=auth,
-            inventory_result=inventory_result,
-            progress_callback=progress_callback,
-            checkpoint_file=str(checkpoint_file) if checkpoint_file else None
-        )
+        with ProgressManager(enabled=progress) as pm:
+            cb = create_progress_callback(pm)
 
-        result = collector.collect()
+            collector = DataflowAccessCollector(
+                auth=auth,
+                inventory_result=inventory_result,
+                progress_callback=cb,
+                checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
+                progress_manager=pm if progress else None
+            )
+
+            result = collector.collect()
 
         exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
         output_path = exporter.export(result, [])
@@ -433,7 +453,8 @@ def refresh_history(format, output, resume, limit, progress, run_dir):
                 inventory_result=inventory_result,
                 progress_callback=cb,
                 checkpoint_file=str(checkpoint_file) if checkpoint_file else None,
-                history_limit=limit
+                history_limit=limit,
+                progress_manager=pm if progress else None
             )
 
             result = collector.collect()
@@ -805,8 +826,9 @@ def all_infrastructure(format, output, run_dir):
 @click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
 @click.option('--output', default='output', help='Diretório de output')
 @click.option('--resume/--no-resume', default=True, help='Retomar de checkpoint')
+@click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
 @click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
-def all_access(format, output, resume, run_dir):
+def all_access(format, output, resume, progress, run_dir):
     """
     Coleta TODOS os acessos (workspace, report, dataset, dataflow)
 
@@ -838,6 +860,7 @@ def all_access(format, output, resume, run_dir):
             format=format,
             output=output,
             resume=resume,
+            progress=progress,
             run_dir=run_dir,
         )
 
@@ -1108,6 +1131,7 @@ def all_collect(format, output, resume, limit, progress):
                 format=format,
                 output=output,
                 resume=inner_resume,
+                progress=progress,
                 run_dir=run_dir,
             )
             mark_step_completed(session, step)
