@@ -5,7 +5,8 @@ from fabricgov.collectors.report_access import ReportAccessCollector
 from fabricgov.collectors.dataset_access import DatasetAccessCollector
 from fabricgov.collectors.dataflow_access import DataflowAccessCollector
 from fabricgov.collectors.refresh_history import RefreshHistoryCollector
-from fabricgov.collectors.refresh_schedule import RefreshScheduleCollector  
+from fabricgov.collectors.refresh_schedule import RefreshScheduleCollector
+from fabricgov.collectors.domain import DomainCollector
 
 __all__ = [
     "BaseCollector",
@@ -15,5 +16,6 @@ __all__ = [
     "DatasetAccessCollector",
     "DataflowAccessCollector",
     "RefreshHistoryCollector",
-    "RefreshScheduleCollector",  
+    "RefreshScheduleCollector",
+    "DomainCollector",
 ]
