@@ -12,6 +12,7 @@ from fabricgov.collectors import (
     RefreshHistoryCollector,
     RefreshScheduleCollector,
     DomainCollector,
+    TagCollector,
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -506,6 +507,53 @@ def domains(format, output, non_empty_only):
         click.echo(f"Domínios raiz:          {summary['root_domains']}")
         click.echo(f"Subdomínios:            {summary['sub_domains']}")
         click.echo(f"Com label padrão:       {summary['domains_with_default_label']}")
+        click.echo("="*70)
+
+    except Exception as e:
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
+
+@collect.command('tags')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+def tags(format, output):
+    """
+    Coleta todas as tags do tenant
+
+    Exemplo:
+        fabricgov collect tags
+        fabricgov collect tags --format json
+    """
+    click.echo("="*70)
+    click.echo("COLETA DE TAGS")
+    click.echo("="*70)
+
+    try:
+        auth = get_auth_provider()
+
+        def _progress(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+
+        collector = TagCollector(
+            auth=auth,
+            progress_callback=_progress,
+        )
+
+        result = collector.collect()
+
+        exporter = FileExporter(format=format, output_dir=output)
+        output_path = exporter.export(result, [])
+
+        click.echo(f"\n✓ Tags exportadas em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        summary = result['summary']
+        click.echo(f"Total de tags:          {summary['total_tags']}")
+        click.echo(f"Escopo Tenant:          {summary['tenant_tags']}")
+        click.echo(f"Escopo Domain:          {summary['domain_tags']}")
         click.echo("="*70)
 
     except Exception as e:

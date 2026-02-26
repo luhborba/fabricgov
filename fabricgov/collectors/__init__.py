@@ -7,6 +7,7 @@ from fabricgov.collectors.dataflow_access import DataflowAccessCollector
 from fabricgov.collectors.refresh_history import RefreshHistoryCollector
 from fabricgov.collectors.refresh_schedule import RefreshScheduleCollector
 from fabricgov.collectors.domain import DomainCollector
+from fabricgov.collectors.tag import TagCollector
 
 __all__ = [
     "BaseCollector",
@@ -18,4 +19,5 @@ __all__ = [
     "RefreshHistoryCollector",
     "RefreshScheduleCollector",
     "DomainCollector",
+    "TagCollector",
 ]
