@@ -9,6 +9,7 @@ from fabricgov.collectors.refresh_schedule import RefreshScheduleCollector
 from fabricgov.collectors.domain import DomainCollector
 from fabricgov.collectors.tag import TagCollector
 from fabricgov.collectors.capacity import CapacityCollector
+from fabricgov.collectors.workload import WorkloadCollector
 
 __all__ = [
     "BaseCollector",
@@ -22,4 +23,5 @@ __all__ = [
     "DomainCollector",
     "TagCollector",
     "CapacityCollector",
+    "WorkloadCollector",
 ]
