@@ -23,6 +23,7 @@
 - 🏢 Domínios, tags, capacidades e workloads do tenant
 - 💾 Sistema de checkpoint para tenants grandes (retoma de onde parou)
 - 📊 Export em JSON ou CSV
+- 📄 Relatório HTML automático com gráficos e findings de governança (PT + EN)
 - ⚡ CLI pronto para uso
 - 🛡️ Rate limit handling automático
 
@@ -100,12 +101,31 @@ fabricgov collect domains
 fabricgov collect tags
 fabricgov collect capacities
 fabricgov collect workloads
+
+# Coleta completa em sessão única
+fabricgov collect all
+fabricgov collect status          # status da sessão
 ```
 
 **Flags disponíveis:**
 - `--format json|csv` (padrão: csv)
 - `--output DIR` (padrão: output)
 - `--resume/--no-resume` (padrão: resume habilitado)
+
+---
+
+### 3. Gere o relatório de governança
+```bash
+fabricgov report                                      # pasta mais recente em output/
+fabricgov report --from output/20260227_143000/       # pasta específica
+fabricgov report --from output/20260227_143000/ --open  # gera e abre no browser
+```
+
+Gera automaticamente dois arquivos HTML standalone:
+- `report.html` — Português
+- `report.en.html` — English
+
+> 📘 [Guia completo do relatório →](docs/report.md)
 
 ---
 
@@ -181,6 +201,7 @@ fabricgov/
 ├── auth/               # ServicePrincipalAuth + DeviceFlowAuth
 ├── collectors/         # 11 collectors (access, refresh, infraestrutura)
 ├── exporters/          # JSON/CSV export
+├── reporters/          # Report HTML (InsightsEngine + HtmlReporter + template)
 ├── checkpoint.py       # Sistema de checkpoint
 └── exceptions.py       # Exceções customizadas
 ```
@@ -206,7 +227,9 @@ output/
     ├── tags.csv
     ├── capacities.csv
     ├── workloads.csv
-    └── workloads_errors.csv
+    ├── workloads_errors.csv
+    ├── report.html         # Relatório de governança (PT)
+    └── report.en.html      # Governance report (EN)
 ```
 
 ---
@@ -267,21 +290,24 @@ output/
 - [x] Documentação em inglês (`docs/en/`)
 - [x] README em inglês
 
-### 🎯 v0.6.2 (Atual)
+### ✅ v0.6.2
 - [x] Quick Start com Device Flow e tabela de permissões
 
-### 🎯 v0.7.0
-- [ ] Report HTML
+### ✅ v0.7.0 — 2026-02-27
+- [x] Report HTML standalone gerado via `fabricgov report`
+- [x] Duas versões automáticas: PT (`report.html`) + EN (`report.en.html`)
+- [x] 10 gráficos Plotly interativos + KPI cards + findings de governança
+- [x] Seção dedicada de Workspaces com tabela completa de artefatos
 
-### v0.8.0
+### 🎯 v0.8.0 (Próxima)
 - [ ] Identificar datasets sem dono
 - [ ] Usuários externos com acesso a workspaces sensíveis
 - [ ] Workspaces sem refresh há mais de 30 dias
-- [ ] CLI: fabricgov analyze
+- [ ] CLI: `fabricgov analyze`
 
-### v0.9.0
-- [ ] Integração com KeyVault
-- [ ] Comparação de Snapshots - fabricgov diff
+### 🎯 v0.9.0
+- [ ] Integração com Azure Key Vault
+- [ ] Comparação de Snapshots — `fabricgov diff`
 
 ### 🎯 v1.0.0
 - [ ] Atualizar Report HTML

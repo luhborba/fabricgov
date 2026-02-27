@@ -7,6 +7,64 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.7.0] - 2026-02-27
+
+### Added
+- **`fabricgov report`** — geração de relatório HTML de governança standalone
+  - Gera duas versões automaticamente: PT (`report.html`) e EN (`report.en.html`)
+  - Arquivo `.html` autossuficiente — sem servidor, compartilhável por email ou storage
+  - Seções: Resumo Executivo, Inventário, Workspaces (detalhe completo), Acesso & Governança, Saúde do Refresh, Infraestrutura, Domínios, Findings de Governança
+  - 10 gráficos interativos com Plotly (bar charts, donuts, line chart, scatter)
+  - KPI cards com classificação visual de risco (azul, amarelo, vermelho, verde)
+  - Tabela completa de workspaces ordenada por contagem de artefatos (com scroll)
+  - Tabelas de governança: usuários externos, top 10 usuários, refreshes com falha, datasets sem refresh recente
+  - Findings de governança priorizados por severidade (CRITICAL, HIGH, MEDIUM, OK)
+  - Social links do autor: GitHub, LinkedIn, YouTube, Instagram
+  - Opções CLI: `--from PATH`, `--output FILE`, `--open` (abre no browser)
+- **`InsightsEngine`** (`fabricgov/reporters/insights.py`)
+  - Lê todos os CSVs da pasta dinamicamente (sem lista hardcoded de tipos)
+  - Fallback robusto: conta workspaces e artefatos diretamente dos CSVs quando `summary.json` tem formato diferente por collector
+  - Suporta múltiplos formatos de `summary.json`
+- **`HtmlReporter`** (`fabricgov/reporters/html_reporter.py`)
+  - `generate(output_path, lang)` — gera versão em idioma específico
+  - `generate_all(output_dir)` — gera PT + EN em uma única operação (1 leitura de dados)
+  - i18n via `TRANSLATIONS` dict com 50+ chaves PT/EN embutido
+  - Template Jinja2 único compartilhado entre idiomas
+- **`fabricgov/reporters/templates/report.html.j2`** — template Bootstrap 5 + Plotly CDN
+  - Sidebar de navegação fixa com highlight ativo por scroll
+  - Tema Dark Blue gerencial (sidebar azul escuro `#1e3a5f`, conteúdo cinza claro)
+  - Layout responsivo (sidebar oculta em mobile)
+
+### Dependencies
+- `plotly ^5.0` — gráficos interativos embutidos como div HTML
+- `jinja2 ^3.1` — templating do relatório HTML
+- `pandas ^2.0` — leitura e processamento dos CSVs coletados
+
+---
+
+## [0.6.2] - 2026-02-27
+
+### Changed
+- `README.md` e `README.en.md`: Quick Start expandido com explicação do Device Flow e tabela de permissões necessárias (Service Principal vs Device Flow)
+
+---
+
+## [0.6.1] - 2026-02-27
+
+### Added
+- Documentação em inglês: `docs/en/authentication.md`, `docs/en/collectors.md`, `docs/en/exporters.md`, `docs/en/limitations.md`, `docs/en/contributing.md`
+- `README.en.md` — README completo em inglês com referência cruzada ao README.md
+
+---
+
+## [0.6.0] - 2026-02-26
+
+### Changed
+- Documentação interna atualizada (pt-BR): `docs/authentication.md`, `docs/collectors.md`, `docs/exporters.md`, `docs/limitations.md`, `docs/contributing.md`
+- Roadmap reorganizado com versões v0.6.x–v1.0.0
+
+---
+
 ## [0.5.0] - 2026-02-26
 
 ### Added
