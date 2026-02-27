@@ -1,8 +1,9 @@
 import click
 from fabricgov.cli.auth import auth
 from fabricgov.cli.collect import collect
+from fabricgov.cli.report import report_cmd
 
-__version__ = "0.3.3"
+__version__ = "0.7.0"
 
 
 @click.group()
@@ -10,13 +11,13 @@ __version__ = "0.3.3"
 def cli():
     """
     fabricgov - Assessment automatizado de governança em Microsoft Fabric
-    
+
     \b
     🔐 Autenticação:
       fabricgov auth sp       # Service Principal (.env)
       fabricgov auth device   # Device Flow (interativo)
       fabricgov auth clear    # Limpa autenticação
-    
+
     \b
     📊 Coleta de Dados:
       fabricgov collect inventory          # Inventário completo
@@ -26,12 +27,19 @@ def cli():
       fabricgov collect dataflow-access    # Permissões em dataflows
       fabricgov collect refresh-history    # Histórico de refreshes
       fabricgov collect refresh-schedules  # Agendamentos configurados
-    
+
     \b
     ⚡ Atalhos:
       fabricgov collect all-access   # Todos os access collectors
       fabricgov collect all-refresh  # Refresh history + schedules
-    
+      fabricgov collect all          # Coleta completa em sessão única
+
+    \b
+    📊 Relatório:
+      fabricgov report                     # Gera HTML do run mais recente
+      fabricgov report --from output/...   # Pasta específica
+      fabricgov report --open              # Abre no browser após gerar
+
     \b
     📖 Documentação: https://github.com/luhborba/fabricgov
     """
@@ -40,6 +48,7 @@ def cli():
 
 cli.add_command(auth)
 cli.add_command(collect)
+cli.add_command(report_cmd, name="report")
 
 
 if __name__ == '__main__':

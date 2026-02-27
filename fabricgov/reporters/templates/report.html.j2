@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="{{ t.html_lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fabricgov — Governance Report</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    :root {
+      --sidebar-bg: #1e3a5f;
+      --sidebar-hover: #2e6da4;
+      --header-bg: #1e3a5f;
+      --content-bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #6c757d;
+      --accent-blue: #2e6da4;
+      --accent-orange: #e07b39;
+      --accent-green: #4caf50;
+      --accent-red: #e53935;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--content-bg);
+      color: var(--text-main);
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 220px;
+      background: var(--sidebar-bg);
+      color: white;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    #sidebar .sidebar-brand {
+      padding: 20px 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    #sidebar .sidebar-brand h5 {
+      font-weight: 700;
+      color: white;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    #sidebar .sidebar-brand small {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.72rem;
+    }
+
+    #sidebar .nav-link {
+      color: rgba(255,255,255,0.75);
+      padding: 9px 16px;
+      font-size: 0.85rem;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    #sidebar .nav-link:hover,
+    #sidebar .nav-link.active {
+      color: white;
+      background: rgba(255,255,255,0.08);
+      border-left-color: #4a9fd4;
+    }
+
+    #sidebar .nav-link i {
+      width: 18px;
+      margin-right: 6px;
+      opacity: 0.8;
+    }
+
+    /* ── Header ── */
+    #main-header {
+      background: var(--header-bg);
+      color: white;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+
+    #main-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    #main-header .meta {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.65);
+      text-align: right;
+    }
+
+    /* ── Content ── */
+    #content {
+      margin-left: 220px;
+    }
+
+    .section {
+      padding: 32px 28px 8px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--sidebar-bg);
+      border-bottom: 2px solid var(--accent-blue);
+      padding-bottom: 6px;
+      margin-bottom: 20px;
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 4px solid var(--accent-blue);
+      height: 100%;
+    }
+
+    .kpi-card.kpi-inventory  { border-left-color: var(--accent-blue); }
+    .kpi-card.kpi-access     { border-left-color: #f0a500; }
+    .kpi-card.kpi-risk       { border-left-color: var(--accent-red); }
+    .kpi-card.kpi-health     { border-left-color: var(--accent-green); }
+
+    .kpi-card .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .kpi-card .kpi-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .kpi-card .kpi-icon {
+      font-size: 1.6rem;
+      opacity: 0.18;
+      float: right;
+    }
+
+    /* ── Chart Cards ── */
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    /* ── Tables ── */
+    .table-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .table-card h6 {
+      font-weight: 600;
+      color: var(--sidebar-bg);
+      margin-bottom: 12px;
+    }
+
+    .table th {
+      background: #f0f4f8;
+      color: var(--sidebar-bg);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .table td { font-size: 0.83rem; }
+
+    /* ── Findings ── */
+    .finding-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .finding-icon { font-size: 1.2rem; }
+
+    .finding-text { font-size: 0.88rem; }
+
+    /* ── No-data alert ── */
+    .no-data-alert {
+      background: #f8f9fa;
+      border: 1px dashed #ced4da;
+      border-radius: 6px;
+      padding: 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-left: 220px;
+      padding: 16px 28px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid #dee2e6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      #sidebar { display: none; }
+      #content, footer { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <h5><i class="bi bi-shield-check"></i> fabricgov</h5>
+    <small>Governance Report</small>
+  </div>
+  <ul class="nav flex-column mt-2">
+    <li class="nav-item">
+      <a class="nav-link" href="#summary"><i class="bi bi-speedometer2"></i> {{ t.nav_summary }}</a>
+    </li>
+    {% if ins.has_workspace_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#inventory"><i class="bi bi-grid-3x3-gap"></i> {{ t.nav_inventory }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#workspaces"><i class="bi bi-building"></i> {{ t.nav_workspaces }}</a>
+    </li>
+    {% endif %}
+    {% if ins.has_access_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#access"><i class="bi bi-people"></i> {{ t.nav_access }}</a>
+    </li>
+    {% endif %}
+    {% if ins.has_refresh_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#refresh"><i class="bi bi-arrow-repeat"></i> {{ t.nav_refresh }}</a>
+    </li>
+    {% endif %}
+    {% if ins.has_infra_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#infra"><i class="bi bi-server"></i> {{ t.nav_infra }}</a>
+    </li>
+    {% endif %}
+    {% if ins.has_domain_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#domains"><i class="bi bi-diagram-3"></i> {{ t.nav_domains }}</a>
+    </li>
+    {% endif %}
+    <li class="nav-item">
+      <a class="nav-link" href="#findings"><i class="bi bi-exclamation-triangle"></i> {{ t.nav_findings }}</a>
+    </li>
+  </ul>
+
+  <!-- Author / Social links -->
+  <div style="padding: 16px; border-top: 1px solid rgba(255,255,255,0.12); margin-top: auto;">
+    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-bottom: 4px;">{{ t.developed_by }}</div>
+    <div style="font-size: 0.85rem; font-weight: 600; color: white;">Luciano Borba</div>
+    <div style="font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-bottom: 8px;">Power Tuning</div>
+    <div style="display: flex; gap: 10px;">
+      <a href="https://github.com/luhborba" target="_blank" rel="noopener"
+         title="GitHub" style="color: rgba(255,255,255,0.65); font-size: 1.1rem; text-decoration: none;">
+        <i class="bi bi-github"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/luhborba" target="_blank" rel="noopener"
+         title="LinkedIn" style="color: rgba(255,255,255,0.65); font-size: 1.1rem; text-decoration: none;">
+        <i class="bi bi-linkedin"></i>
+      </a>
+      <a href="https://www.youtube.com/@luhborba" target="_blank" rel="noopener"
+         title="YouTube" style="color: rgba(255,255,255,0.65); font-size: 1.1rem; text-decoration: none;">
+        <i class="bi bi-youtube"></i>
+      </a>
+      <a href="https://www.instagram.com/lrdataconsult" target="_blank" rel="noopener"
+         title="Instagram" style="color: rgba(255,255,255,0.65); font-size: 1.1rem; text-decoration: none;">
+        <i class="bi bi-instagram"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════════════ -->
+<div id="content">
+
+  <!-- Header -->
+  <div id="main-header">
+    <div>
+      <h1><i class="bi bi-shield-check me-2"></i>fabricgov — Governance Report</h1>
+    </div>
+    <div class="meta">
+      <div><i class="bi bi-folder2"></i> {{ ins.source_folder }}</div>
+      <div><i class="bi bi-calendar3"></i> {{ t.generated_at }} {{ ins.generated_at }}</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION: Executive Summary / Resumo Executivo ── -->
+  <div id="summary" class="section">
+    <div class="section-title"><i class="bi bi-speedometer2 me-2"></i>{{ t.section_summary }}</div>
+    <div class="row g-3 mb-4">
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-grid-3x3-gap kpi-icon"></i>
+          <div class="kpi-value">{{ ins.total_workspaces | default(0) }}</div>
+          <div class="kpi-label">{{ t.kpi_workspaces }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-box kpi-icon"></i>
+          <div class="kpi-value">{{ "{:,}".format(ins.total_artifacts) }}</div>
+          <div class="kpi-label">{{ t.kpi_total_artifacts }}</div>
+        </div>
+      </div>
+
+      {% if ins.has_access_data %}
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-access">
+          <i class="bi bi-people kpi-icon"></i>
+          <div class="kpi-value">{{ ins.total_users }}</div>
+          <div class="kpi-label">{{ t.kpi_unique_users }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-risk">
+          <i class="bi bi-person-x kpi-icon"></i>
+          <div class="kpi-value">{{ ins.external_users_count }}</div>
+          <div class="kpi-label">{{ t.kpi_external_users }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if ins.datasets_without_owner > 0 %}
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-risk">
+          <i class="bi bi-question-circle kpi-icon"></i>
+          <div class="kpi-value">{{ ins.datasets_without_owner }}</div>
+          <div class="kpi-label">{{ t.kpi_datasets_without_owner }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if ins.refresh_success_rate is not none %}
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card {% if ins.refresh_success_rate >= 90 %}kpi-health{% elif ins.refresh_success_rate >= 70 %}kpi-access{% else %}kpi-risk{% endif %}">
+          <i class="bi bi-arrow-repeat kpi-icon"></i>
+          <div class="kpi-value">{{ ins.refresh_success_rate }}%</div>
+          <div class="kpi-label">{{ t.kpi_refresh_success_rate }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if ins.has_workspace_data %}
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-health">
+          <i class="bi bi-hdd-network kpi-icon"></i>
+          <div class="kpi-value">{{ ins.workspaces_on_dedicated }}</div>
+          <div class="kpi-label">{{ t.kpi_workspaces_on_dedicated }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div><!-- /row KPIs -->
+
+    <!-- Mini-findings -->
+    <div class="row g-2">
+      {% for f in ins.findings %}
+      <div class="col-12 col-md-6">
+        <div class="finding-item">
+          <span class="finding-icon">{{ f.icon }}</span>
+          <span class="finding-text">{{ f.message_en if lang == "en" else f.message }}</span>
+          {% if f.count > 0 %}<span class="badge bg-{{ f.badge }} ms-auto">{{ f.count }}</span>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div><!-- /summary -->
+
+
+  <!-- ── SECTION: Inventory / Inventário ── -->
+  {% if ins.has_workspace_data %}
+  <div id="inventory" class="section">
+    <div class="section-title"><i class="bi bi-grid-3x3-gap me-2"></i>{{ t.section_inventory }}</div>
+
+    <div class="row g-3">
+      {% if "artifacts_bar" in charts %}
+      <div class="col-12 col-lg-8">
+        <div class="chart-card">{{ charts["artifacts_bar"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "workspace_type_donut" in charts %}
+      <div class="col-12 col-lg-4">
+        <div class="chart-card">{{ charts["workspace_type_donut"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "capacity_donut" in charts %}
+      <div class="col-12 col-lg-4">
+        <div class="chart-card">{{ charts["capacity_donut"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "top_workspaces_bar" in charts %}
+      <div class="col-12 col-lg-8">
+        <div class="chart-card">{{ charts["top_workspaces_bar"] | safe }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Artifact count table -->
+    {% if ins.artifacts_by_type %}
+    <div class="table-card mt-2">
+      <h6><i class="bi bi-table me-1"></i>{{ t.artifact_count_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm table-striped align-middle mb-0">
+          <thead>
+            <tr><th>{{ t.col_type }}</th><th class="text-end">{{ t.col_quantity }}</th></tr>
+          </thead>
+          <tbody>
+            {% for tipo, qtd in ins.artifacts_by_type.items() | sort(attribute='1', reverse=True) %}
+            <tr>
+              <td>{{ tipo }}</td>
+              <td class="text-end fw-semibold">{{ "{:,}".format(qtd) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Workspaces Detail ── -->
+  {% if ins.has_workspace_data and ins.workspace_rows %}
+  <div id="workspaces" class="section">
+    <div class="section-title"><i class="bi bi-building me-2"></i>{{ t.section_workspaces }}</div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-building kpi-icon"></i>
+          <div class="kpi-value">{{ ins.total_workspaces }}</div>
+          <div class="kpi-label">{{ t.kpi_total_workspaces }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-health">
+          <i class="bi bi-hdd-network kpi-icon"></i>
+          <div class="kpi-value">{{ ins.workspaces_on_dedicated }}</div>
+          <div class="kpi-label">{{ t.kpi_on_dedicated }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-access">
+          <i class="bi bi-cloud kpi-icon"></i>
+          <div class="kpi-value">{{ ins.workspaces_on_shared }}</div>
+          <div class="kpi-label">{{ t.kpi_on_shared }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-box kpi-icon"></i>
+          <div class="kpi-value">{{ "{:,}".format(ins.total_artifacts) }}</div>
+          <div class="kpi-label">{{ t.kpi_total_artifacts }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full workspace table -->
+    <div class="table-card">
+      <h6><i class="bi bi-table me-1"></i>{{ t.all_workspaces_table }}</h6>
+      <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+        <table class="table table-hover table-sm table-striped align-middle mb-0">
+          <thead style="position: sticky; top: 0; z-index: 1;">
+            <tr>
+              <th>#</th>
+              <th>{{ t.col_name }}</th>
+              <th>{{ t.col_type }}</th>
+              <th>{{ t.col_state }}</th>
+              <th>{{ t.col_capacity }}</th>
+              <th class="text-end">{{ t.col_artifacts }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ws in ins.workspace_rows %}
+            <tr>
+              <td class="text-muted">{{ loop.index }}</td>
+              <td class="fw-semibold">{{ ws.name }}</td>
+              <td>
+                <span class="badge {% if ws.type == 'Workspace' %}bg-primary{% elif ws.type == 'PersonalWorkspace' %}bg-secondary{% else %}bg-info text-dark{% endif %}">
+                  {{ ws.type }}
+                </span>
+              </td>
+              <td>
+                <span class="badge {% if ws.state == 'Active' %}bg-success{% elif ws.state == 'Deleted' %}bg-danger{% else %}bg-secondary{% endif %}">
+                  {{ ws.state }}
+                </span>
+              </td>
+              <td>
+                {% if ws.dedicated %}
+                  <span class="badge bg-success"><i class="bi bi-hdd-network"></i> Dedicated</span>
+                {% else %}
+                  <span class="badge bg-secondary">Shared</span>
+                {% endif %}
+              </td>
+              <td class="text-end fw-semibold">
+                {% if ws.artifact_count > 0 %}
+                  {{ ws.artifact_count }}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Artifacts by type (cards) -->
+    {% if ins.artifacts_by_type %}
+    <div class="table-card">
+      <h6><i class="bi bi-box me-1"></i>{{ t.artifacts_by_type }}</h6>
+      <div class="row g-2">
+        {% for tipo, qtd in ins.artifacts_by_type.items() | sort(attribute='1', reverse=True) %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <div style="background: #f8f9fa; border-radius: 6px; padding: 10px 14px; border-left: 3px solid var(--accent-blue);">
+            <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">{{ "{:,}".format(qtd) }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ tipo }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Access & Governance ── -->
+  {% if ins.has_access_data %}
+  <div id="access" class="section">
+    <div class="section-title"><i class="bi bi-people me-2"></i>{{ t.section_access }}</div>
+
+    <div class="row g-3">
+      {% if "role_donut" in charts %}
+      <div class="col-12 col-lg-6">
+        <div class="chart-card">{{ charts["role_donut"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "principal_type_donut" in charts %}
+      <div class="col-12 col-lg-6">
+        <div class="chart-card">{{ charts["principal_type_donut"] | safe }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- External users -->
+    {% if ins.external_users %}
+    <div class="table-card">
+      <h6><i class="bi bi-person-x me-1 text-warning"></i>{{ t.external_users_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{{ t.col_email }}</th>
+              <th>{{ t.col_roles }}</th>
+              <th class="text-end">{{ t.nav_workspaces }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in ins.external_users %}
+            <tr>
+              <td class="text-break">{{ u.email }}</td>
+              <td><span class="badge bg-secondary">{{ u.roles }}</span></td>
+              <td class="text-end">{{ u.workspace_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="no-data-alert"><i class="bi bi-check-circle text-success me-1"></i> {{ t.no_external_users }}</div>
+    {% endif %}
+
+    <!-- Top users by access -->
+    {% if ins.top_users_by_access %}
+    <div class="table-card">
+      <h6><i class="bi bi-person-check me-1"></i>{{ t.top_users_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead><tr><th>#</th><th>{{ t.col_email }}</th><th class="text-end">{{ t.nav_workspaces }}</th></tr></thead>
+          <tbody>
+            {% for u in ins.top_users_by_access %}
+            <tr>
+              <td class="text-muted">{{ loop.index }}</td>
+              <td>{{ u.email }}</td>
+              <td class="text-end fw-semibold">{{ u.workspace_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Single-user workspaces -->
+    {% if ins.single_user_workspaces %}
+    <div class="table-card">
+      <h6><i class="bi bi-exclamation-circle me-1 text-info"></i>{{ t.single_user_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead><tr><th>{{ t.nav_workspaces }}</th><th>{{ t.col_user }}</th><th>{{ t.col_role }}</th></tr></thead>
+          <tbody>
+            {% for w in ins.single_user_workspaces %}
+            <tr>
+              <td>{{ w.workspace }}</td>
+              <td class="text-break">{{ w.user_email }}</td>
+              <td><span class="badge bg-primary">{{ w.role }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Refresh Health ── -->
+  {% if ins.has_refresh_data %}
+  <div id="refresh" class="section">
+    <div class="section-title"><i class="bi bi-arrow-repeat me-2"></i>{{ t.section_refresh }}</div>
+
+    <div class="row g-3">
+      {% if "refresh_status_donut" in charts %}
+      <div class="col-12 col-lg-4">
+        <div class="chart-card">{{ charts["refresh_status_donut"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "refresh_timeline" in charts %}
+      <div class="col-12 col-lg-8">
+        <div class="chart-card">{{ charts["refresh_timeline"] | safe }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Failed refreshes -->
+    {% if ins.failed_refreshes %}
+    <div class="table-card">
+      <h6><i class="bi bi-x-circle me-1 text-danger"></i>{{ t.failed_refreshes_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{{ t.col_artifact }}</th>
+              <th>{{ t.nav_workspaces }}</th>
+              <th>{{ t.col_start }}</th>
+              <th>{{ t.col_status }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in ins.failed_refreshes %}
+            <tr>
+              <td>{{ r.get("artifact_name", "—") }}</td>
+              <td>{{ r.get("workspace_name", "—") }}</td>
+              <td>{{ r.get("start_time", "—") }}</td>
+              <td><span class="badge bg-danger">{{ r.get("status", "—") }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Stale datasets -->
+    {% if ins.stale_datasets %}
+    <div class="table-card">
+      <h6><i class="bi bi-clock-history me-1 text-warning"></i>{{ t.stale_datasets_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead><tr><th>Dataset</th><th>{{ t.nav_workspaces }}</th><th>{{ t.col_last_refresh }}</th></tr></thead>
+          <tbody>
+            {% for d in ins.stale_datasets %}
+            <tr>
+              <td>{{ d.name }}</td>
+              <td>{{ d.workspace }}</td>
+              <td><span class="badge bg-warning text-dark">{{ d.last_refresh }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="no-data-alert"><i class="bi bi-check-circle text-success me-1"></i> {{ t.all_fresh }}</div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Infrastructure / Infraestrutura ── -->
+  {% if ins.has_infra_data %}
+  <div id="infra" class="section">
+    <div class="section-title"><i class="bi bi-server me-2"></i>{{ t.section_infra }}</div>
+
+    <div class="row g-3">
+      {% if "capacity_bar" in charts %}
+      <div class="col-12 col-lg-8">
+        <div class="chart-card">{{ charts["capacity_bar"] | safe }}</div>
+      </div>
+      {% endif %}
+
+      {% if "sku_bar" in charts %}
+      <div class="col-12 col-lg-4">
+        <div class="chart-card">{{ charts["sku_bar"] | safe }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Capacities table -->
+    {% if ins.capacities_list %}
+    <div class="table-card">
+      <h6><i class="bi bi-hdd-network me-1"></i>{{ t.capacities_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{{ t.col_name }}</th>
+              <th>SKU</th>
+              <th>{{ t.col_state }}</th>
+              <th>{{ t.col_region }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in ins.capacities_list %}
+            <tr>
+              <td>{{ c.get("displayName", "—") }}</td>
+              <td><span class="badge bg-primary">{{ c.get("sku", "—") }}</span></td>
+              <td>
+                {% set state = c.get("state", "") %}
+                <span class="badge {% if state == "Active" %}bg-success{% else %}bg-secondary{% endif %}">
+                  {{ state or "—" }}
+                </span>
+              </td>
+              <td>{{ c.get("region", "—") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Workloads -->
+    {% if ins.workload_state_counts %}
+    <div class="table-card">
+      <h6><i class="bi bi-cpu me-1"></i>{{ t.workloads_title }}</h6>
+      <div class="row g-2">
+        {% for state, cnt in ins.workload_state_counts.items() %}
+        <div class="col-auto">
+          <span class="badge fs-6 {% if state == 'Enabled' %}bg-success{% elif state == 'Disabled' %}bg-secondary{% else %}bg-warning text-dark{% endif %}">
+            {{ state }}: {{ cnt }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Domains / Domínios ── -->
+  {% if ins.has_domain_data and ins.domains_list %}
+  <div id="domains" class="section">
+    <div class="section-title"><i class="bi bi-diagram-3 me-2"></i>{{ t.section_domains }}</div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover table-sm table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{{ t.col_name }}</th>
+              <th>{{ t.col_description }}</th>
+              <th>{{ t.col_type }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in ins.domains_list %}
+            <tr>
+              <td class="fw-semibold">{{ d.get("displayName", "—") }}</td>
+              <td class="text-muted">{{ d.get("description", "—") }}</td>
+              <td>
+                {% if d.get("parentDomainId") %}
+                  <span class="badge bg-secondary">{{ t.badge_subdomain }}</span>
+                {% else %}
+                  <span class="badge bg-primary">{{ t.badge_root }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Governance Findings ── -->
+  <div id="findings" class="section">
+    <div class="section-title"><i class="bi bi-exclamation-triangle me-2"></i>{{ t.section_findings }}</div>
+    <div class="row g-2">
+      {% for f in ins.findings %}
+      <div class="col-12">
+        <div class="finding-item">
+          <span class="finding-icon">{{ f.icon }}</span>
+          <div class="flex-grow-1">
+            <div class="finding-text fw-semibold">{{ f.message_en if lang == "en" else f.message }}</div>
+            <small class="text-muted">{{ t.severity_label }} {{ f.severity }}</small>
+          </div>
+          {% if f.count > 0 %}
+          <span class="badge bg-{{ f.badge }} fs-6">{{ f.count }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- Footer -->
+<footer>
+  {{ t.footer_generated_by }} <strong>fabricgov</strong> &mdash; {{ t.generated_at }} {{ ins.generated_at }} &nbsp;&middot;&nbsp;
+  {{ t.footer_source }} <code>{{ ins.source_folder }}</code>
+  <span class="ms-3">
+    &nbsp;&middot;&nbsp; {{ t.footer_developed_by }}
+    <strong>Luciano Borba</strong>
+    &nbsp;
+    <a href="https://github.com/luhborba" target="_blank" rel="noopener" class="text-muted me-1" title="GitHub"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/luhborba" target="_blank" rel="noopener" class="text-muted me-1" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+    <a href="https://www.youtube.com/@luhborba" target="_blank" rel="noopener" class="text-muted me-1" title="YouTube"><i class="bi bi-youtube"></i></a>
+    <a href="https://www.instagram.com/lrdataconsult" target="_blank" rel="noopener" class="text-muted" title="Instagram"><i class="bi bi-instagram"></i></a>
+  </span>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Smooth scroll + active sidebar link -->
+<script>
+  document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+    link.addEventListener('click', function () {
+      document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Highlight sidebar link on scroll
+  const sections = document.querySelectorAll('.section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+
+</body>
+</html>

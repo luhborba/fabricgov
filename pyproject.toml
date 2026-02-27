@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fabricgov"
-version = "0.6.2"
+version = "0.7.0"
 description = "Biblioteca Python para extralçao automatizada de dados para governança em Microsoft Fabric"
 authors = ["Luciano Borba <luhborbafilho@gmail.com>"]
 license = "MIT"
@@ -32,6 +32,9 @@ click = "^8.1"
 pydantic = "^2.0"
 python-dotenv = "^1.0"
 rich = "^14.3.3"
+plotly = "^5.0"
+jinja2 = "^3.1"
+pandas = "^2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
