@@ -22,6 +22,7 @@
 - 🏢 Tenant domains, tags, capacities, and workloads
 - 💾 Checkpoint system for large tenants (resumes where it left off)
 - 📊 Export to JSON or CSV
+- 📄 Automatic HTML report with charts and governance findings (PT + EN)
 - ⚡ Ready-to-use CLI
 - 🛡️ Automatic rate limit handling
 
@@ -112,7 +113,22 @@ fabricgov collect status          # check session status
 
 ---
 
-### 3. Or use as a Python library
+### 3. Generate the governance report
+```bash
+fabricgov report                                      # most recent folder in output/
+fabricgov report --from output/20260227_143000/       # specific folder
+fabricgov report --from output/20260227_143000/ --open  # generate and open in browser
+```
+
+Automatically generates two standalone HTML files:
+- `report.html` — English
+- `report.en.html` — English (alternate filename for compatibility)
+
+> 📘 [Full report guide →](docs/en/report.md)
+
+---
+
+### 4. Or use as a Python library
 ```python
 from fabricgov.auth import ServicePrincipalAuth
 from fabricgov.collectors import WorkspaceInventoryCollector
@@ -184,6 +200,7 @@ fabricgov/
 ├── auth/               # ServicePrincipalAuth + DeviceFlowAuth
 ├── collectors/         # 11 collectors (access, refresh, infrastructure)
 ├── exporters/          # JSON/CSV export
+├── reporters/          # HTML Report (InsightsEngine + HtmlReporter + template)
 ├── checkpoint.py       # Checkpoint system
 └── exceptions.py       # Custom exceptions
 ```
@@ -209,7 +226,9 @@ output/
     ├── tags.csv
     ├── capacities.csv
     ├── workloads.csv
-    └── workloads_errors.csv
+    ├── workloads_errors.csv
+    ├── report.html         # Governance report (EN)
+    └── report.en.html      # Governance report (EN alternate)
 ```
 
 ---
@@ -270,13 +289,16 @@ output/
 - [x] English documentation (`docs/en/`)
 - [x] English README
 
-### 🎯 v0.6.2 (Current)
+### ✅ v0.6.2
 - [x] Quick Start with Device Flow and permissions table
 
-### 🎯 v0.7.0
-- [ ] HTML Report
+### ✅ v0.7.0 — 2026-02-27
+- [x] Standalone HTML report generated via `fabricgov report`
+- [x] Two automatic versions: PT (`report.html`) + EN (`report.en.html`)
+- [x] 10 interactive Plotly charts + KPI cards + governance findings
+- [x] Dedicated Workspaces section with full artifact table
 
-### 🎯 v0.8.0
+### 🎯 v0.8.0 (Next)
 - [ ] Identify datasets without owners
 - [ ] External users with access to sensitive workspaces
 - [ ] Workspaces without refresh in the last 30 days
