@@ -266,9 +266,12 @@ output/
 ### ✅ v0.6.0
 - [x] Internal documentation update (pt-BR)
 
-### ✅ v0.6.1 (Current)
+### ✅ v0.6.1
 - [x] English documentation (`docs/en/`)
 - [x] English README
+
+### 🎯 v0.6.2 (Current)
+- [x] Quick Start with Device Flow and permissions table
 
 ### 🎯 v0.7.0
 - [ ] HTML Report
