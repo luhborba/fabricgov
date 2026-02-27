@@ -125,7 +125,7 @@ Gera automaticamente dois arquivos HTML standalone:
 - `report.html` — Português
 - `report.en.html` — English
 
-> 📘 [Guia completo do relatório →](docs/report.md)
+> 📘 [Guia completo do relatório →](docs/report.md) — seções, fontes de dados e regras aplicadas
 
 ---
 
@@ -321,6 +321,7 @@ output/
 
 - **[Autenticação](docs/authentication.md)** — Service Principal setup
 - **[Coletores](docs/collectors.md)** — Exemplos e casos de uso
+- **[Relatório HTML](docs/report.md)** — Seções, fontes de dados e regras de governança
 - **[Exportadores](docs/exporters.md)** — Integração com Power BI, Pandas
 - **[Limitações](docs/limitations.md)** — Rate limits, performance
 - **[Contribuindo](docs/contributing.md)** — Como contribuir
