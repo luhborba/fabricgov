@@ -2,6 +2,8 @@
 
 > Biblioteca Python para assessment automatizado de governança em ambientes Microsoft Fabric
 
+> 🇺🇸 **English documentation:** [README.en.md](README.en.md)
+
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Poetry](https://img.shields.io/badge/poetry-1.8+-purple.svg)](https://python-poetry.org/)
@@ -238,9 +240,12 @@ output/
 - [x] CLI: `fabricgov collect status` — status da sessão e checkpoints pendentes
 - [x] Progress bars visuais nos coletores de acesso e refresh
 
-### 🎯 v0.6.0
-- [ ] Atualização de Documentação interna
-- [ ] Criação de Documentação em Inglês
+### ✅ v0.6.0
+- [x] Atualização de Documentação interna (pt-BR)
+
+### 🎯 v0.6.1 (Atual)
+- [x] Documentação em inglês (`docs/en/`)
+- [x] README em inglês
 
 ### 🎯 v0.7.0
 - [ ] Report HTML
