@@ -43,22 +43,42 @@ fabricgov --help
 
 ## 🚀 Quick Start
 
-### 1. Configure credentials (`.env`)
+### 1. Authentication
+
+Choose the method that fits your scenario:
+
+#### Service Principal (automation / CI-CD)
 ```env
+# Create a .env file in the project root
 FABRICGOV_TENANT_ID=your-tenant-id
 FABRICGOV_CLIENT_ID=your-client-id
 FABRICGOV_CLIENT_SECRET=your-client-secret
 ```
+```bash
+fabricgov auth sp       # validate credentials
+```
 
-> 📘 [How to obtain credentials →](docs/en/authentication.md)
+#### Device Flow (manual use / local development)
+```bash
+fabricgov auth device   # opens interactive browser flow (no .env required)
+```
+
+> 📘 [Full authentication guide →](docs/en/authentication.md)
+
+#### Required permissions
+
+| Authentication | Required permission | Where to configure |
+|---|---|---|
+| Service Principal | `Tenant.Read.All` + `Workspace.ReadWrite.All` (Application) | Azure AD → App Registrations → API Permissions |
+| Service Principal | Enabled in Fabric Admin APIs | Fabric Admin Portal → Tenant settings |
+| Device Flow | **Fabric Administrator** role in the tenant | Fabric Admin Portal → Users |
+
+> ⚠️ Without these permissions, collections will return `403 Forbidden`.
 
 ---
 
 ### 2. Use the CLI
 ```bash
-# Test credentials
-fabricgov auth sp
-
 # Collect inventory
 fabricgov collect inventory
 
