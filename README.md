@@ -24,6 +24,7 @@
 - 💾 Sistema de checkpoint para tenants grandes (retoma de onde parou)
 - 📊 Export em JSON ou CSV
 - 📄 Relatório HTML automático com gráficos e findings de governança (PT + EN)
+- 🔍 Análise de governança no terminal via `fabricgov analyze` (sem chamadas de API)
 - ⚡ CLI pronto para uso
 - 🛡️ Rate limit handling automático
 
@@ -114,6 +115,17 @@ fabricgov collect status          # status da sessão
 
 ---
 
+### 4. Analise os findings de governança (terminal)
+```bash
+fabricgov analyze                                         # pasta mais recente em output/
+fabricgov analyze --from output/20260227_143000/          # pasta específica
+fabricgov analyze --from output/20260227_143000/ --lang en  # mensagens em inglês
+```
+
+Exibe findings diretamente no terminal (sem abrir o HTML) e salva `findings.json` na pasta de origem.
+
+---
+
 ### 3. Gere o relatório de governança
 ```bash
 fabricgov report                                      # pasta mais recente em output/
@@ -129,7 +141,7 @@ Gera automaticamente dois arquivos HTML standalone:
 
 ---
 
-### 3. Ou use como biblioteca Python
+### 5. Ou use como biblioteca Python
 ```python
 from fabricgov.auth import ServicePrincipalAuth
 from fabricgov.collectors import WorkspaceInventoryCollector
@@ -229,7 +241,8 @@ output/
     ├── workloads.csv
     ├── workloads_errors.csv
     ├── report.html         # Relatório de governança (PT)
-    └── report.en.html      # Governance report (EN)
+    ├── report.en.html      # Governance report (EN)
+    └── findings.json       # Findings de governança (fabricgov analyze)
 ```
 
 ---
@@ -299,11 +312,11 @@ output/
 - [x] 10 gráficos Plotly interativos + KPI cards + findings de governança
 - [x] Seção dedicada de Workspaces com tabela completa de artefatos
 
-### 🎯 v0.8.0 (Próxima)
+### ✅ v0.8.0
 - [x] Identificar datasets sem dono
 - [x] Usuários externos com acesso a workspaces
 - [x] Workspaces sem refresh há mais de 30 dias
-- [x] CLI: `fabricgov analyze`
+- [x] CLI: `fabricgov analyze` — findings no terminal + `findings.json`
 
 ### 🎯 v0.9.0
 - [ ] Integração com Azure Key Vault

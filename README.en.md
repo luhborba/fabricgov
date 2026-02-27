@@ -23,6 +23,7 @@
 - 💾 Checkpoint system for large tenants (resumes where it left off)
 - 📊 Export to JSON or CSV
 - 📄 Automatic HTML report with charts and governance findings (PT + EN)
+- 🔍 Terminal governance analysis via `fabricgov analyze` (no API calls)
 - ⚡ Ready-to-use CLI
 - 🛡️ Automatic rate limit handling
 
@@ -113,6 +114,17 @@ fabricgov collect status          # check session status
 
 ---
 
+### 4. Analyze governance findings (terminal)
+```bash
+fabricgov analyze                                           # most recent folder in output/
+fabricgov analyze --from output/20260227_143000/            # specific folder
+fabricgov analyze --from output/20260227_143000/ --lang en  # messages in English
+```
+
+Displays findings directly in the terminal (without opening the HTML) and saves `findings.json` in the source folder.
+
+---
+
 ### 3. Generate the governance report
 ```bash
 fabricgov report                                      # most recent folder in output/
@@ -128,7 +140,7 @@ Automatically generates two standalone HTML files:
 
 ---
 
-### 4. Or use as a Python library
+### 5. Or use as a Python library
 ```python
 from fabricgov.auth import ServicePrincipalAuth
 from fabricgov.collectors import WorkspaceInventoryCollector
@@ -228,7 +240,8 @@ output/
     ├── workloads.csv
     ├── workloads_errors.csv
     ├── report.html         # Governance report (EN)
-    └── report.en.html      # Governance report (EN alternate)
+    ├── report.en.html      # Governance report (EN alternate)
+    └── findings.json       # Governance findings (fabricgov analyze)
 ```
 
 ---
@@ -298,11 +311,11 @@ output/
 - [x] 10 interactive Plotly charts + KPI cards + governance findings
 - [x] Dedicated Workspaces section with full artifact table
 
-### 🎯 v0.8.0 (Next)
-- [ ] Identify datasets without owners
-- [ ] External users with access to sensitive workspaces
-- [ ] Workspaces without refresh in the last 30 days
-- [ ] CLI: `fabricgov analyze`
+### ✅ v0.8.0
+- [x] Identify datasets without owners
+- [x] External users with workspace access
+- [x] Workspaces without refresh in the last 30 days
+- [x] CLI: `fabricgov analyze` — terminal findings + `findings.json`
 
 ### 🎯 v0.9.0
 - [ ] Azure Key Vault integration
