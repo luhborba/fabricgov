@@ -7,6 +7,26 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.8.0] - 2026-02-27
+
+### Added
+- **`fabricgov analyze`** — análise de governança diretamente no terminal
+  - Lê os CSVs coletados sem chamadas de API (puro análise offline)
+  - Tabela rich com findings priorizados por severidade (CRITICAL, HIGH, MEDIUM, OK)
+  - Detalhe por finding: lista as primeiras 10 linhas afetadas no terminal
+  - Salva `findings.json` na pasta de origem com detalhe completo (até 100 linhas por finding)
+  - Opção `--lang pt|en` para mensagens em português ou inglês
+  - Opção `--from PATH` para pasta específica (padrão: mais recente em `output/`)
+- **Campo `details`** adicionado em cada finding do `InsightsEngine`
+  - `datasets_without_owner` → lista de `{name, workspace_name, id}`
+  - `external_users` → lista de `{email, roles, workspace_count}`
+  - `failed_refreshes` → lista de `{artifact_name, workspace_name, start_time, status}`
+  - `stale_datasets` → lista de `{name, workspace, last_refresh}`
+  - `single_user_workspaces` → lista de `{workspace, user_email, role}`
+  - Campo retrocompatível: `fabricgov report` e template HTML não são afetados
+
+---
+
 ## [0.7.1] - 2026-02-27
 
 ### Added

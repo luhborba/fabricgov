@@ -2,8 +2,9 @@ import click
 from fabricgov.cli.auth import auth
 from fabricgov.cli.collect import collect
 from fabricgov.cli.report import report_cmd
+from fabricgov.cli.analyze import analyze_cmd
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"
 
 
 @click.group()
@@ -35,10 +36,13 @@ def cli():
       fabricgov collect all          # Coleta completa em sessão única
 
     \b
-    📊 Relatório:
+    📊 Relatório e Análise:
       fabricgov report                     # Gera HTML do run mais recente
       fabricgov report --from output/...   # Pasta específica
       fabricgov report --open              # Abre no browser após gerar
+      fabricgov analyze                    # Findings de governança no terminal
+      fabricgov analyze --from output/...  # Pasta específica
+      fabricgov analyze --lang en          # Mensagens em inglês
 
     \b
     📖 Documentação: https://github.com/luhborba/fabricgov
@@ -49,6 +53,7 @@ def cli():
 cli.add_command(auth)
 cli.add_command(collect)
 cli.add_command(report_cmd, name="report")
+cli.add_command(analyze_cmd, name="analyze")
 
 
 if __name__ == '__main__':
