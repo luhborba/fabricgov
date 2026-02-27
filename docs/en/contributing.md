@@ -63,7 +63,13 @@ fabricgov/
 │   │   ├── main.py            # Main `fabricgov` group
 │   │   ├── auth.py            # `fabricgov auth` commands
 │   │   ├── collect.py         # `fabricgov collect` commands
+│   │   ├── report.py          # `fabricgov report` command
+│   │   ├── analyze.py         # `fabricgov analyze` command
 │   │   └── session.py         # Session management (`collect all`)
+│   ├── reporters/             # HTML report and data analysis
+│   │   ├── insights.py        # InsightsEngine — reads CSVs and computes metrics
+│   │   ├── html_reporter.py   # HtmlReporter — Plotly charts + Jinja2
+│   │   └── templates/         # Jinja2 templates
 │   ├── collectors/            # Data collectors (11 total)
 │   │   ├── base.py            # BaseCollector (retry, pagination, rate limiting)
 │   │   ├── workspace_inventory.py
@@ -410,6 +416,8 @@ We follow **Conventional Commits**:
 ### Scopes
 
 - `auth` — Authentication module
+- `reporters` — InsightsEngine, HtmlReporter, templates
+- `analyze` — `fabricgov analyze` command
 - `collectors` — Data collectors
 - `exporters` — Exporters
 - `cli` — Command-line interface
@@ -481,9 +489,10 @@ The SP has Tenant.Read.All permissions configured.
 
 Areas where contributions are especially welcome:
 
-### Analyzers (v0.8.0)
-- Implement `fabricgov analyze` commands (datasets without owners, external users with sensitive access, workspaces without refresh)
-- New governance finding types
+### New governance findings (v0.9.0+)
+- New finding types in `InsightsEngine._build_findings()`
+- Snapshot comparison (`fabricgov diff`)
+- Azure Key Vault integration for credentials
 
 ### Exporters
 - Export to Excel (.xlsx) with multiple sheets
