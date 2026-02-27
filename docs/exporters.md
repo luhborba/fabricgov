@@ -52,7 +52,8 @@ output_path = exporter.export(result, log_messages)
 ```python
 FileExporter(
     format: Literal["json", "csv"] = "json",
-    output_dir: str = "output"
+    output_dir: str = "output",
+    run_dir: str | None = None
 )
 ```
 
@@ -60,6 +61,11 @@ FileExporter(
 |-----------|------|-----------|--------|
 | `format` | `"json"` ou `"csv"` | Formato de exportação | `"json"` |
 | `output_dir` | `str` | Diretório raiz onde criar pastas timestampadas | `"output"` |
+| `run_dir` | `str\|None` | Pasta de destino direta (sem criar timestamp). Usado pelo `collect all` para manter uma pasta única por sessão | `None` |
+
+**Quando usar `run_dir`:**
+- Uso normal (CLI individual): não informar — será criado `output/YYYYMMDD_HHMMSS/` automaticamente
+- `fabricgov collect all`: gerenciado internamente para garantir que todos os passos gravem na mesma pasta
 
 ---
 

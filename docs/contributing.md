@@ -59,11 +59,29 @@ fabricgov/
 │   │   ├── base.py            # Protocolo AuthProvider
 │   │   ├── service_principal.py
 │   │   └── device_flow.py
-│   ├── collectors/            # Coletores de dados
-│   │   ├── base.py            # BaseCollector (retry, paginação)
-│   │   └── workspace_inventory.py
+│   ├── cli/                   # CLI via Click
+│   │   ├── main.py            # Grupo principal `fabricgov`
+│   │   ├── auth.py            # Comandos `fabricgov auth`
+│   │   ├── collect.py         # Comandos `fabricgov collect`
+│   │   └── session.py         # Gerenciamento de sessão (`collect all`)
+│   ├── collectors/            # Coletores de dados (11 total)
+│   │   ├── base.py            # BaseCollector (retry, paginação, rate limiting)
+│   │   ├── workspace_inventory.py
+│   │   ├── workspace_access.py
+│   │   ├── report_access.py
+│   │   ├── dataset_access.py
+│   │   ├── dataflow_access.py
+│   │   ├── refresh_history.py
+│   │   ├── refresh_schedule.py
+│   │   ├── domain.py
+│   │   ├── tag.py
+│   │   ├── capacity.py
+│   │   └── workload.py
 │   ├── exporters/             # Exportadores de resultados
-│   │   └── file_exporter.py
+│   │   └── file_exporter.py   # JSON/CSV com suporte a run_dir
+│   ├── config.py              # Auth preference system
+│   ├── progress.py            # ProgressManager (rich)
+│   ├── checkpoint.py          # Sistema de checkpoint
 │   └── exceptions.py          # Exceções customizadas
 ├── tests/
 │   ├── auth/                  # Unit tests do módulo auth
@@ -73,6 +91,7 @@ fabricgov/
 │   ├── authentication.md
 │   ├── collectors.md
 │   ├── exporters.md
+│   ├── limitations.md
 │   └── contributing.md
 ├── pyproject.toml             # Dependências e configuração do Poetry
 └── README.md
@@ -387,8 +406,9 @@ Seguimos **Conventional Commits**:
 - `auth` — Módulo de autenticação
 - `collectors` — Coletores de dados
 - `exporters` — Exportadores
+- `cli` — Interface de linha de comando
 - `exceptions` — Exceções customizadas
-- `cli` — Interface de linha de comando (futuro)
+- `docs` — Documentação
 
 ### Exemplos
 ```bash
@@ -455,28 +475,22 @@ O SP tem permissões de Tenant.Read.All configuradas.
 
 Áreas onde contribuições são especialmente bem-vindas:
 
-### Novos Coletores
-- **CapacityConsumptionCollector** — métricas de CU via DAX
-- **SecurityAccessCollector** — roles e permissões detalhadas
-- **RefreshMonitoringCollector** — histórico de refresh
-- **ConnectionsCollector** — conexões e permissões
+### Analisadores (v0.8.0)
+- Implementar comandos `fabricgov analyze` (datasets sem dono, usuários externos, workspaces sem refresh)
+- Novos tipos de findings de governança
 
-### Melhorias de Infraestrutura
-- CLI via Click (`fabricgov assess`, `fabricgov auth`)
-- Assessment orchestrator (executa múltiplos coletores)
-- Suporte a Azure Key Vault para credenciais
-- Report template (HTML/Word/PDF)
+### Exportadores
+- Export para Excel (.xlsx) com múltiplas abas
+- Integração com Azure Blob Storage
 
 ### Documentação
-- Tradução para inglês
-- Mais exemplos de uso
-- Tutoriais em vídeo
+- Tradução para inglês (v0.6.1)
+- Mais exemplos de casos de uso reais
 - Troubleshooting guide
 
 ### Testes
-- Aumentar cobertura de unit tests
-- Adicionar testes de integração
-- Testes de performance
+- Aumentar cobertura de unit tests nos collectors v0.5
+- Testes de integração com mock da API
 
 ---
 
