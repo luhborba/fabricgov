@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fabricgov"
-version = "0.4.0"
+version = "0.5.0"
 description = "Biblioteca Python para extralçao automatizada de dados para governança em Microsoft Fabric"
 authors = ["Luciano Borba <luhborbafilho@gmail.com>"]
 license = "MIT"
