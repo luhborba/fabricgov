@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.7.1] - 2026-02-27
+
+### Added
+- **`docs/report.md`** — documentação completa do relatório HTML em português
+  - Descreve cada seção do relatório, a fonte dos dados e as regras aplicadas
+  - Tabelas de requisitos por seção (quais arquivos são necessários)
+  - Detalhes de todos os 10 gráficos, 6 tabelas e 5 tipos de findings
+- **`docs/en/report.md`** — versão em inglês da documentação do relatório
+
+---
+
 ## [0.7.0] - 2026-02-27
 
 ### Added

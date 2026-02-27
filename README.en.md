@@ -124,7 +124,7 @@ Automatically generates two standalone HTML files:
 - `report.html` — English
 - `report.en.html` — English (alternate filename for compatibility)
 
-> 📘 [Full report guide →](docs/en/report.md)
+> 📘 [Full report guide →](docs/en/report.md) — sections, data sources, and rules applied
 
 ---
 
@@ -320,6 +320,7 @@ output/
 
 - **[Authentication](docs/en/authentication.md)** — Service Principal setup
 - **[Collectors](docs/en/collectors.md)** — Examples and use cases
+- **[HTML Report](docs/en/report.md)** — Sections, data sources, and governance rules
 - **[Exporters](docs/en/exporters.md)** — Integration with Power BI, Pandas
 - **[Limitations](docs/en/limitations.md)** — Rate limits, performance
 - **[Contributing](docs/en/contributing.md)** — How to contribute

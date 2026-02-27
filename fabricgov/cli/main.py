@@ -3,7 +3,7 @@ from fabricgov.cli.auth import auth
 from fabricgov.cli.collect import collect
 from fabricgov.cli.report import report_cmd
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 
 @click.group()
