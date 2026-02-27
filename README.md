@@ -284,7 +284,7 @@ output/
 - [x] CLI: `fabricgov collect all-refresh`
 - [x] CLI: `fabricgov auth sp` (renomeado de `auth test`)
 
-### ✅ v0.5.0 (Atual)
+### ✅ v0.5.0 
 - [x] DomainCollector (domínios do tenant)
 - [x] TagCollector (tags do tenant)
 - [x] CapacityCollector (capacidades Premium/Fabric)
@@ -312,7 +312,7 @@ output/
 - [x] 10 gráficos Plotly interativos + KPI cards + findings de governança
 - [x] Seção dedicada de Workspaces com tabela completa de artefatos
 
-### ✅ v0.8.0
+### ✅ v0.8.0 (Atual)
 - [x] Identificar datasets sem dono
 - [x] Usuários externos com acesso a workspaces
 - [x] Workspaces sem refresh há mais de 30 dias
