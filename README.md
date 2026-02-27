@@ -300,10 +300,10 @@ output/
 - [x] Seção dedicada de Workspaces com tabela completa de artefatos
 
 ### 🎯 v0.8.0 (Próxima)
-- [ ] Identificar datasets sem dono
-- [ ] Usuários externos com acesso a workspaces sensíveis
-- [ ] Workspaces sem refresh há mais de 30 dias
-- [ ] CLI: `fabricgov analyze`
+- [x] Identificar datasets sem dono
+- [x] Usuários externos com acesso a workspaces
+- [x] Workspaces sem refresh há mais de 30 dias
+- [x] CLI: `fabricgov analyze`
 
 ### 🎯 v0.9.0
 - [ ] Integração com Azure Key Vault
