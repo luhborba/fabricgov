@@ -11,6 +11,10 @@ Este documento lista as limitações técnicas da biblioteca **fabricgov**, incl
 **APIs afetadas:**
 - `GET /admin/groups/{groupId}/users` (WorkspaceAccessCollector)
 - `GET /admin/reports/{reportId}/users` (ReportAccessCollector)
+- `GET /admin/datasets/{datasetId}/users` (DatasetAccessCollector)
+- `GET /admin/dataflows/{dataflowId}/users` (DataflowAccessCollector)
+- `GET /admin/datasets/{datasetId}/refreshes` (RefreshHistoryCollector)
+- `GET /admin/dataflows/{dataflowId}/transactions` (RefreshHistoryCollector)
 
 **Limite observado:** ~200 requests/hora (não documentado oficialmente pela Microsoft)
 
@@ -197,15 +201,13 @@ Personal Workspaces (formato: `"PersonalWorkspace Nome (email)"`) **não suporta
 
 ### Coleta de métricas de consumo
 
-**Não implementado (planejado para v0.3):**
+**Não implementado (fora do escopo do projeto):**
 - Consumo de CU por workspace/dataset
-- Histórico de refresh de datasets
-- Queries executadas
-- Performance de queries
+- Queries executadas e performance de queries
 
 **Motivo:**
 - Requer acesso ao dataset do Capacity Metrics App via DAX
-- Complexidade adicional significativa
+- Foco do fabricgov é governança (permissões, inventário, refresh) — não monitoramento de performance
 
 ---
 
@@ -318,26 +320,26 @@ Personal Workspaces (formato: `"PersonalWorkspace Nome (email)"`) **não suporta
 
 ## 🔮 Limitações Planejadas para Remoção
 
-### v0.3 (próxima versão)
+### v0.7.0
 
 **Planejado:**
-- CapacityConsumptionCollector (métricas via DAX)
-- Suporte a múltiplos Service Principals (parallel collection)
-- Sample mode para assessments rápidos
+- Report HTML gerado automaticamente a partir dos dados coletados
 
-### v0.4
+### v0.8.0
 
 **Planejado:**
-- CLI com flags (`--resume`, `--sample-mode`)
-- Progress bars visuais
-- Estimativa de tempo restante
+- `fabricgov analyze` — findings automáticos de governança (datasets sem dono, usuários externos, workspaces sem refresh)
 
-### v1.0
+### v0.9.0
 
 **Planejado:**
-- Suporte a Azure Key Vault
-- Report templates (HTML, Word, PDF)
-- Assessment orchestrator
+- Integração com Azure Key Vault para gerenciamento de credenciais
+- `fabricgov diff` — comparação entre snapshots de coletas distintas
+
+### v1.0.0
+
+**Planejado:**
+- Documentação completa via MkDocs
 
 ---
 
