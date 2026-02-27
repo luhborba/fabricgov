@@ -241,12 +241,22 @@ output/
 ### 🎯 v0.6.0
 - [ ] Atualização de Documentação interna
 - [ ] Criação de Documentação em Inglês
-- [ ] Integração com KeyVault
 
 ### 🎯 v0.7.0
 - [ ] Report HTML
 
+### v0.8.0
+- [ ] Identificar datasets sem dono
+- [ ] Usuários externos com acesso a workspaces sensíveis
+- [ ] Workspaces sem refresh há mais de 30 dias
+- [ ] CLI: fabricgov analyze
+
+### v0.9.0
+- [ ] Integração com KeyVault
+- [ ] Comparação de Snapshots - fabricgov diff
+
 ### 🎯 v1.0.0
+- [ ] Atualizar Report HTML
 - [ ] MkDocs para documentação
 
 > 📘 [Ver changelog completo →](CHANGELOG.md)
