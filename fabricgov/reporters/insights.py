@@ -427,6 +427,16 @@ class InsightsEngine:
         findings = []
 
         if ins.datasets_without_owner > 0:
+            ddf = self._read_csv("datasets")
+            details: list[dict] = []
+            if ddf is not None and "configuredBy" in ddf.columns:
+                mask = ddf["configuredBy"].isna() | (ddf["configuredBy"].astype(str).str.strip() == "")
+                for _, row in ddf[mask].head(100).iterrows():
+                    details.append({
+                        "name": str(row.get("name", "—")),
+                        "workspace_name": str(row.get("workspace_name", "—")),
+                        "id": str(row.get("id", "—")),
+                    })
             findings.append({
                 "severity": "CRITICAL",
                 "badge": "danger",
@@ -434,6 +444,7 @@ class InsightsEngine:
                 "message": f"{ins.datasets_without_owner} dataset(s) sem owner definido (configuredBy vazio)",
                 "message_en": f"{ins.datasets_without_owner} dataset(s) without defined owner (configuredBy empty)",
                 "count": ins.datasets_without_owner,
+                "details": details,
             })
 
         if ins.external_users_count > 0:
@@ -444,6 +455,7 @@ class InsightsEngine:
                 "message": f"{ins.external_users_count} usuário(s) externo(s) (#EXT#) com acesso ao tenant",
                 "message_en": f"{ins.external_users_count} external user(s) (#EXT#) with access to the tenant",
                 "count": ins.external_users_count,
+                "details": ins.external_users[:100],
             })
 
         failed_count = ins.refresh_status_counts.get("Failed", 0) + ins.refresh_status_counts.get("failed", 0)
@@ -455,6 +467,7 @@ class InsightsEngine:
                 "message": f"{failed_count} refresh(es) com falha no histórico coletado",
                 "message_en": f"{failed_count} refresh(es) failed in the collected history",
                 "count": failed_count,
+                "details": ins.failed_refreshes[:100],
             })
 
         if len(ins.single_user_workspaces) > 0:
@@ -465,6 +478,7 @@ class InsightsEngine:
                 "message": f"{len(ins.single_user_workspaces)} workspace(s) com apenas 1 usuário (ponto único de falha)",
                 "message_en": f"{len(ins.single_user_workspaces)} workspace(s) with only 1 user (single point of failure)",
                 "count": len(ins.single_user_workspaces),
+                "details": ins.single_user_workspaces,
             })
 
         if len(ins.stale_datasets) > 0:
@@ -475,6 +489,7 @@ class InsightsEngine:
                 "message": f"{len(ins.stale_datasets)} dataset(s) sem refresh nos últimos 30 dias",
                 "message_en": f"{len(ins.stale_datasets)} dataset(s) without refresh in the last 30 days",
                 "count": len(ins.stale_datasets),
+                "details": ins.stale_datasets,
             })
 
         if not findings:
@@ -485,6 +500,7 @@ class InsightsEngine:
                 "message": "Nenhum finding crítico detectado com os dados disponíveis",
                 "message_en": "No critical findings detected with the available data",
                 "count": 0,
+                "details": [],
             })
 
         ins.findings = findings
