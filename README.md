@@ -52,10 +52,11 @@ Escolha o método conforme seu cenário:
 
 #### Service Principal (automação / CI-CD)
 ```env
-# Crie um arquivo .env na raiz do projeto
-FABRICGOV_TENANT_ID=seu-tenant-id
-FABRICGOV_CLIENT_ID=seu-client-id
-FABRICGOV_CLIENT_SECRET=seu-client-secret
+# Copie o template e preencha com suas credenciais
+cp .env-example .env
+# FABRICGOV_TENANT_ID=seu-tenant-id
+# FABRICGOV_CLIENT_ID=seu-client-id
+# FABRICGOV_CLIENT_SECRET=seu-client-secret
 ```
 ```bash
 fabricgov auth sp       # valida as credenciais
@@ -312,11 +313,18 @@ output/
 - [x] 10 gráficos Plotly interativos + KPI cards + findings de governança
 - [x] Seção dedicada de Workspaces com tabela completa de artefatos
 
-### ✅ v0.8.0 (Atual)
+### ✅ v0.8.0
 - [x] Identificar datasets sem dono
 - [x] Usuários externos com acesso a workspaces
 - [x] Workspaces sem refresh há mais de 30 dias
 - [x] CLI: `fabricgov analyze` — findings no terminal + `findings.json`
+
+### ✅ v0.8.1 (Atual)
+- [x] Correção de erro no relatório HTML (conflito `dict.items` no Jinja2)
+- [x] Cards de artefatos colapsáveis com nome, dono, workspace e última modificação
+- [x] Tabela "Top Usuários por Artefatos Próprios"
+- [x] Layout de gráficos otimizado na seção Inventário
+- [x] Arquivo `.env-example` com variáveis documentadas
 
 ### 🎯 v0.9.0
 - [ ] Integração com Azure Key Vault
