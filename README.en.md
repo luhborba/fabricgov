@@ -51,10 +51,11 @@ Choose the method that fits your scenario:
 
 #### Service Principal (automation / CI-CD)
 ```env
-# Create a .env file in the project root
-FABRICGOV_TENANT_ID=your-tenant-id
-FABRICGOV_CLIENT_ID=your-client-id
-FABRICGOV_CLIENT_SECRET=your-client-secret
+# Copy the template and fill in your credentials
+cp .env-example .env
+# FABRICGOV_TENANT_ID=your-tenant-id
+# FABRICGOV_CLIENT_ID=your-client-id
+# FABRICGOV_CLIENT_SECRET=your-client-secret
 ```
 ```bash
 fabricgov auth sp       # validate credentials
@@ -316,6 +317,13 @@ output/
 - [x] External users with workspace access
 - [x] Workspaces without refresh in the last 30 days
 - [x] CLI: `fabricgov analyze` — terminal findings + `findings.json`
+
+### ✅ v0.8.1 (Current)
+- [x] Fixed HTML report error (Jinja2 `dict.items` conflict)
+- [x] Collapsible artifact cards with name, owner, workspace and last modified date
+- [x] "Top Users by Owned Artifacts" table
+- [x] Optimized chart layout in Inventory section
+- [x] `.env-example` file with documented variables
 
 ### 🎯 v0.9.0
 - [ ] Azure Key Vault integration

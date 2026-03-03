@@ -4,7 +4,7 @@ from fabricgov.cli.collect import collect
 from fabricgov.cli.report import report_cmd
 from fabricgov.cli.analyze import analyze_cmd
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 
 @click.group()

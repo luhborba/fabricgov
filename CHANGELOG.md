@@ -7,6 +7,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.8.1] - 2026-03-03
+
+### Fixed
+- Corrigido erro `'builtin_function_or_method' object is not iterable` no relatório HTML causado por acesso ambíguo `card.items` no template Jinja2 (conflito com método built-in `dict.items`); corrigido com notação de subscript `card['items']`
+
+### Changed
+- Seção Inventário: removido gráfico de barras "Artefatos por Tipo" e tabela "Contagem por Tipo de Artefato" (redundantes com os cards)
+- Seção Inventário: gráficos donut reduzidos para `col-lg-3` e gráfico de barras Top Workspaces ampliado para `col-lg-6` — todos na mesma linha
+- Cards "Artefatos por Tipo" agora são colapsáveis: ao clicar, exibe tabela com nome, dono, workspace e última modificação (até 300 artefatos por tipo)
+
+### Added
+- Nova tabela "Top Usuários por Artefatos Próprios" na seção Workspaces (top 10 por campo `configuredBy`)
+- Arquivo `.env-example` com variáveis de ambiente documentadas (SP auth, idioma e Key Vault futuro)
+
+---
+
 ## [0.8.0] - 2026-02-27
 
 ### Added
