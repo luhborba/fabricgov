@@ -419,52 +419,24 @@
     <div class="section-title"><i class="bi bi-grid-3x3-gap me-2"></i>{{ t.section_inventory }}</div>
 
     <div class="row g-3">
-      {% if "artifacts_bar" in charts %}
-      <div class="col-12 col-lg-8">
-        <div class="chart-card">{{ charts["artifacts_bar"] | safe }}</div>
-      </div>
-      {% endif %}
-
       {% if "workspace_type_donut" in charts %}
-      <div class="col-12 col-lg-4">
+      <div class="col-12 col-lg-3">
         <div class="chart-card">{{ charts["workspace_type_donut"] | safe }}</div>
       </div>
       {% endif %}
 
       {% if "capacity_donut" in charts %}
-      <div class="col-12 col-lg-4">
+      <div class="col-12 col-lg-3">
         <div class="chart-card">{{ charts["capacity_donut"] | safe }}</div>
       </div>
       {% endif %}
 
       {% if "top_workspaces_bar" in charts %}
-      <div class="col-12 col-lg-8">
+      <div class="col-12 col-lg-6">
         <div class="chart-card">{{ charts["top_workspaces_bar"] | safe }}</div>
       </div>
       {% endif %}
     </div>
-
-    <!-- Artifact count table -->
-    {% if ins.artifacts_by_type %}
-    <div class="table-card mt-2">
-      <h6><i class="bi bi-table me-1"></i>{{ t.artifact_count_title }}</h6>
-      <div class="table-responsive">
-        <table class="table table-hover table-sm table-striped align-middle mb-0">
-          <thead>
-            <tr><th>{{ t.col_type }}</th><th class="text-end">{{ t.col_quantity }}</th></tr>
-          </thead>
-          <tbody>
-            {% for tipo, qtd in ins.artifacts_by_type.items() | sort(attribute='1', reverse=True) %}
-            <tr>
-              <td>{{ tipo }}</td>
-              <td class="text-end fw-semibold">{{ "{:,}".format(qtd) }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% endif %}
   </div>
   {% endif %}
 
@@ -557,20 +529,85 @@
       </div>
     </div>
 
-    <!-- Artifacts by type (cards) -->
-    {% if ins.artifacts_by_type %}
-    <div class="table-card">
+    <!-- Top artifact owners -->
+    {% if ins.top_artifact_owners %}
+    <div class="table-card mt-2">
+      <h6><i class="bi bi-person-check me-1"></i>{{ t.top_artifact_owners_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ t.col_user }}</th>
+              <th class="text-end">{{ t.col_artifacts }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in ins.top_artifact_owners %}
+            <tr>
+              <td class="text-muted">{{ loop.index }}</td>
+              <td>{{ u.email }}</td>
+              <td class="text-end fw-semibold">{{ u.count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Artifacts by type (collapsible cards) -->
+    {% if ins.artifact_cards %}
+    <div class="table-card mt-2">
       <h6><i class="bi bi-box me-1"></i>{{ t.artifacts_by_type }}</h6>
       <div class="row g-2">
-        {% for tipo, qtd in ins.artifacts_by_type.items() | sort(attribute='1', reverse=True) %}
+        {% for card in ins.artifact_cards %}
+        {% set card_id = "artifact-detail-" ~ loop.index %}
         <div class="col-6 col-md-4 col-lg-3">
-          <div style="background: #f8f9fa; border-radius: 6px; padding: 10px 14px; border-left: 3px solid var(--accent-blue);">
-            <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">{{ "{:,}".format(qtd) }}</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ tipo }}</div>
+          <div role="button" data-bs-toggle="collapse" data-bs-target="#{{ card_id }}"
+               style="background:#f8f9fa; border-radius:6px; padding:10px 14px; border-left:3px solid var(--accent-blue); cursor:pointer; user-select:none;">
+            <div style="font-size:1.3rem; font-weight:700; color:var(--text-main);">{{ "{:,}".format(card.count) }}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">{{ card.type }} <i class="bi bi-chevron-down" style="font-size:0.65rem;"></i></div>
           </div>
         </div>
         {% endfor %}
       </div>
+
+      <!-- Detail panels (one per type, full width, below the card grid) -->
+      {% for card in ins.artifact_cards %}
+      {% if card['items'] %}
+      {% set card_id = "artifact-detail-" ~ loop.index %}
+      <div id="{{ card_id }}" class="collapse mt-2">
+        <div style="background:#fff; border:1px solid #dee2e6; border-radius:6px; padding:8px;">
+          <div class="mb-1">
+            <small class="fw-semibold text-muted">{{ card['type'] }} — {{ card['count'] }} artefatos</small>
+          </div>
+          <div class="table-responsive" style="max-height:280px; overflow-y:auto;">
+            <table class="table table-hover table-sm table-striped align-middle mb-0">
+              <thead style="position:sticky; top:0; z-index:1;">
+                <tr>
+                  <th>{{ t.col_name }}</th>
+                  <th>{{ t.col_owner }}</th>
+                  <th>{{ t.nav_workspaces }}</th>
+                  <th>{{ t.col_modified }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in card['items'] %}
+                <tr>
+                  <td class="fw-semibold">{{ a['name'] }}</td>
+                  <td class="text-muted">{{ a['owner'] }}</td>
+                  <td>{{ a['workspace_name'] }}</td>
+                  <td class="text-muted" style="white-space:nowrap;">{{ a['modified_at'] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
     </div>
     {% endif %}
 
