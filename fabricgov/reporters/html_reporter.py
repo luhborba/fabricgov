@@ -82,6 +82,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "col_capacity": "Capacidade",
         "col_artifacts": "Artefatos",
         "artifacts_by_type": "Artefatos por Tipo",
+        "top_artifact_owners_title": "Top Usuários por Artefatos Próprios",
+        "col_owner": "Dono",
+        "col_modified": "Últ. Modificação",
         # Access
         "external_users_title": "Usuários Externos com Acesso (#EXT#)",
         "no_external_users": "Nenhum usuário externo detectado.",
@@ -170,6 +173,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "col_capacity": "Capacity",
         "col_artifacts": "Artifacts",
         "artifacts_by_type": "Artifacts by Type",
+        "top_artifact_owners_title": "Top Users by Owned Artifacts",
+        "col_owner": "Owner",
+        "col_modified": "Last Modified",
         # Access
         "external_users_title": "External Users with Access (#EXT#)",
         "no_external_users": "No external users detected.",

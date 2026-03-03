@@ -58,6 +58,8 @@ class ReportInsights:
     stale_datasets: list[dict] = field(default_factory=list)
     single_user_workspaces: list[dict] = field(default_factory=list)
     top_users_by_access: list[dict] = field(default_factory=list)
+    top_artifact_owners: list[dict] = field(default_factory=list)
+    artifact_cards: list[dict] = field(default_factory=list)
     capacities_list: list[dict] = field(default_factory=list)
     domains_list: list[dict] = field(default_factory=list)
 
@@ -174,6 +176,11 @@ class InsightsEngine:
             "workspace_access_errors", "report_access_errors", "dataset_access_errors",
             "dataflow_access_errors", "refresh_history_errors", "workloads_errors",
         }
+        _OWNER_COLS = ("configuredBy", "createdBy", "modifiedBy")
+        _DATE_COLS = ("modifiedDateTime", "modifiedDateTimeUtc", "lastRefreshTime", "createdDateTime")
+        owner_counts: dict[str, int] = {}
+        artifact_cards_map: dict[str, dict] = {}
+
         for csv_path in self.src.glob("*.csv"):
             stem = csv_path.stem
             if stem in skip:
@@ -186,11 +193,49 @@ class InsightsEngine:
             for ws_id, cnt in adf["workspace_id"].value_counts().items():
                 counts[str(ws_id)] = counts.get(str(ws_id), 0) + int(cnt)
 
+            # Build detail list for collapsible cards (limit 300 per type)
+            items: list[dict] = []
+            for _, row in adf.head(300).iterrows():
+                ws_id_str = str(row.get("workspace_id", ""))
+                owner = "—"
+                for ocol in _OWNER_COLS:
+                    val = str(row.get(ocol, "")).strip()
+                    if val and val.lower() not in ("nan", "none", ""):
+                        owner = val
+                        break
+                mod_at = "—"
+                for dcol in _DATE_COLS:
+                    val = str(row.get(dcol, "")).strip()
+                    if val and val.lower() not in ("nan", "none", "nat", ""):
+                        mod_at = val[:10]
+                        break
+                if owner != "—":
+                    owner_counts[owner] = owner_counts.get(owner, 0) + 1
+                items.append({
+                    "name": str(row.get("name", "—")),
+                    "owner": owner,
+                    "workspace_name": names.get(ws_id_str, ws_id_str) if ws_id_str else "—",
+                    "modified_at": mod_at,
+                })
+            artifact_cards_map[stem] = {"count": cnt_total, "items": items}
+
         # Fallback: preenche artifacts_by_type e total_artifacts a partir dos CSVs
         if not ins.artifacts_by_type and artifact_type_counts:
             ins.artifacts_by_type = artifact_type_counts
         if ins.total_artifacts == 0 and artifact_type_counts:
             ins.total_artifacts = sum(artifact_type_counts.values())
+
+        # artifact_cards: sorted by count desc
+        ins.artifact_cards = [
+            {"type": stem, "count": v["count"], "items": v["items"]}
+            for stem, v in sorted(artifact_cards_map.items(), key=lambda x: x[1]["count"], reverse=True)
+        ]
+
+        # top_artifact_owners: top 10 por artefatos possuídos
+        ins.top_artifact_owners = [
+            {"email": e, "count": c}
+            for e, c in sorted(owner_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        ]
 
         # Top 10 workspaces por artefatos
         top = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:10]
