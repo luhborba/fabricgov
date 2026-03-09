@@ -25,6 +25,7 @@
 - 📊 Export em JSON ou CSV
 - 📄 Relatório HTML automático com gráficos e findings de governança (PT + EN)
 - 🔍 Análise de governança no terminal via `fabricgov analyze` (sem chamadas de API)
+- 🔑 Integração com Azure Key Vault — credenciais sem texto plano em disco
 - ⚡ CLI pronto para uso
 - 🛡️ Rate limit handling automático
 
@@ -32,8 +33,11 @@
 
 ## 📦 Instalação
 ```bash
-# Via pip (recomendado)
+# Instalação padrão
 pip install fabricgov
+
+# Com suporte a Azure Key Vault
+pip install fabricgov[keyvault]
 
 # Ou via Poetry
 poetry add fabricgov
@@ -67,7 +71,13 @@ fabricgov auth sp       # valida as credenciais
 fabricgov auth device   # abre fluxo interativo no browser (sem .env necessário)
 ```
 
-> 📘 [Guia completo de autenticação →](docs/authentication.md)
+#### Azure Key Vault (produção / sem credenciais em disco)
+```bash
+pip install fabricgov[keyvault]
+fabricgov auth keyvault --vault-url https://meu-vault.vault.azure.net/
+```
+
+> 📘 [Guia completo de autenticação →](docs/authentication.md) | [Key Vault →](docs/keyvault.md)
 
 #### Permissões necessárias
 

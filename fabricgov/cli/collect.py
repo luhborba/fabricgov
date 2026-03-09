@@ -2,7 +2,7 @@ import click
 import json
 from pathlib import Path
 from datetime import datetime
-from fabricgov.auth import ServicePrincipalAuth, DeviceFlowAuth
+from fabricgov.auth import ServicePrincipalAuth, DeviceFlowAuth, KeyVaultAuth
 from fabricgov.collectors import (
     WorkspaceInventoryCollector,
     WorkspaceAccessCollector,
@@ -18,7 +18,7 @@ from fabricgov.collectors import (
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
-from fabricgov.config import get_auth_preference, require_auth
+from fabricgov.config import get_auth_preference, get_keyvault_config, require_auth
 from fabricgov.progress import ProgressManager, create_progress_callback
 from fabricgov.cli.session import (
     load_session,
@@ -1243,6 +1243,17 @@ def get_auth_provider():
         return ServicePrincipalAuth.from_env()
     elif method == "device_flow":
         return DeviceFlowAuth()
+    elif method == "keyvault":
+        kv_config = get_keyvault_config()
+        if not kv_config:
+            raise RuntimeError(
+                "❌ Configuração do Key Vault não encontrada!\n"
+                "   Execute 'fabricgov auth keyvault --vault-url <url>' novamente."
+            )
+        return KeyVaultAuth(
+            vault_url=kv_config["vault_url"],
+            secret_names=kv_config["secret_names"],
+        ).to_service_principal()
     else:
         raise RuntimeError(
             "❌ Método de autenticação inválido!\n"
