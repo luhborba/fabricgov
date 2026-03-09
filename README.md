@@ -21,6 +21,7 @@
 - 🔐 Coleta de acessos (workspaces, reports, datasets, dataflows)
 - 🔄 Histórico de refresh e agendamentos configurados
 - 🏢 Domínios, tags, capacidades e workloads do tenant
+- 📋 Log de atividades do tenant — até 28 dias de histórico
 - 💾 Sistema de checkpoint para tenants grandes (retoma de onde parou)
 - 📊 Export em JSON ou CSV
 - 📄 Relatório HTML automático com gráficos e findings de governança (PT + EN)
@@ -114,9 +115,14 @@ fabricgov collect tags
 fabricgov collect capacities
 fabricgov collect workloads
 
+# Coleta log de atividades
+fabricgov collect activity               # últimos 7 dias
+fabricgov collect activity --days 28     # máximo histórico (28 dias)
+
 # Coleta completa em sessão única
 fabricgov collect all
-fabricgov collect status          # status da sessão
+fabricgov collect all --activity-days 28  # inclui atividades na coleta completa
+fabricgov collect status                  # status da sessão
 ```
 
 **Flags disponíveis:**
@@ -187,8 +193,9 @@ exporter.export(result, [])
 | `TagCollector` | Tags do tenant (escopo tenant ou domínio) | — |
 | `CapacityCollector` | Capacidades Premium/Fabric (SKU, região, admins) | — |
 | `WorkloadCollector` | Workloads de capacidades Gen1 (P-SKU, A-SKU) | — |
+| `ActivityCollector` | Log de atividades do tenant (até 28 dias) | — |
 
-> 📘 [Ver exemplos detalhados →](docs/collectors.md)
+> 📘 [Ver exemplos detalhados →](docs/collectors.md) | [Log de atividades →](docs/activity.md)
 
 ---
 
@@ -251,6 +258,7 @@ output/
     ├── capacities.csv
     ├── workloads.csv
     ├── workloads_errors.csv
+    ├── activity_events.csv # Log de atividades do tenant
     ├── report.html         # Relatório de governança (PT)
     ├── report.en.html      # Governance report (EN)
     └── findings.json       # Findings de governança (fabricgov analyze)
@@ -329,19 +337,21 @@ output/
 - [x] Workspaces sem refresh há mais de 30 dias
 - [x] CLI: `fabricgov analyze` — findings no terminal + `findings.json`
 
-### ✅ v0.8.1 (Atual)
+### ✅ v0.8.1
 - [x] Correção de erro no relatório HTML (conflito `dict.items` no Jinja2)
 - [x] Cards de artefatos colapsáveis com nome, dono, workspace e última modificação
 - [x] Tabela "Top Usuários por Artefatos Próprios"
 - [x] Layout de gráficos otimizado na seção Inventário
 - [x] Arquivo `.env-example` com variáveis documentadas
 
-### 🎯 v0.9.0
-- [ ] Integração com Azure Key Vault
-- [ ] Comparação de Snapshots — `fabricgov diff`
+### 🚧 v0.9.0 (Atual — em desenvolvimento)
+- [x] Integração com Azure Key Vault (`fabricgov auth keyvault`)
+- [x] `ActivityCollector` — log de atividades do tenant (até 28 dias)
+- [x] CLI: `fabricgov collect activity --days N`
+- [x] `fabricgov collect all --days N` — inclui atividades na coleta completa
+- [ ] `fabricgov diff` — comparação de dois snapshots de output
 
 ### 🎯 v1.0.0
-- [ ] Atualizar Report HTML
 - [ ] MkDocs para documentação
 
 > 📘 [Ver changelog completo →](CHANGELOG.md)
@@ -350,8 +360,10 @@ output/
 
 ## 📚 Documentação
 
-- **[Autenticação](docs/authentication.md)** — Service Principal setup
+- **[Autenticação](docs/authentication.md)** — Service Principal, Device Flow, Key Vault
+- **[Key Vault](docs/keyvault.md)** — Credenciais sem texto plano em disco
 - **[Coletores](docs/collectors.md)** — Exemplos e casos de uso
+- **[Atividades](docs/activity.md)** — Log de atividades do tenant
 - **[Relatório HTML](docs/report.md)** — Seções, fontes de dados e regras de governança
 - **[Exportadores](docs/exporters.md)** — Integração com Power BI, Pandas
 - **[Limitações](docs/limitations.md)** — Rate limits, performance

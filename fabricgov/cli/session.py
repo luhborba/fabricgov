@@ -4,7 +4,7 @@ from pathlib import Path
 
 SESSION_FILE = "session_state.json"
 
-STEPS = ["inventory", "all-infrastructure", "all-access", "all-refresh"]
+STEPS = ["inventory", "all-infrastructure", "all-access", "all-refresh", "activity"]
 
 CHECKPOINT_PREFIXES = [
     "checkpoint_workspace_access",
