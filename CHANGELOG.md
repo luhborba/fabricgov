@@ -5,6 +5,16 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased] — v0.9.0 em desenvolvimento
+
+### Added
+- Integração com Azure Key Vault (`fabricgov auth keyvault`) — credenciais do Service Principal sem texto plano em disco
+- `KeyVaultAuth` em `fabricgov/auth/keyvault.py` — usa `DefaultAzureCredential` (az login, Managed Identity, env vars)
+- `save_keyvault_config()` / `get_keyvault_config()` em `config.py` — salva apenas URL + nomes dos secrets
+- Extra opcional `fabricgov[keyvault]` (`azure-keyvault-secrets` + `azure-identity`)
+- Documentação: `docs/keyvault.md` e `docs/en/keyvault.md` (quick start)
+- Seção Key Vault em `docs/authentication.md` e `docs/en/authentication.md` com tabela comparativa dos 3 métodos
+
 ---
 
 ## [0.8.1] - 2026-03-03

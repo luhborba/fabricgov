@@ -1,9 +1,10 @@
 # Authentication Guide
 
-**fabricgov** supports two authentication modes to access Microsoft Fabric and Power BI APIs:
+**fabricgov** supports three authentication modes to access Microsoft Fabric and Power BI APIs:
 
 1. **Service Principal** — non-interactive authentication (recommended for automation)
 2. **Device Flow** — interactive browser-based authentication (recommended for manual use)
+3. **Azure Key Vault** — Service Principal without credentials on disk (recommended for production)
 
 ---
 
@@ -190,18 +191,71 @@ auth = DeviceFlowAuth(
 
 ---
 
-## 🔄 Comparison: Service Principal vs Device Flow
+## 🔑 Azure Key Vault (Production)
 
-| Aspect | Service Principal | Device Flow |
-|--------|-------------------|-------------|
-| **Setup** | Requires App Registration + permissions | Zero configuration |
-| **Credentials** | client_id + client_secret | No credentials needed |
-| **Interaction** | Non-interactive | Interactive (browser) |
-| **MFA** | N/A | Supported automatically |
-| **Automation** | ✅ Ideal for CI/CD | ❌ Not recommended |
-| **Local development** | ⚠️ Requires secrets | ✅ Perfect |
-| **Permissions** | App-level (Tenant.Read.All) | User-level (delegated) |
-| **Audit logs** | Service Principal name | User name |
+### When to use
+- Production environments where storing `client_secret` on disk is not acceptable
+- Organizations that already centralize credentials in a corporate Key Vault
+- CI/CD pipelines with Managed Identity (Azure DevOps, GitHub Actions with OIDC)
+
+### Prerequisites
+
+1. **Key Vault created** in Azure with the 3 SP secrets
+2. **Role assigned:** `Key Vault Secrets User` for your user/SP on the vault
+3. **Dependencies installed:**
+   ```bash
+   pip install fabricgov[keyvault]
+   ```
+
+### Creating the secrets
+
+```bash
+az keyvault secret set --vault-name MY-VAULT --name fabricgov-tenant-id     --value "<tenant-id>"
+az keyvault secret set --vault-name MY-VAULT --name fabricgov-client-id     --value "<client-id>"
+az keyvault secret set --vault-name MY-VAULT --name fabricgov-client-secret --value "<client-secret>"
+```
+
+> Secret names are flexible — the `fabricgov-*` defaults can be overridden via `--tenant-id-secret`, `--client-id-secret`, and `--client-secret-secret`.
+
+### Configuring fabricgov
+
+```bash
+# With default names
+fabricgov auth keyvault --vault-url https://my-vault.vault.azure.net/
+
+# With custom names
+fabricgov auth keyvault \
+    --vault-url https://my-vault.vault.azure.net/ \
+    --tenant-id-secret     pbi-tenant \
+    --client-id-secret     pbi-client \
+    --client-secret-secret pbi-secret
+```
+
+### How the vault is accessed
+
+`DefaultAzureCredential` tries in order:
+
+| Environment | Mechanism |
+|---|---|
+| Local development | `az login` (Azure CLI) |
+| Azure VM / Container | Managed Identity |
+| CI/CD | Env vars `AZURE_CLIENT_ID` + `AZURE_TENANT_ID` + `AZURE_CLIENT_SECRET` |
+
+> 📘 [Key Vault quick start guide →](keyvault.md)
+
+---
+
+## 🔄 Comparison: all three methods
+
+| Aspect | Service Principal | Device Flow | Key Vault |
+|--------|:-----------------:|:-----------:|:---------:|
+| **Setup** | App Registration | Zero | App Reg + Vault |
+| **Credentials on disk** | ⚠️ `.env` file | ❌ None | ✅ Never |
+| **Interaction** | Non-interactive | Browser | Non-interactive |
+| **Automation / CI-CD** | ✅ | ❌ | ✅ |
+| **Local development** | ⚠️ | ✅ | ✅ (with az login) |
+| **Enterprise production** | ⚠️ | ❌ | ✅ Recommended |
+| **Extra dependency** | None | None | `fabricgov[keyvault]` |
 
 ---
 
@@ -230,7 +284,7 @@ auth = DeviceFlowAuth(
 ✅ **DO:**
 - Use `.env` and add it to `.gitignore`
 - Rotate client secrets every 6–12 months
-- Use Key Vault for production environments (planned for v0.9.0)
+- Use Key Vault for production environments — `fabricgov auth keyvault`
 - Apply the principle of least privilege
 
 ❌ **DON'T:**
@@ -247,6 +301,7 @@ auth = DeviceFlowAuth(
 - [Power BI Service Principal](https://learn.microsoft.com/power-bi/developer/embedded/embed-service-principal)
 - [Fabric Admin APIs](https://learn.microsoft.com/rest/api/power-bi/admin)
 - [MSAL Python Documentation](https://msal-python.readthedocs.io/)
+- [Azure Key Vault — fabricgov guide](keyvault.md)
 
 ---
 

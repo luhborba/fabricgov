@@ -35,6 +35,11 @@ rich = "^14.3.3"
 plotly = "^5.0"
 jinja2 = "^3.1"
 pandas = "^2.0"
+azure-keyvault-secrets = {version = ">=4.7", optional = true}
+azure-identity = {version = ">=1.15", optional = true}
+
+[tool.poetry.extras]
+keyvault = ["azure-keyvault-secrets", "azure-identity"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
