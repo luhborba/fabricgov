@@ -20,6 +20,7 @@
 - 🔐 Access collection (workspaces, reports, datasets, dataflows)
 - 🔄 Refresh history and configured schedules
 - 🏢 Tenant domains, tags, capacities, and workloads
+- 📋 Tenant activity log — up to 28 days of history
 - 💾 Checkpoint system for large tenants (resumes where it left off)
 - 📊 Export to JSON or CSV
 - 📄 Automatic HTML report with charts and governance findings (PT + EN)
@@ -113,9 +114,14 @@ fabricgov collect tags
 fabricgov collect capacities
 fabricgov collect workloads
 
+# Collect activity log
+fabricgov collect activity               # last 7 days
+fabricgov collect activity --days 28     # maximum history (28 days)
+
 # Full collection in a single session
 fabricgov collect all
-fabricgov collect status          # check session status
+fabricgov collect all --activity-days 28  # includes activity log
+fabricgov collect status                  # check session status
 ```
 
 **Available flags:**
@@ -186,8 +192,9 @@ exporter.export(result, [])
 | `TagCollector` | Tenant tags (tenant or domain scope) | — |
 | `CapacityCollector` | Premium/Fabric capacities (SKU, region, admins) | — |
 | `WorkloadCollector` | Gen1 capacity workloads (P-SKU, A-SKU) | — |
+| `ActivityCollector` | Tenant activity log (up to 28 days) | — |
 
-> 📘 [See detailed examples →](docs/en/collectors.md)
+> 📘 [See detailed examples →](docs/en/collectors.md) | [Activity log →](docs/en/activity.md)
 
 ---
 
@@ -328,19 +335,21 @@ output/
 - [x] Workspaces without refresh in the last 30 days
 - [x] CLI: `fabricgov analyze` — terminal findings + `findings.json`
 
-### ✅ v0.8.1 (Current)
+### ✅ v0.8.1
 - [x] Fixed HTML report error (Jinja2 `dict.items` conflict)
 - [x] Collapsible artifact cards with name, owner, workspace and last modified date
 - [x] "Top Users by Owned Artifacts" table
 - [x] Optimized chart layout in Inventory section
 - [x] `.env-example` file with documented variables
 
-### 🎯 v0.9.0
-- [ ] Azure Key Vault integration
-- [ ] Snapshot comparison — `fabricgov diff`
+### 🚧 v0.9.0 (Current — in development)
+- [x] Azure Key Vault integration (`fabricgov auth keyvault`)
+- [x] `ActivityCollector` — tenant activity log (up to 28 days)
+- [x] CLI: `fabricgov collect activity --days N`
+- [x] `fabricgov collect all --days N` — includes activity log in full collection
+- [ ] `fabricgov diff` — compare two output snapshots
 
 ### 🎯 v1.0.0
-- [ ] Updated HTML Report
 - [ ] MkDocs documentation
 
 > 📘 [View full changelog →](CHANGELOG.md)
@@ -349,8 +358,10 @@ output/
 
 ## 📚 Documentation
 
-- **[Authentication](docs/en/authentication.md)** — Service Principal setup
+- **[Authentication](docs/en/authentication.md)** — Service Principal, Device Flow, Key Vault
+- **[Key Vault](docs/en/keyvault.md)** — Credentials without plain-text on disk
 - **[Collectors](docs/en/collectors.md)** — Examples and use cases
+- **[Activity Log](docs/en/activity.md)** — Tenant activity events
 - **[HTML Report](docs/en/report.md)** — Sections, data sources, and governance rules
 - **[Exporters](docs/en/exporters.md)** — Integration with Power BI, Pandas
 - **[Limitations](docs/en/limitations.md)** — Rate limits, performance

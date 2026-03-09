@@ -10,6 +10,7 @@ from fabricgov.collectors.domain import DomainCollector
 from fabricgov.collectors.tag import TagCollector
 from fabricgov.collectors.capacity import CapacityCollector
 from fabricgov.collectors.workload import WorkloadCollector
+from fabricgov.collectors.activity_collector import ActivityCollector
 
 __all__ = [
     "BaseCollector",
@@ -24,4 +25,5 @@ __all__ = [
     "TagCollector",
     "CapacityCollector",
     "WorkloadCollector",
+    "ActivityCollector",
 ]

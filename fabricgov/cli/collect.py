@@ -15,6 +15,7 @@ from fabricgov.collectors import (
     TagCollector,
     CapacityCollector,
     WorkloadCollector,
+    ActivityCollector,
 )
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
@@ -775,6 +776,78 @@ def workloads(format, output, run_dir):
         raise click.Abort()
 
 
+# ── activity ──────────────────────────────────────────────────────────────────
+
+@collect.command('activity')
+@click.option('--format', type=click.Choice(['json', 'csv']), default='csv', help='Formato de export')
+@click.option('--output', default='output', help='Diretório de output')
+@click.option('--days', default=7, show_default=True, help='Número de dias de histórico (máximo 28)')
+@click.option('--filter-activity', default=None, help='Filtrar por tipo de atividade (ex: ViewReport)')
+@click.option('--filter-user', default=None, help='Filtrar por email do usuário')
+@click.option('--run-dir', default=None, hidden=True, help='Diretório de sessão fixo (usado pelo all)')
+def activity(format, output, days, filter_activity, filter_user, run_dir):
+    """
+    Coleta eventos de atividade do tenant (últimos N dias)
+
+    Limites da API:
+      - Histórico máximo: 28 dias
+      - Janela por request: 1 dia UTC
+      - Rate limit: 200 req/hora (compartilhado)
+
+    Exemplos:
+        fabricgov collect activity
+        fabricgov collect activity --days 28
+        fabricgov collect activity --days 3 --filter-activity ViewReport
+        fabricgov collect activity --days 1 --filter-user user@empresa.com
+    """
+    global _checkpoint_abort
+    click.echo("="*70)
+    click.echo("COLETA DE EVENTOS DE ATIVIDADE")
+    click.echo("="*70)
+
+    try:
+        auth = get_auth_provider()
+
+        def _progress(msg: str):
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            click.echo(f"[{timestamp}] {msg}")
+
+        collector = ActivityCollector(
+            auth=auth,
+            days=days,
+            filter_activity=filter_activity,
+            filter_user=filter_user,
+            progress_callback=_progress,
+        )
+
+        result = collector.collect()
+
+        exporter = FileExporter(format=format, output_dir=output, run_dir=run_dir)
+        output_path = exporter.export(result, [])
+
+        click.echo(f"\n✓ Eventos exportados em: {output_path}")
+        click.echo("\n" + "="*70)
+        click.echo("COLETA CONCLUÍDA")
+        click.echo("="*70)
+        summary = result['summary']
+        click.echo(f"Total de eventos:       {summary['total_events']}")
+        click.echo(f"Dias coletados:         {summary['days_collected']}/{summary['days_requested']}")
+        click.echo(f"Usuários únicos:        {summary['unique_users']}")
+        click.echo(f"Tipos de atividade:     {summary['unique_activity_types']}")
+        if summary['days_with_errors']:
+            click.echo(f"Dias com erro:          {summary['days_with_errors']}")
+        if summary['top_activities']:
+            click.echo("\nTop atividades:")
+            for act in summary['top_activities'][:5]:
+                click.echo(f"  {act['activity']:<35} {act['count']:>6}")
+        click.echo("="*70)
+
+    except Exception as e:
+        _checkpoint_abort = False
+        click.echo(f"❌ Erro: {e}", err=True)
+        raise click.Abort()
+
+
 # ── all-infrastructure ────────────────────────────────────────────────────────
 
 @collect.command('all-infrastructure')
@@ -983,9 +1056,10 @@ def status(output):
             "all-infrastructure": "all-infrastructure ",
             "all-access":         "all-access         ",
             "all-refresh":        "all-refresh        ",
+            "activity":           "activity           ",
         }
 
-        for step in ["inventory", "all-infrastructure", "all-access", "all-refresh"]:
+        for step in ["inventory", "all-infrastructure", "all-access", "all-refresh", "activity"]:
             info = steps.get(step, {})
             st = info.get("status", "not_started")
             icon = icons.get(st, "⏳")
@@ -1025,9 +1099,10 @@ def status(output):
 @click.option('--resume/--no-resume', default=True, help='Retomar sessão anterior se existir')
 @click.option('--limit', default=100, help='Número máximo de refreshes por artefato (history)')
 @click.option('--progress/--no-progress', default=True, help='Mostrar progress bars')
-def all_collect(format, output, resume, limit, progress):
+@click.option('--days', default=28, show_default=True, help='Dias de histórico de atividades (0 = pular activity)')
+def all_collect(format, output, resume, limit, progress, days):
     """
-    Coleta TUDO em uma única sessão (inventory → infrastructure → access → refresh).
+    Coleta TUDO em uma única sessão (inventory → infrastructure → access → refresh → activity).
 
     Usa uma pasta única para todos os outputs. Se algum passo bater rate limit,
     salva o checkpoint e continua para o próximo passo. Execute novamente com
@@ -1036,8 +1111,10 @@ def all_collect(format, output, resume, limit, progress):
     Exemplo:
         fabricgov collect all
         fabricgov collect all --resume
-        fabricgov collect all --no-resume   # inicia sessão do zero
+        fabricgov collect all --no-resume    # inicia sessão do zero
         fabricgov collect all --limit 50
+        fabricgov collect all --days 7       # apenas últimos 7 dias de atividade
+        fabricgov collect all --days 0       # pula coleta de atividades
     """
     global _checkpoint_abort
 
@@ -1060,6 +1137,11 @@ def all_collect(format, output, resume, limit, progress):
 
     click.echo()
     ctx = click.get_current_context()
+
+    # Se days == 0, marca "activity" como concluído para não bloquear is_session_complete
+    if days == 0 and get_step_status(session, "activity") == "not_started":
+        mark_step_completed(session, "activity")
+        save_session(output, session)
 
     # ── Passo 1: inventory (crítico) ──────────────────────────────────────────
     step = "inventory"
@@ -1185,6 +1267,35 @@ def all_collect(format, output, resume, limit, progress):
 
     click.echo()
 
+    # ── Passo 5: activity (opcional, padrão 28 dias) ───────────────────────────
+    if days > 0:
+        step = "activity"
+        if get_step_status(session, step) == "completed":
+            click.echo(f"⏭️  {step}: já concluído, pulando.")
+        else:
+            click.echo(f"{'='*70}")
+            click.echo(f"▶️  PASSO 5: ATIVIDADES ({days} dias)")
+            click.echo(f"{'='*70}")
+            _checkpoint_abort = False
+            try:
+                ctx.invoke(
+                    activity,
+                    format=format,
+                    output=output,
+                    days=days,
+                    filter_activity=None,
+                    filter_user=None,
+                    run_dir=run_dir,
+                )
+                mark_step_completed(session, step)
+                save_session(output, session)
+            except click.Abort:
+                mark_step_failed(session, step, "erro durante coleta de atividades")
+                save_session(output, session)
+                click.echo("\n⚠️  Coleta de atividades falhou, sessão continua.")
+
+        click.echo()
+
     # ── Resumo final ──────────────────────────────────────────────────────────
     click.echo("=" * 70)
     click.echo("RESUMO DA SESSÃO")
@@ -1192,8 +1303,12 @@ def all_collect(format, output, resume, limit, progress):
     click.echo(f"Pasta: {run_dir}")
     click.echo()
 
+    all_steps = ["inventory", "all-infrastructure", "all-access", "all-refresh"]
+    if days > 0:
+        all_steps.append("activity")
+
     has_pending = False
-    for s in ["inventory", "all-infrastructure", "all-access", "all-refresh"]:
+    for s in all_steps:
         st = get_step_status(session, s)
         if st == "completed":
             icon = "✅"

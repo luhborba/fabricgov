@@ -28,6 +28,8 @@ def cli():
       fabricgov collect dataflow-access    # Permissões em dataflows
       fabricgov collect refresh-history    # Histórico de refreshes
       fabricgov collect refresh-schedules  # Agendamentos configurados
+      fabricgov collect activity           # Eventos de atividade (últimos 7 dias)
+      fabricgov collect activity --days 28 # Máximo de histórico (28 dias)
 
     \b
     ⚡ Atalhos:
