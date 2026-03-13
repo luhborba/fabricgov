@@ -3,6 +3,7 @@ from fabricgov.cli.auth import auth
 from fabricgov.cli.collect import collect
 from fabricgov.cli.report import report_cmd
 from fabricgov.cli.analyze import analyze_cmd
+from fabricgov.cli.diff import diff_cmd
 
 __version__ = "0.8.1"
 
@@ -47,6 +48,11 @@ def cli():
       fabricgov analyze --lang en          # Mensagens em inglês
 
     \b
+    🔍 Comparação de Snapshots:
+      fabricgov diff                                          # 2 runs mais recentes
+      fabricgov diff --from output/20260301_120000 --to output/20260309_143000
+
+    \b
     📖 Documentação: https://github.com/luhborba/fabricgov
     """
     pass
@@ -56,6 +62,7 @@ cli.add_command(auth)
 cli.add_command(collect)
 cli.add_command(report_cmd, name="report")
 cli.add_command(analyze_cmd, name="analyze")
+cli.add_command(diff_cmd, name="diff")
 
 
 if __name__ == '__main__':
