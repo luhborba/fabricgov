@@ -5,15 +5,46 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Unreleased] — v0.9.0 em desenvolvimento
+## [0.9.0] - 2026-03-13
 
 ### Added
-- Integração com Azure Key Vault (`fabricgov auth keyvault`) — credenciais do Service Principal sem texto plano em disco
+
+#### Azure Key Vault
 - `KeyVaultAuth` em `fabricgov/auth/keyvault.py` — usa `DefaultAzureCredential` (az login, Managed Identity, env vars)
+- CLI: `fabricgov auth keyvault --vault-url <URL>` — credenciais do Service Principal sem texto plano em disco
 - `save_keyvault_config()` / `get_keyvault_config()` em `config.py` — salva apenas URL + nomes dos secrets
 - Extra opcional `fabricgov[keyvault]` (`azure-keyvault-secrets` + `azure-identity`)
-- Documentação: `docs/keyvault.md` e `docs/en/keyvault.md` (quick start)
+- Documentação: `docs/keyvault.md` e `docs/en/keyvault.md`
 - Seção Key Vault em `docs/authentication.md` e `docs/en/authentication.md` com tabela comparativa dos 3 métodos
+
+#### ActivityCollector
+- **`ActivityCollector`** — coleta o log de atividades do tenant via `GET /v1.0/myorg/admin/activityevents`
+  - Iteração dia a dia de `hoje - N` até ontem (janela UTC obrigatória por request)
+  - Paginação via `continuationToken`
+  - Parâmetros: `days` (padrão: 7, max: 28), `filter_activity`, `filter_user`
+  - Summary com `top_activities`, `unique_users`, `days_collected`, `days_with_errors`
+- CLI: `fabricgov collect activity [--days N] [--filter-activity X] [--filter-user Y]`
+- `fabricgov collect all --days N` — inclui ActivityCollector como Passo 5 (0 = skip)
+- `session.py`: `"activity"` adicionado à lista `STEPS`
+- `FileExporter`: suporte à chave `activity_events`
+- Documentação: `docs/activity.md` e `docs/en/activity.md`
+
+#### fabricgov diff — Comparação de Snapshots
+- **`fabricgov diff`** — compara dois snapshots de output e gera `diff.json`
+  - Auto-detecta os 2 runs mais recentes em `output/` ou aceita `--from`/`--to` explícitos
+  - Compara 5 dimensões: workspaces, artefatos, acesso (4 fontes), refresh (schedules + health), findings
+  - `DiffEngine` orquestra comparators independentes → `DiffResult` dataclass
+  - `diff.json` salvo em `<to>/diff.json` por padrão (projetado para consumo futuro pelo `fabricgov report`)
+- Resumo executivo com rich no terminal (totais por seção)
+- Módulo `fabricgov/diff/`: `snapshot.py`, `engine.py`, `comparators/` (workspace, artifacts, access, refresh, findings)
+- Documentação: `docs/diff.md` e `docs/en/diff.md`
+
+### Changed
+- `docs/collectors.md` e `docs/en/collectors.md`: total atualizado para 12 coletores, tabela ActivityCollector adicionada
+- `README.md` e `README.en.md`: features, CLI, arquitetura, output e roadmap atualizados para v0.9.0
+
+### Fixed
+- `pyproject.toml`: corrigido typo `"extralçao"` → `"extração"` na description
 
 ---
 
