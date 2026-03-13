@@ -4,7 +4,7 @@
 
 ---
 
-## 📦 Available Collectors (v0.5.0 — 11 total)
+## 📦 Available Collectors (12 total)
 
 ### Inventory & Access
 | Collector | CLI | Checkpoint |
@@ -28,6 +28,13 @@
 | `TagCollector` | `collect tags` | — |
 | `CapacityCollector` | `collect capacities` | — |
 | `WorkloadCollector` | `collect workloads` | — |
+
+### Activity (v0.9.0)
+| Collector | CLI | Checkpoint |
+|-----------|-----|------------|
+| `ActivityCollector` | `collect activity --days N` | — |
+
+> 📘 [Full ActivityCollector guide →](activity.md)
 
 ---
 
@@ -984,4 +991,4 @@ items = self._paginate(
 
 ---
 
-**[← Back: Authentication](authentication.md)** | **[Next: Exporters →](exporters.md)**
+**[← Back: Authentication](authentication.md)** | **[Activity Log →](activity.md)** | **[Next: Exporters →](exporters.md)**

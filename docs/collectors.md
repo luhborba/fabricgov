@@ -4,7 +4,7 @@ Os **coletores** são responsáveis por buscar dados específicos das APIs do Mi
 
 ---
 
-## 📦 Coletores Disponíveis (v0.5.0 — 11 total)
+## 📦 Coletores Disponíveis (12 total)
 
 ### Inventário & Acesso
 | Coletor | CLI | Checkpoint |
@@ -28,6 +28,13 @@ Os **coletores** são responsáveis por buscar dados específicos das APIs do Mi
 | `TagCollector` | `collect tags` | — |
 | `CapacityCollector` | `collect capacities` | — |
 | `WorkloadCollector` | `collect workloads` | — |
+
+### Atividades (v0.9.0)
+| Coletor | CLI | Checkpoint |
+|---------|-----|------------|
+| `ActivityCollector` | `collect activity --days N` | — |
+
+> 📘 [Guia completo do ActivityCollector →](activity.md)
 
 ---
 
@@ -1173,4 +1180,4 @@ items = self._paginate(
 
 ---
 
-**[← Voltar: Autenticação](authentication.md)** | **[Próximo: Exportadores →](exporters.md)**
+**[← Voltar: Autenticação](authentication.md)** | **[Atividades →](activity.md)** | **[Próximo: Exportadores →](exporters.md)**

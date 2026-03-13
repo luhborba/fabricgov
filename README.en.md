@@ -25,6 +25,7 @@
 - 📊 Export to JSON or CSV
 - 📄 Automatic HTML report with charts and governance findings (PT + EN)
 - 🔍 Terminal governance analysis via `fabricgov analyze` (no API calls)
+- 🔁 Snapshot comparison via `fabricgov diff` — diff.json with all dimensions
 - 🔑 Azure Key Vault integration — credentials without plain-text on disk
 - ⚡ Ready-to-use CLI
 - 🛡️ Automatic rate limit handling
@@ -120,8 +121,12 @@ fabricgov collect activity --days 28     # maximum history (28 days)
 
 # Full collection in a single session
 fabricgov collect all
-fabricgov collect all --activity-days 28  # includes activity log
-fabricgov collect status                  # check session status
+fabricgov collect all --days 28  # includes activity log (28 days)
+fabricgov collect status         # check session status
+
+# Snapshot comparison
+fabricgov diff                                                  # 2 most recent runs
+fabricgov diff --from output/20260301_120000 --to output/20260309_143000
 ```
 
 **Available flags:**
@@ -228,9 +233,10 @@ fabricgov collect report-access
 fabricgov/
 ├── cli/                # CLI via Click
 ├── auth/               # ServicePrincipalAuth + DeviceFlowAuth
-├── collectors/         # 11 collectors (access, refresh, infrastructure)
+├── collectors/         # 12 collectors (access, refresh, infrastructure, activity)
 ├── exporters/          # JSON/CSV export
 ├── reporters/          # HTML Report (InsightsEngine + HtmlReporter + template)
+├── diff/               # Snapshot comparison (DiffEngine + comparators)
 ├── checkpoint.py       # Checkpoint system
 └── exceptions.py       # Custom exceptions
 ```
@@ -257,9 +263,11 @@ output/
     ├── capacities.csv
     ├── workloads.csv
     ├── workloads_errors.csv
-    ├── report.html         # Governance report (EN)
-    ├── report.en.html      # Governance report (EN alternate)
-    └── findings.json       # Governance findings (fabricgov analyze)
+    ├── activity_events.csv # Tenant activity log
+    ├── report.html         # Governance report (PT)
+    ├── report.en.html      # Governance report (EN)
+    ├── findings.json       # Governance findings (fabricgov analyze)
+    └── diff.json           # Comparison with previous snapshot (fabricgov diff)
 ```
 
 ---
@@ -347,7 +355,7 @@ output/
 - [x] `ActivityCollector` — tenant activity log (up to 28 days)
 - [x] CLI: `fabricgov collect activity --days N`
 - [x] `fabricgov collect all --days N` — includes activity log in full collection
-- [ ] `fabricgov diff` — compare two output snapshots
+- [x] `fabricgov diff` — compare two output snapshots (workspaces, artifacts, access, refresh, findings)
 
 ### 🎯 v1.0.0
 - [ ] MkDocs documentation
@@ -362,6 +370,7 @@ output/
 - **[Key Vault](docs/en/keyvault.md)** — Credentials without plain-text on disk
 - **[Collectors](docs/en/collectors.md)** — Examples and use cases
 - **[Activity Log](docs/en/activity.md)** — Tenant activity events
+- **[Snapshot Diff](docs/en/diff.md)** — Comparison between two collection runs
 - **[HTML Report](docs/en/report.md)** — Sections, data sources, and governance rules
 - **[Exporters](docs/en/exporters.md)** — Integration with Power BI, Pandas
 - **[Limitations](docs/en/limitations.md)** — Rate limits, performance
