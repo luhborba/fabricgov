@@ -66,6 +66,30 @@ class ReportInsights:
     # --- Findings de governança ---
     findings: list[dict] = field(default_factory=list)
 
+    # --- Atividades (ActivityCollector) ---
+    has_activity_data: bool = False
+    total_activity_events: int = 0
+    activity_unique_users: int = 0
+    activity_top_activities: list[dict] = field(default_factory=list)
+    activity_timeline: list[dict] = field(default_factory=list)
+    activity_top_users: list[dict] = field(default_factory=list)
+    activity_top_artifacts: list[dict] = field(default_factory=list)
+
+    # --- Diff / Tendências ---
+    has_diff_data: bool = False
+    diff_meta: dict = field(default_factory=dict)
+    diff_summary: dict = field(default_factory=dict)
+    diff_access_granted: list[dict] = field(default_factory=list)
+    diff_access_revoked: list[dict] = field(default_factory=list)
+    diff_datasets_degraded: list[dict] = field(default_factory=list)
+    diff_datasets_improved: list[dict] = field(default_factory=list)
+    diff_findings_new: list[dict] = field(default_factory=list)
+    diff_findings_resolved: list[dict] = field(default_factory=list)
+    diff_workspaces_added: list[dict] = field(default_factory=list)
+    diff_workspaces_removed: list[dict] = field(default_factory=list)
+    diff_artifacts_added: list[dict] = field(default_factory=list)
+    diff_artifacts_removed: list[dict] = field(default_factory=list)
+
 
 # ---------------------------------------------------------------------------
 # Engine
@@ -117,6 +141,8 @@ class InsightsEngine:
         self._load_infra(ins)
         self._load_domains(ins)
         self._build_findings(ins)
+        self._load_activity(ins)
+        self._load_diff(ins)
 
         return ins
 
@@ -549,3 +575,80 @@ class InsightsEngine:
             })
 
         ins.findings = findings
+
+    def _load_activity(self, ins: ReportInsights) -> None:
+        df = self._read_csv("activity_events")
+        if df is None or df.empty:
+            return
+        ins.has_activity_data = True
+        ins.total_activity_events = len(df)
+
+        # Usuários únicos
+        if "UserId" in df.columns:
+            ins.activity_unique_users = int(df["UserId"].nunique())
+
+        # Top atividades
+        if "Activity" in df.columns:
+            top = df["Activity"].value_counts().head(10)
+            ins.activity_top_activities = [
+                {"activity": str(k), "count": int(v)}
+                for k, v in top.items()
+            ]
+
+        # Timeline diária
+        date_col = next((c for c in ["CreationTime", "creation_time"] if c in df.columns), None)
+        if date_col:
+            try:
+                df["_date"] = pd.to_datetime(df[date_col], errors="coerce").dt.date
+                timeline = df.groupby("_date").size().reset_index(name="count")
+                ins.activity_timeline = [
+                    {"date": str(r["_date"]), "count": int(r["count"])}
+                    for _, r in timeline.iterrows()
+                ]
+            except Exception:
+                pass
+
+        # Top usuários mais ativos
+        if "UserId" in df.columns:
+            top_users = df["UserId"].value_counts().head(10)
+            ins.activity_top_users = [
+                {"user": str(k), "count": int(v)}
+                for k, v in top_users.items()
+            ]
+
+        # Top artefatos mais acessados
+        artifact_col = next((c for c in ["ItemName", "item_name"] if c in df.columns), None)
+        if artifact_col:
+            top_art = df[artifact_col].dropna().value_counts().head(10)
+            ins.activity_top_artifacts = [
+                {"name": str(k), "count": int(v)}
+                for k, v in top_art.items()
+            ]
+
+    def _load_diff(self, ins: ReportInsights) -> None:
+        data = self._read_json("diff")
+        if not data or not isinstance(data, dict):
+            return
+        ins.has_diff_data = True
+        ins.diff_meta = data.get("meta", {})
+        ins.diff_summary = data.get("summary", {})
+
+        acc = data.get("access", {})
+        ins.diff_access_granted = acc.get("granted", [])[:50]
+        ins.diff_access_revoked = acc.get("revoked", [])[:50]
+
+        ref = data.get("refresh", {})
+        ins.diff_datasets_degraded = ref.get("degraded", [])[:30]
+        ins.diff_datasets_improved = ref.get("improved", [])[:30]
+
+        find = data.get("findings", {})
+        ins.diff_findings_new = find.get("new", [])[:20]
+        ins.diff_findings_resolved = find.get("resolved", [])[:20]
+
+        ws = data.get("workspaces", {})
+        ins.diff_workspaces_added = ws.get("added", [])[:50]
+        ins.diff_workspaces_removed = ws.get("removed", [])[:50]
+
+        art = data.get("artifacts", {})
+        ins.diff_artifacts_added = art.get("added", [])[:50]
+        ins.diff_artifacts_removed = art.get("removed", [])[:50]

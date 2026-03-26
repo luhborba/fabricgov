@@ -283,6 +283,16 @@
     <li class="nav-item">
       <a class="nav-link" href="#findings"><i class="bi bi-exclamation-triangle"></i> {{ t.nav_findings }}</a>
     </li>
+    {% if ins.has_activity_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#activity"><i class="bi bi-activity"></i> {{ t.nav_activity }}</a>
+    </li>
+    {% endif %}
+    {% if ins.has_diff_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#trends"><i class="bi bi-graph-up-arrow"></i> {{ t.nav_trends }}</a>
+    </li>
+    {% endif %}
   </ul>
 
   <!-- Author / Social links -->
@@ -913,6 +923,263 @@
       {% endfor %}
     </div>
   </div>
+
+  <!-- ── SECTION: Activity Log ── -->
+  {% if ins.has_activity_data %}
+  <div id="activity" class="section">
+    <div class="section-title"><i class="bi bi-activity me-2"></i>{{ t.section_activity }}</div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-list-ul kpi-icon"></i>
+          <div class="kpi-value">{{ "{:,}".format(ins.total_activity_events) }}</div>
+          <div class="kpi-label">{{ t.kpi_total_events }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-access">
+          <i class="bi bi-people kpi-icon"></i>
+          <div class="kpi-value">{{ ins.activity_unique_users }}</div>
+          <div class="kpi-label">{{ t.kpi_active_users }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3">
+      {% if "activity_top" in charts %}
+      <div class="col-12 col-lg-6">
+        <div class="chart-card">{{ charts["activity_top"] | safe }}</div>
+      </div>
+      {% endif %}
+      {% if "activity_timeline" in charts %}
+      <div class="col-12 col-lg-6">
+        <div class="chart-card">{{ charts["activity_timeline"] | safe }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Top usuários -->
+    {% if ins.activity_top_users %}
+    <div class="row g-3 mt-1">
+      <div class="col-12 col-lg-6">
+        <div class="table-card">
+          <h6><i class="bi bi-person-check me-1"></i>{{ t.activity_top_users_title }}</h6>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+              <thead><tr><th>#</th><th>{{ t.col_user }}</th><th class="text-end">{{ t.col_events }}</th></tr></thead>
+              <tbody>
+                {% for u in ins.activity_top_users %}
+                <tr>
+                  <td class="text-muted">{{ loop.index }}</td>
+                  <td class="text-break">{{ u.user }}</td>
+                  <td class="text-end fw-semibold">{{ u.count }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top artefatos -->
+      {% if ins.activity_top_artifacts %}
+      <div class="col-12 col-lg-6">
+        <div class="table-card">
+          <h6><i class="bi bi-box me-1"></i>{{ t.activity_top_artifacts_title }}</h6>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+              <thead><tr><th>#</th><th>{{ t.col_name }}</th><th class="text-end">{{ t.col_events }}</th></tr></thead>
+              <tbody>
+                {% for a in ins.activity_top_artifacts %}
+                <tr>
+                  <td class="text-muted">{{ loop.index }}</td>
+                  <td>{{ a.name }}</td>
+                  <td class="text-end fw-semibold">{{ a.count }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Trends / Tendências ── -->
+  {% if ins.has_diff_data %}
+  <div id="trends" class="section">
+    <div class="section-title"><i class="bi bi-graph-up-arrow me-2"></i>{{ t.section_trends }}</div>
+
+    <!-- Meta -->
+    {% if ins.diff_meta %}
+    <p class="text-muted mb-3" style="font-size:0.85rem;">
+      <i class="bi bi-calendar-range me-1"></i>
+      {{ t.diff_interval }}: <strong>{{ ins.diff_meta.get("days_between", "?") }} {{ t.diff_days }}</strong>
+      &nbsp;&middot;&nbsp;
+      <code>{{ ins.diff_meta.get("snapshot_from", "")[-17:] }}</code>
+      &nbsp;→&nbsp;
+      <code>{{ ins.diff_meta.get("snapshot_to", "")[-17:] }}</code>
+    </p>
+    {% endif %}
+
+    <!-- KPI deltas -->
+    <div class="row g-3 mb-4">
+      {% set s = ins.diff_summary %}
+      <div class="col-6 col-lg-2">
+        <div class="kpi-card {% if s.get('workspaces_added',0) > s.get('workspaces_removed',0) %}kpi-health{% else %}kpi-access{% endif %}">
+          <i class="bi bi-building kpi-icon"></i>
+          <div class="kpi-value">+{{ s.get("workspaces_added", 0) }} / -{{ s.get("workspaces_removed", 0) }}</div>
+          <div class="kpi-label">Workspaces</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="kpi-card kpi-inventory">
+          <i class="bi bi-box kpi-icon"></i>
+          <div class="kpi-value">+{{ s.get("artifacts_added", 0) }} / -{{ s.get("artifacts_removed", 0) }}</div>
+          <div class="kpi-label">{{ t.kpi_total_artifacts }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="kpi-card {% if s.get('access_granted',0) > 0 %}kpi-access{% else %}kpi-health{% endif %}">
+          <i class="bi bi-key kpi-icon"></i>
+          <div class="kpi-value">+{{ s.get("access_granted", 0) }} / -{{ s.get("access_revoked", 0) }}</div>
+          <div class="kpi-label">{{ t.diff_access_granted }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="kpi-card {% if s.get('datasets_degraded',0) > 0 %}kpi-risk{% else %}kpi-health{% endif %}">
+          <i class="bi bi-arrow-repeat kpi-icon"></i>
+          <div class="kpi-value">↓{{ s.get("datasets_degraded", 0) }} / ↑{{ s.get("datasets_improved", 0) }}</div>
+          <div class="kpi-label">Refresh</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="kpi-card {% if s.get('findings_new',0) > 0 %}kpi-risk{% elif s.get('findings_resolved',0) > 0 %}kpi-health{% else %}kpi-inventory{% endif %}">
+          <i class="bi bi-exclamation-triangle kpi-icon"></i>
+          <div class="kpi-value">⚠{{ s.get("findings_new", 0) }} / ✓{{ s.get("findings_resolved", 0) }}</div>
+          <div class="kpi-label">Findings</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview chart -->
+    {% if "diff_overview" in charts %}
+    <div class="chart-card mb-3">{{ charts["diff_overview"] | safe }}</div>
+    {% endif %}
+
+    <!-- Permissões concedidas -->
+    {% if ins.diff_access_granted %}
+    <div class="table-card">
+      <h6><i class="bi bi-key me-1 text-success"></i>{{ t.diff_access_granted_title }} (+{{ ins.diff_access_granted | length }})</h6>
+      <div class="table-responsive" style="max-height:260px; overflow-y:auto;">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead style="position:sticky;top:0;z-index:1;">
+            <tr><th>{{ t.col_resource }}</th><th>{{ t.col_user }}</th><th>{{ t.col_role }}</th><th>Fonte</th></tr>
+          </thead>
+          <tbody>
+            {% for e in ins.diff_access_granted %}
+            <tr>
+              <td>{{ e.get("resource_name", "—") }}</td>
+              <td class="text-break">{{ e.get("user_email", "—") }}</td>
+              <td><span class="badge bg-primary">{{ e.get("role", "—") }}</span></td>
+              <td class="text-muted" style="font-size:0.75rem;">{{ e.get("source", "—") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Permissões revogadas -->
+    {% if ins.diff_access_revoked %}
+    <div class="table-card">
+      <h6><i class="bi bi-key me-1 text-danger"></i>{{ t.diff_access_revoked_title }} (-{{ ins.diff_access_revoked | length }})</h6>
+      <div class="table-responsive" style="max-height:260px; overflow-y:auto;">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead style="position:sticky;top:0;z-index:1;">
+            <tr><th>{{ t.col_resource }}</th><th>{{ t.col_user }}</th><th>{{ t.col_role }}</th><th>Fonte</th></tr>
+          </thead>
+          <tbody>
+            {% for e in ins.diff_access_revoked %}
+            <tr>
+              <td>{{ e.get("resource_name", "—") }}</td>
+              <td class="text-break">{{ e.get("user_email", "—") }}</td>
+              <td><span class="badge bg-secondary">{{ e.get("role", "—") }}</span></td>
+              <td class="text-muted" style="font-size:0.75rem;">{{ e.get("source", "—") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Datasets degradados -->
+    {% if ins.diff_datasets_degraded %}
+    <div class="table-card">
+      <h6><i class="bi bi-arrow-down-circle me-1 text-danger"></i>{{ t.diff_degraded_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead><tr><th>Dataset</th><th>Workspace</th><th class="text-end">{{ t.col_failures_before }}</th><th class="text-end">{{ t.col_failures_after }}</th></tr></thead>
+          <tbody>
+            {% for d in ins.diff_datasets_degraded %}
+            <tr>
+              <td>{{ d.get("name", "—") }}</td>
+              <td>{{ d.get("workspace", "—") }}</td>
+              <td class="text-end">{{ d.get("failures_before", 0) }}</td>
+              <td class="text-end fw-semibold text-danger">{{ d.get("failures_after", 0) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Findings novos/resolvidos -->
+    {% if ins.diff_findings_new or ins.diff_findings_resolved %}
+    <div class="row g-3">
+      {% if ins.diff_findings_new %}
+      <div class="col-12 col-lg-6">
+        <div class="table-card">
+          <h6><i class="bi bi-exclamation-triangle me-1 text-danger"></i>{{ t.diff_findings_new_title }}</h6>
+          {% for f in ins.diff_findings_new %}
+          <div class="finding-item">
+            <span class="finding-icon">{{ f.get("icon", "⚠") }}</span>
+            <span class="finding-text">{{ f.get("message_en", f.get("message", "")) if lang == "en" else f.get("message", "") }}</span>
+            <span class="badge bg-{{ f.get('badge', 'warning') }} ms-auto">{{ f.get("severity", "") }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if ins.diff_findings_resolved %}
+      <div class="col-12 col-lg-6">
+        <div class="table-card">
+          <h6><i class="bi bi-check-circle me-1 text-success"></i>{{ t.diff_findings_resolved_title }}</h6>
+          {% for f in ins.diff_findings_resolved %}
+          <div class="finding-item">
+            <span class="finding-icon">✅</span>
+            <span class="finding-text">{{ f.get("message_en", f.get("message", "")) if lang == "en" else f.get("message", "") }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+  {% endif %}
 
 </div><!-- /content -->
 

@@ -127,6 +127,44 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "chart_refresh_timeline": "Refreshes por Dia (últimos 30 dias)",
         "chart_capacity_bar": "Workspaces por Capacidade",
         "chart_sku": "Capacidades por SKU",
+        # Activity
+        "nav_activity": "Log de Atividades",
+        "section_activity": "Log de Atividades do Tenant",
+        "kpi_total_events": "Total de Eventos",
+        "kpi_active_users": "Usuários Ativos",
+        "activity_top_activities_title": "Top 10 Tipos de Atividade",
+        "activity_top_users_title": "Top 10 Usuários Mais Ativos",
+        "activity_top_artifacts_title": "Top 10 Artefatos Mais Acessados",
+        "col_activity": "Atividade",
+        "col_events": "Eventos",
+        "chart_activity_top": "Top Atividades",
+        "chart_activity_timeline": "Eventos por Dia",
+        # Diff / Trends
+        "nav_trends": "Tendências",
+        "section_trends": "Tendências — Comparativo de Snapshots",
+        "diff_interval": "Intervalo entre snapshots",
+        "diff_days": "dias",
+        "diff_workspaces_added": "Workspaces Adicionados",
+        "diff_workspaces_removed": "Workspaces Removidos",
+        "diff_artifacts_added": "Artefatos Adicionados",
+        "diff_artifacts_removed": "Artefatos Removidos",
+        "diff_access_granted": "Permissões Concedidas",
+        "diff_access_revoked": "Permissões Revogadas",
+        "diff_degraded": "Datasets Degradados",
+        "diff_improved": "Datasets Melhorados",
+        "diff_findings_new": "Findings Novos",
+        "diff_findings_resolved": "Findings Resolvidos",
+        "diff_access_granted_title": "Permissões Concedidas",
+        "diff_access_revoked_title": "Permissões Revogadas",
+        "diff_degraded_title": "Datasets com Mais Falhas de Refresh",
+        "diff_improved_title": "Datasets com Menos Falhas de Refresh",
+        "diff_findings_new_title": "Novos Findings de Governança",
+        "diff_findings_resolved_title": "Findings Resolvidos",
+        "col_resource": "Recurso",
+        "col_user": "Usuário",
+        "col_failures_before": "Falhas Antes",
+        "col_failures_after": "Falhas Depois",
+        "chart_diff_overview": "Visão Geral do Comparativo",
     },
     "en": {
         "html_lang": "en",
@@ -218,6 +256,44 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "chart_refresh_timeline": "Refreshes per Day (last 30 days)",
         "chart_capacity_bar": "Workspaces by Capacity",
         "chart_sku": "Capacities by SKU",
+        # Activity
+        "nav_activity": "Activity Log",
+        "section_activity": "Tenant Activity Log",
+        "kpi_total_events": "Total Events",
+        "kpi_active_users": "Active Users",
+        "activity_top_activities_title": "Top 10 Activity Types",
+        "activity_top_users_title": "Top 10 Most Active Users",
+        "activity_top_artifacts_title": "Top 10 Most Accessed Artifacts",
+        "col_activity": "Activity",
+        "col_events": "Events",
+        "chart_activity_top": "Top Activities",
+        "chart_activity_timeline": "Events per Day",
+        # Diff / Trends
+        "nav_trends": "Trends",
+        "section_trends": "Trends — Snapshot Comparison",
+        "diff_interval": "Interval between snapshots",
+        "diff_days": "days",
+        "diff_workspaces_added": "Workspaces Added",
+        "diff_workspaces_removed": "Workspaces Removed",
+        "diff_artifacts_added": "Artifacts Added",
+        "diff_artifacts_removed": "Artifacts Removed",
+        "diff_access_granted": "Permissions Granted",
+        "diff_access_revoked": "Permissions Revoked",
+        "diff_degraded": "Degraded Datasets",
+        "diff_improved": "Improved Datasets",
+        "diff_findings_new": "New Findings",
+        "diff_findings_resolved": "Resolved Findings",
+        "diff_access_granted_title": "Granted Permissions",
+        "diff_access_revoked_title": "Revoked Permissions",
+        "diff_degraded_title": "Datasets with More Refresh Failures",
+        "diff_improved_title": "Datasets with Fewer Refresh Failures",
+        "diff_findings_new_title": "New Governance Findings",
+        "diff_findings_resolved_title": "Resolved Findings",
+        "col_resource": "Resource",
+        "col_user": "User",
+        "col_failures_before": "Failures Before",
+        "col_failures_after": "Failures After",
+        "chart_diff_overview": "Comparison Overview",
     },
 }
 
@@ -290,6 +366,15 @@ class HtmlReporter:
 
         if ins.sku_counts:
             charts["sku_bar"] = self._chart_sku_bar(ins, t)
+
+        if ins.activity_top_activities:
+            charts["activity_top"] = self._chart_activity_top(ins, t)
+
+        if ins.activity_timeline:
+            charts["activity_timeline"] = self._chart_activity_timeline(ins, t)
+
+        if ins.has_diff_data and ins.diff_summary:
+            charts["diff_overview"] = self._chart_diff_overview(ins, t)
 
         return charts
 
@@ -405,6 +490,61 @@ class HtmlReporter:
         ))
         fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_sku"],
                           showlegend=False)
+        return self._fig_to_div(fig)
+
+    def _chart_activity_top(self, ins: ReportInsights, t: dict) -> str:
+        items = ins.activity_top_activities[:10]
+        labels = [i["activity"] for i in reversed(items)]
+        values = [i["count"] for i in reversed(items)]
+        fig = go.Figure(go.Bar(
+            x=values, y=labels, orientation="h",
+            marker_color=COLORS_PRIMARY[2],
+            text=values, textposition="outside",
+        ))
+        fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_activity_top"],
+                          showlegend=False)
+        return self._fig_to_div(fig)
+
+    def _chart_activity_timeline(self, ins: ReportInsights, t: dict) -> str:
+        dates = [r["date"] for r in ins.activity_timeline]
+        counts = [r["count"] for r in ins.activity_timeline]
+        fig = go.Figure(go.Scatter(
+            x=dates, y=counts, mode="lines+markers",
+            line=dict(color=COLORS_ACCENT[0], width=2),
+            marker=dict(size=5),
+            fill="tozeroy", fillcolor="rgba(224,123,57,0.1)",
+        ))
+        fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_activity_timeline"],
+                          showlegend=False)
+        return self._fig_to_div(fig)
+
+    def _chart_diff_overview(self, ins: ReportInsights, t: dict) -> str:
+        s = ins.diff_summary
+        categories = [
+            t["diff_workspaces_added"], t["diff_workspaces_removed"],
+            t["diff_artifacts_added"], t["diff_artifacts_removed"],
+            t["diff_access_granted"], t["diff_access_revoked"],
+            t["diff_findings_new"], t["diff_findings_resolved"],
+        ]
+        values = [
+            s.get("workspaces_added", 0), s.get("workspaces_removed", 0),
+            s.get("artifacts_added", 0), s.get("artifacts_removed", 0),
+            s.get("access_granted", 0), s.get("access_revoked", 0),
+            s.get("findings_new", 0), s.get("findings_resolved", 0),
+        ]
+        colors = [
+            COLORS_ACCENT[2], COLORS_ACCENT[3],
+            COLORS_ACCENT[2], COLORS_ACCENT[3],
+            COLORS_ACCENT[2], COLORS_ACCENT[3],
+            COLORS_ACCENT[3], COLORS_ACCENT[2],
+        ]
+        fig = go.Figure(go.Bar(
+            x=values, y=categories, orientation="h",
+            marker_color=colors,
+            text=values, textposition="outside",
+        ))
+        fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_diff_overview"],
+                          showlegend=False, yaxis=dict(autorange="reversed"))
         return self._fig_to_div(fig)
 
     # ------------------------------------------------------------------
