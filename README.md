@@ -164,22 +164,31 @@ Gera automaticamente dois arquivos HTML standalone:
 ---
 
 ### 5. Ou use como biblioteca Python
+
+A classe `FabricGov` oferece uma API de alto nível — sem CLI, sem configuração manual de auth/exporters:
+
 ```python
-from fabricgov.auth import ServicePrincipalAuth
-from fabricgov.collectors import WorkspaceInventoryCollector
-from fabricgov.exporters import FileExporter
+from fabricgov import FabricGov
 
-# Autentica
-auth = ServicePrincipalAuth.from_env()
+# Autentica via .env (TENANT_ID, CLIENT_ID, CLIENT_SECRET)
+fg = FabricGov.from_env()
 
-# Coleta inventário
-collector = WorkspaceInventoryCollector(auth=auth)
-result = collector.collect()
+# Coleta completa em uma pasta de sessão (equivalente ao 'collect all')
+run_dir = fg.collect.all(days=28)
 
-# Exporta
-exporter = FileExporter(format="csv", output_dir="output")
-exporter.export(result, [])
+# Gera relatório HTML
+fg.report(output_path=run_dir / "report.html", lang="pt")
+
+# Compara os dois runs mais recentes
+result = fg.diff()
+
+# Findings de governança (sem chamadas de API)
+findings = fg.analyze(source_dir=run_dir)
+for f in findings:
+    print(f["severity"], f["count"], f["message"])
 ```
+
+> 📘 [Ver documentação completa da Python API →](docs/api.md)
 
 ---
 
@@ -357,6 +366,8 @@ output/
 - [x] CLI: `fabricgov collect activity --days N`
 - [x] `fabricgov collect all --days N` — inclui atividades na coleta completa
 - [x] `fabricgov diff` — comparação de dois snapshots de output (workspaces, artefatos, acesso, refresh, findings)
+- [x] `FabricGov` Python API — facade de alto nível para uso programático sem CLI
+- [x] Relatório HTML: seções Atividade e Tendências (Activity/Trends com dados do `activity_events.csv` e `diff.json`)
 
 ### 🎯 v1.0.0
 - [ ] MkDocs para documentação
@@ -367,6 +378,7 @@ output/
 
 ## 📚 Documentação
 
+- **[Python API](docs/api.md)** — Uso programático com a classe `FabricGov`
 - **[Autenticação](docs/authentication.md)** — Service Principal, Device Flow, Key Vault
 - **[Key Vault](docs/keyvault.md)** — Credenciais sem texto plano em disco
 - **[Coletores](docs/collectors.md)** — Exemplos e casos de uso

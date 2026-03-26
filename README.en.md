@@ -163,22 +163,31 @@ Automatically generates two standalone HTML files:
 ---
 
 ### 5. Or use as a Python library
+
+The `FabricGov` class provides a high-level API — no CLI, no manual auth/exporter setup:
+
 ```python
-from fabricgov.auth import ServicePrincipalAuth
-from fabricgov.collectors import WorkspaceInventoryCollector
-from fabricgov.exporters import FileExporter
+from fabricgov import FabricGov
 
-# Authenticate
-auth = ServicePrincipalAuth.from_env()
+# Authenticate via .env (TENANT_ID, CLIENT_ID, CLIENT_SECRET)
+fg = FabricGov.from_env()
 
-# Collect inventory
-collector = WorkspaceInventoryCollector(auth=auth)
-result = collector.collect()
+# Full collection in a session folder (equivalent to 'collect all')
+run_dir = fg.collect.all(days=28)
 
-# Export
-exporter = FileExporter(format="csv", output_dir="output")
-exporter.export(result, [])
+# Generate HTML report
+fg.report(output_path=run_dir / "report.en.html", lang="en")
+
+# Compare the two most recent runs
+result = fg.diff()
+
+# Governance findings (no API calls)
+findings = fg.analyze(source_dir=run_dir)
+for f in findings:
+    print(f["severity"], f["count"], f["message"])
 ```
+
+> 📘 [See full Python API documentation →](docs/en/api.md)
 
 ---
 
@@ -356,6 +365,8 @@ output/
 - [x] CLI: `fabricgov collect activity --days N`
 - [x] `fabricgov collect all --days N` — includes activity log in full collection
 - [x] `fabricgov diff` — compare two output snapshots (workspaces, artifacts, access, refresh, findings)
+- [x] `FabricGov` Python API — high-level facade for programmatic use without CLI
+- [x] HTML Report: Activity and Trends sections (with `activity_events.csv` and `diff.json` data)
 
 ### 🎯 v1.0.0
 - [ ] MkDocs documentation
@@ -366,6 +377,7 @@ output/
 
 ## 📚 Documentation
 
+- **[Python API](docs/en/api.md)** — Programmatic usage with the `FabricGov` class
 - **[Authentication](docs/en/authentication.md)** — Service Principal, Device Flow, Key Vault
 - **[Key Vault](docs/en/keyvault.md)** — Credentials without plain-text on disk
 - **[Collectors](docs/en/collectors.md)** — Examples and use cases
