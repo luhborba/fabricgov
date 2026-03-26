@@ -39,6 +39,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Módulo `fabricgov/diff/`: `snapshot.py`, `engine.py`, `comparators/` (workspace, artifacts, access, refresh, findings)
 - Documentação: `docs/diff.md` e `docs/en/diff.md`
 
+#### Python API — FabricGov facade
+- **`FabricGov`** — facade de alto nível para uso programático (sem CLI)
+  - `FabricGov.from_env()` — autentica via Service Principal lendo `.env`
+  - `FabricGov.from_params(tenant_id, client_id, client_secret)` — credenciais diretas
+  - `FabricGov.from_device_flow()` — fluxo interativo via browser
+  - `FabricGov.from_keyvault(vault_url)` — credenciais via Azure Key Vault
+  - `fg.collect.<método>()` — sub-namespace com todos os 12 coletores
+  - `fg.collect.all(days=28)` — coleta completa em sequência, retorna Path da sessão
+  - `fg.report(output_path, lang)` — gera relatório HTML e salva no caminho indicado
+  - `fg.diff(from_dir, to_dir)` — compara dois snapshots, retorna `DiffResult`
+  - `fg.analyze(source_dir, lang)` — retorna lista de findings sem chamadas de API
+- `fabricgov/__init__.py` expõe `FabricGov` para `from fabricgov import FabricGov`
+
+#### Relatório HTML — Seções Atividade e Tendências
+- **Seção Atividade**: KPIs (total eventos, usuários únicos, dias coletados, top operação), gráfico de barras top usuários, gráfico de linha timeline por dia, tabela top artefatos acessados
+- **Seção Tendências**: delta KPIs (workspaces, artefatos, acesso), tabelas de acesso adicionado/removido, saúde de refresh no período, findings comparados entre snapshots
+- `InsightsEngine`: `_load_activity()` lê `activity_events.csv`; `_load_diff()` lê `diff.json`
+- `HtmlReporter`: 3 novos builders de gráfico + 35 novas chaves de tradução PT/EN
+
 ### Changed
 - `docs/collectors.md` e `docs/en/collectors.md`: total atualizado para 12 coletores, tabela ActivityCollector adicionada
 - `README.md` e `README.en.md`: features, CLI, arquitetura, output e roadmap atualizados para v0.9.0
