@@ -46,6 +46,11 @@ pytest = "^8.0"
 pytest-httpx = "^0.30"
 pytest-mock = "^3.15.1"
 
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6"
+mkdocs-material = "^9.5"
+mkdocs-static-i18n = "^1.2"
+
 [tool.poetry.scripts]
 fabricgov = "fabricgov.cli.main:cli"
 

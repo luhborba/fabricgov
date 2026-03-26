@@ -360,16 +360,17 @@ output/
 - [x] Layout de gráficos otimizado na seção Inventário
 - [x] Arquivo `.env-example` com variáveis documentadas
 
-### 🚧 v0.9.0 (Atual — em desenvolvimento)
+### ✅ v0.9.0 (Atual) — em desenvolvimento)
 - [x] Integração com Azure Key Vault (`fabricgov auth keyvault`)
 - [x] `ActivityCollector` — log de atividades do tenant (até 28 dias)
 - [x] CLI: `fabricgov collect activity --days N`
 - [x] `fabricgov collect all --days N` — inclui atividades na coleta completa
 - [x] `fabricgov diff` — comparação de dois snapshots de output (workspaces, artefatos, acesso, refresh, findings)
+
+
+### 🎯 v1.0.0 (Em desenvolvimento))
 - [x] `FabricGov` Python API — facade de alto nível para uso programático sem CLI
 - [x] Relatório HTML: seções Atividade e Tendências (Activity/Trends com dados do `activity_events.csv` e `diff.json`)
-
-### 🎯 v1.0.0
 - [ ] MkDocs para documentação
 
 > 📘 [Ver changelog completo →](CHANGELOG.md)

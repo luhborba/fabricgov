@@ -1,0 +1,107 @@
+site_name: fabricgov
+site_description: Biblioteca Python para assessment automatizado de governança em Microsoft Fabric
+site_url: https://luhborba.github.io/fabricgov/
+repo_url: https://github.com/luhborba/fabricgov
+repo_name: luhborba/fabricgov
+copyright: "Copyright &copy; 2026 Luciano Borba — Power Tuning"
+
+theme:
+  name: material
+  language: pt
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Mudar para tema escuro
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Mudar para tema claro
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+plugins:
+  - search:
+      lang:
+        - pt
+        - en
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: pt
+          default: true
+          name: Português
+          build: true
+        - locale: en
+          name: English
+          build: true
+          nav_translations:
+            Início: Home
+            Guias: Guides
+            Referência: Reference
+            Autenticação: Authentication
+            Coletores: Collectors
+            Atividades: Activity Log
+            Diff de Snapshots: Snapshot Diff
+            Relatório HTML: HTML Report
+            Exportadores: Exporters
+            Limitações: Limitations
+            Contribuindo: Contributing
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Início: index.md
+  - Guias:
+    - Python API: api.md
+    - Autenticação: authentication.md
+    - Key Vault: keyvault.md
+    - Coletores: collectors.md
+    - Atividades: activity.md
+    - Diff de Snapshots: diff.md
+    - Relatório HTML: report.md
+    - Exportadores: exporters.md
+  - Referência:
+    - Limitações: limitations.md
+    - Contribuindo: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/luhborba
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/luhborba
+    - icon: fontawesome/brands/youtube
+      link: https://youtube.com/@luhborba
+    - icon: fontawesome/brands/instagram
+      link: https://instagram.com/lrdataconsult
+  version:
+    provider: mike

@@ -359,16 +359,16 @@ output/
 - [x] Optimized chart layout in Inventory section
 - [x] `.env-example` file with documented variables
 
-### 🚧 v0.9.0 (Current — in development)
+### ✅ v0.9.0 (Current)
 - [x] Azure Key Vault integration (`fabricgov auth keyvault`)
 - [x] `ActivityCollector` — tenant activity log (up to 28 days)
 - [x] CLI: `fabricgov collect activity --days N`
 - [x] `fabricgov collect all --days N` — includes activity log in full collection
 - [x] `fabricgov diff` — compare two output snapshots (workspaces, artifacts, access, refresh, findings)
+
+### 🎯 v1.0.0 (In development)
 - [x] `FabricGov` Python API — high-level facade for programmatic use without CLI
 - [x] HTML Report: Activity and Trends sections (with `activity_events.csv` and `diff.json` data)
-
-### 🎯 v1.0.0
 - [ ] MkDocs documentation
 
 > 📘 [View full changelog →](CHANGELOG.md)
