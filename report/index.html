@@ -1,0 +1,2322 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Biblioteca Python para assessment automatizado de governança em Microsoft Fabric">
+      
+      
+      
+        <link rel="canonical" href="https://luhborba.github.io/fabricgov/report/">
+      
+      
+        <link rel="prev" href="../diff/">
+      
+      
+        <link rel="next" href="../exporters/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="pt">
+        
+          <link rel="alternate" href="../en/report/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../assets/logo-fabricgov.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Relatório HTML - fabricgov</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#relatorio-de-governanca-guia-completo" class="md-skip">
+          Ir para o conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="fabricgov" class="md-header__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            fabricgov
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Relatório HTML
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Selecione o idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="pt" class="md-select__link">
+              Português
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../en/report/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando a pesquisa
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/luhborba/fabricgov" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../authentication/" class="md-tabs__link">
+          
+  
+  
+  Guia CLI
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/" class="md-tabs__link">
+          
+  
+  
+  Guia Python
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../examples/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Exemplos
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../limitations/" class="md-tabs__link">
+          
+  
+  
+  Referência
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="fabricgov" class="md-nav__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    fabricgov
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/luhborba/fabricgov" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia CLI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia CLI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autenticação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyvault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key Vault
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coletores
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atividades
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diff de Snapshots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relatório HTML
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relatório HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#geracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geração
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secoes-do-relatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seções do Relatório
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Seções do Relatório">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-resumo-executivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Resumo Executivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inventario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inventário
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Inventário">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-artefatos-por-tipo-barra-horizontal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Artefatos por Tipo (barra horizontal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-tipos-de-workspace-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Tipos de Workspace (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-dedicated-vs-shared-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Dedicated vs Shared (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-workspaces-detalhe-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workspaces — Detalhe Completo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Workspaces — Detalhe Completo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kpi-cards-internos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KPI cards internos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-todos-os-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Todos os Workspaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-top-10-workspaces-barra-horizontal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Top 10 Workspaces (barra horizontal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cards-artefatos-por-tipo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cards: Artefatos por Tipo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-acesso-governanca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Acesso &amp; Governança
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Acesso &amp; Governança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-distribuicao-de-roles-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Distribuição de Roles (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-tipo-de-principal-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Tipo de Principal (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-usuarios-externos-com-acesso-ext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Usuários Externos com Acesso (#EXT#)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-10-usuarios-por-acessos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top 10 Usuários por Acessos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspaces-com-apenas-1-usuario-ponto-unico-de-falha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspaces com Apenas 1 Usuário (Ponto Único de Falha)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-saude-do-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Saúde do Refresh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Saúde do Refresh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-status-de-refresh-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Status de Refresh (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-refreshes-por-dia-ultimos-30-dias-line-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Refreshes por Dia — Últimos 30 Dias (line chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-refreshes-com-falha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Refreshes com Falha
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-datasets-sem-refresh-nos-ultimos-30-dias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Datasets sem Refresh nos Últimos 30 Dias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-infraestrutura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Infraestrutura
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Infraestrutura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tabela-capacidades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Capacidades
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-workspaces-por-capacidade-barra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Workspaces por Capacidade (barra)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-capacidades-por-sku-barra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Capacidades por SKU (barra)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workloads-por-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workloads por Estado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-dominios-do-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Domínios do Tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-findings-de-governanca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Findings de Governança
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dados-necessarios-por-secao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dados Necessários por Seção
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saída
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitações
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exportadores
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia Python
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia Python
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API — FabricGov
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exemplos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referência
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limitações
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuindo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#geracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geração
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secoes-do-relatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seções do Relatório
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Seções do Relatório">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-resumo-executivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Resumo Executivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inventario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inventário
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Inventário">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-artefatos-por-tipo-barra-horizontal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Artefatos por Tipo (barra horizontal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-tipos-de-workspace-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Tipos de Workspace (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-dedicated-vs-shared-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Dedicated vs Shared (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-workspaces-detalhe-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workspaces — Detalhe Completo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Workspaces — Detalhe Completo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kpi-cards-internos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KPI cards internos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-todos-os-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Todos os Workspaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-top-10-workspaces-barra-horizontal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Top 10 Workspaces (barra horizontal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cards-artefatos-por-tipo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cards: Artefatos por Tipo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-acesso-governanca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Acesso &amp; Governança
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Acesso &amp; Governança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-distribuicao-de-roles-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Distribuição de Roles (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-tipo-de-principal-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Tipo de Principal (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-usuarios-externos-com-acesso-ext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Usuários Externos com Acesso (#EXT#)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-10-usuarios-por-acessos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top 10 Usuários por Acessos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspaces-com-apenas-1-usuario-ponto-unico-de-falha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspaces com Apenas 1 Usuário (Ponto Único de Falha)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-saude-do-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Saúde do Refresh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Saúde do Refresh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafico-status-de-refresh-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Status de Refresh (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-refreshes-por-dia-ultimos-30-dias-line-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Refreshes por Dia — Últimos 30 Dias (line chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-refreshes-com-falha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Refreshes com Falha
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabela-datasets-sem-refresh-nos-ultimos-30-dias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Datasets sem Refresh nos Últimos 30 Dias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-infraestrutura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Infraestrutura
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Infraestrutura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tabela-capacidades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabela: Capacidades
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-workspaces-por-capacidade-barra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Workspaces por Capacidade (barra)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafico-capacidades-por-sku-barra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gráfico: Capacidades por SKU (barra)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workloads-por-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workloads por Estado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-dominios-do-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Domínios do Tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-findings-de-governanca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Findings de Governança
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dados-necessarios-por-secao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dados Necessários por Seção
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saída
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitações
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="relatorio-de-governanca-guia-completo">Relatório de Governança — Guia Completo<a class="headerlink" href="#relatorio-de-governanca-guia-completo" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Documentação do <code>fabricgov report</code>: como gerar, o que cada seção mostra, de onde vêm os dados e quais regras são aplicadas.</p>
+</blockquote>
+<hr />
+<h2 id="geracao">Geração<a class="headerlink" href="#geracao" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>fabricgov<span class="w"> </span>report<span class="w">                                       </span><span class="c1"># pasta mais recente em output/</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>fabricgov<span class="w"> </span>report<span class="w"> </span>--from<span class="w"> </span>output/20260227_143000/<span class="w">        </span><span class="c1"># pasta específica</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>fabricgov<span class="w"> </span>report<span class="w"> </span>--from<span class="w"> </span>output/20260227_143000/<span class="w"> </span>--open<span class="w"> </span><span class="c1"># gera e abre no browser</span>
+</code></pre></div>
+<p>O comando gera dois arquivos HTML standalone na pasta de output:</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Idioma</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>report.html</code></td>
+<td>Português</td>
+</tr>
+<tr>
+<td><code>report.en.html</code></td>
+<td>Inglês</td>
+</tr>
+</tbody>
+</table>
+<p>Os arquivos são <strong>autossuficientes</strong> — sem dependência de servidor, compartilháveis por email ou armazenamento em nuvem. Plotly e Bootstrap são carregados via CDN.</p>
+<blockquote>
+<p><strong>Dados necessários:</strong> pelo menos um arquivo <code>.csv</code> ou <code>.json</code> na pasta de output. Seções cujos dados não existem são ocultadas automaticamente.</p>
+</blockquote>
+<hr />
+<h2 id="secoes-do-relatorio">Seções do Relatório<a class="headerlink" href="#secoes-do-relatorio" title="Permanent link">&para;</a></h2>
+<h3 id="1-resumo-executivo">1. Resumo Executivo<a class="headerlink" href="#1-resumo-executivo" title="Permanent link">&para;</a></h3>
+<p>Visão geral do tenant em KPI cards coloridos. Disponível sempre que houver qualquer dado.</p>
+<table>
+<thead>
+<tr>
+<th>KPI</th>
+<th>Fonte</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workspaces</strong></td>
+<td><code>summary.json</code> → <code>total_workspaces</code>; fallback: <code>len(workspaces.csv)</code></td>
+<td>Conta total de workspaces coletados</td>
+</tr>
+<tr>
+<td><strong>Total de Artefatos</strong></td>
+<td><code>summary.json</code> → <code>total_items</code>; fallback: soma de todos os CSVs de artefatos</td>
+<td>Soma de todos os itens em todos os tipos de artefato</td>
+</tr>
+<tr>
+<td><strong>Usuários Únicos</strong></td>
+<td>Union de <code>user_email</code> em <code>workspace_access.csv</code>, <code>report_access.csv</code>, <code>dataset_access.csv</code>, <code>dataflow_access.csv</code></td>
+<td>Endereços de email distintos em todos os arquivos de acesso</td>
+</tr>
+<tr>
+<td><strong>Usuários Externos</strong></td>
+<td>Mesmos arquivos de acesso</td>
+<td>Emails que contêm <code>#EXT#</code> (padrão de convidados Azure AD)</td>
+</tr>
+<tr>
+<td><strong>Datasets sem Owner</strong></td>
+<td><code>datasets.csv</code> → coluna <code>configuredBy</code></td>
+<td>Linhas com <code>configuredBy</code> nulo ou vazio</td>
+</tr>
+<tr>
+<td><strong>Taxa de Sucesso de Refresh</strong></td>
+<td><code>refresh_history.csv</code> → coluna <code>status</code></td>
+<td><code>status == "Completed"</code> ÷ total de linhas × 100</td>
+</tr>
+<tr>
+<td><strong>Workspaces em Dedicated Capacity</strong></td>
+<td><code>workspaces.csv</code> → coluna <code>isOnDedicatedCapacity</code></td>
+<td>Valores <code>true</code>, <code>1</code> ou <code>yes</code> (case-insensitive, sem distinção de tipo)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Código de cores dos cards:</strong>
+- Azul — métricas de inventário (quantidade)
+- Amarelo / Vermelho — métricas de risco (externos, sem owner, falhas)
+- Verde — métricas de saúde (taxa de sucesso, dedicated capacity)</p>
+<hr />
+<h3 id="2-inventario">2. Inventário<a class="headerlink" href="#2-inventario" title="Permanent link">&para;</a></h3>
+<p>Visão dos artefatos e workspaces com três gráficos.</p>
+<h4 id="grafico-artefatos-por-tipo-barra-horizontal">Gráfico: Artefatos por Tipo (barra horizontal)<a class="headerlink" href="#grafico-artefatos-por-tipo-barra-horizontal" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>summary.json</code> → <code>items_by_type</code>; fallback: contagem de linhas de cada CSV de artefato presente na pasta</li>
+<li><strong>Regra:</strong> top 12 tipos por quantidade, ordenados decrescente</li>
+<li><strong>CSVs de artefatos reconhecidos:</strong> <code>reports</code>, <code>datasets</code>, <code>dataflows</code>, <code>dashboards</code>, <code>datamarts</code>, <code>lakehouses</code>, <code>warehouses</code>, <code>notebooks</code>, <code>datasourceInstances</code>, <code>paginatedReports</code>, <code>Eventstream</code>, <code>Eventhouse</code>, <code>KQLDatabase</code>, <code>KQLDashboard</code>, <code>Reflex</code>, <code>DataPipeline</code>, <code>MirroredDatabase</code>, <code>SQLAnalyticsEndpoint</code></li>
+</ul>
+<h4 id="grafico-tipos-de-workspace-donut">Gráfico: Tipos de Workspace (donut)<a class="headerlink" href="#grafico-tipos-de-workspace-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspaces.csv</code> → coluna <code>type</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> — distribuição por tipo (<code>Workspace</code>, <code>PersonalGroup</code>, etc.)</li>
+</ul>
+<h4 id="grafico-dedicated-vs-shared-donut">Gráfico: Dedicated vs Shared (donut)<a class="headerlink" href="#grafico-dedicated-vs-shared-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspaces.csv</code> → coluna <code>isOnDedicatedCapacity</code></li>
+<li><strong>Regra:</strong> valores <code>true/1/yes</code> = Dedicated; demais = Shared</li>
+</ul>
+<hr />
+<h3 id="3-workspaces-detalhe-completo">3. Workspaces — Detalhe Completo<a class="headerlink" href="#3-workspaces-detalhe-completo" title="Permanent link">&para;</a></h3>
+<p>Seção dedicada ao detalhe de todos os workspaces coletados. Requer <code>workspaces.csv</code>.</p>
+<h4 id="kpi-cards-internos">KPI cards internos<a class="headerlink" href="#kpi-cards-internos" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Total de Workspaces</li>
+<li>Em Dedicated Capacity</li>
+<li>Em Shared Capacity</li>
+<li>Total de Artefatos</li>
+</ul>
+<h4 id="tabela-todos-os-workspaces">Tabela: Todos os Workspaces<a class="headerlink" href="#tabela-todos-os-workspaces" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspaces.csv</code> + contagem cruzada com CSVs de artefatos</li>
+<li><strong>Colunas:</strong> Nome, Tipo, Estado, Capacidade (Dedicated/Shared), ID da Capacidade, Artefatos</li>
+<li><strong>Ordenação:</strong> decrescente por contagem de artefatos</li>
+<li><strong>Como a contagem de artefatos é calculada:</strong> para cada CSV de artefato que contém a coluna <code>workspace_id</code>, conta o número de linhas por workspace e acumula</li>
+</ul>
+<h4 id="grafico-top-10-workspaces-barra-horizontal">Gráfico: Top 10 Workspaces (barra horizontal)<a class="headerlink" href="#grafico-top-10-workspaces-barra-horizontal" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> cruzamento workspace_id → contagem de linhas nos CSVs de artefatos</li>
+<li><strong>Regra:</strong> top 10 por total de artefatos; nomes truncados em 35 caracteres</li>
+</ul>
+<h4 id="cards-artefatos-por-tipo">Cards: Artefatos por Tipo<a class="headerlink" href="#cards-artefatos-por-tipo" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>artifacts_by_type</code> (mesmo que seção Inventário)</li>
+<li>Cards individuais para cada tipo com contagem</li>
+</ul>
+<hr />
+<h3 id="4-acesso-governanca">4. Acesso &amp; Governança<a class="headerlink" href="#4-acesso-governanca" title="Permanent link">&para;</a></h3>
+<p>Análise de permissões e exposição de acesso. Requer pelo menos um arquivo <code>*_access.csv</code>.</p>
+<p><strong>Arquivos lidos:</strong>
+- <code>workspace_access.csv</code> — roles em workspaces
+- <code>report_access.csv</code> — permissões em reports
+- <code>dataset_access.csv</code> — permissões em datasets
+- <code>dataflow_access.csv</code> — permissões em dataflows</p>
+<h4 id="grafico-distribuicao-de-roles-donut">Gráfico: Distribuição de Roles (donut)<a class="headerlink" href="#grafico-distribuicao-de-roles-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspace_access.csv</code> → coluna <code>role</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> — mostra Admin, Member, Contributor, Viewer e outros</li>
+</ul>
+<h4 id="grafico-tipo-de-principal-donut">Gráfico: Tipo de Principal (donut)<a class="headerlink" href="#grafico-tipo-de-principal-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspace_access.csv</code> → coluna <code>principal_type</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> — User, Group, App, ServicePrincipal, etc.</li>
+</ul>
+<h4 id="tabela-usuarios-externos-com-acesso-ext">Tabela: Usuários Externos com Acesso (#EXT#)<a class="headerlink" href="#tabela-usuarios-externos-com-acesso-ext" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> todos os arquivos <code>*_access.csv</code> → coluna <code>user_email</code></li>
+<li><strong>Regra:</strong> emails que contêm <code>#EXT#</code> (convidados Azure AD B2B)</li>
+<li><strong>Colunas:</strong> Email, Roles (union de todos os arquivos), contagem de workspaces</li>
+<li><strong>Limite:</strong> top 50 por contagem de workspaces</li>
+</ul>
+<h4 id="top-10-usuarios-por-acessos">Top 10 Usuários por Acessos<a class="headerlink" href="#top-10-usuarios-por-acessos" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspace_access.csv</code></li>
+<li><strong>Regra:</strong> <code>groupby("user_email")["workspace_id"].nunique()</code> — contagem de workspaces distintos por usuário</li>
+<li><strong>Colunas:</strong> Email, Workspaces (count)</li>
+</ul>
+<h4 id="workspaces-com-apenas-1-usuario-ponto-unico-de-falha">Workspaces com Apenas 1 Usuário (Ponto Único de Falha)<a class="headerlink" href="#workspaces-com-apenas-1-usuario-ponto-unico-de-falha" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspace_access.csv</code></li>
+<li><strong>Regra:</strong> <code>groupby("workspace_id")["user_email"].nunique() == 1</code> — identifica workspaces onde só um email está listado</li>
+<li><strong>Limite:</strong> top 20</li>
+<li><strong>Risco:</strong> se esse usuário sair da organização, o workspace ficará sem administrador</li>
+</ul>
+<hr />
+<h3 id="5-saude-do-refresh">5. Saúde do Refresh<a class="headerlink" href="#5-saude-do-refresh" title="Permanent link">&para;</a></h3>
+<p>Análise do histórico de execuções de datasets e dataflows. Requer <code>refresh_history.csv</code>.</p>
+<h4 id="grafico-status-de-refresh-donut">Gráfico: Status de Refresh (donut)<a class="headerlink" href="#grafico-status-de-refresh-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>refresh_history.csv</code> → coluna <code>status</code></li>
+<li><strong>Cores:</strong> Completed = verde, Failed = vermelho, Unknown/Disabled = cinza/laranja</li>
+<li><strong>Regra:</strong> <code>value_counts()</code> sobre todos os registros do histórico</li>
+</ul>
+<h4 id="grafico-refreshes-por-dia-ultimos-30-dias-line-chart">Gráfico: Refreshes por Dia — Últimos 30 Dias (line chart)<a class="headerlink" href="#grafico-refreshes-por-dia-ultimos-30-dias-line-chart" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>refresh_history.csv</code> → coluna <code>start_time</code></li>
+<li><strong>Regra:</strong> <code>pd.to_datetime(start_time)</code> → agrupado por data; filtra os últimos 30 dias a partir do momento de geração do relatório</li>
+<li><strong>Registros sem <code>start_time</code> válido:</strong> ignorados silenciosamente</li>
+</ul>
+<h4 id="tabela-refreshes-com-falha">Tabela: Refreshes com Falha<a class="headerlink" href="#tabela-refreshes-com-falha" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>refresh_history.csv</code></li>
+<li><strong>Regra:</strong> <code>status in ["Failed", "Error", "Disabled"]</code> (case-insensitive)</li>
+<li><strong>Colunas:</strong> Artefato, Workspace, Início, Status, Erro (quando disponível em <code>service_exception_json</code>)</li>
+<li><strong>Limite:</strong> top 50 registros</li>
+</ul>
+<h4 id="tabela-datasets-sem-refresh-nos-ultimos-30-dias">Tabela: Datasets sem Refresh nos Últimos 30 Dias<a class="headerlink" href="#tabela-datasets-sem-refresh-nos-ultimos-30-dias" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>refresh_history.csv</code></li>
+<li><strong>Regra:</strong> para cada artefato (<code>artifact_name</code>), pega o <code>start_time</code> mais recente; se for anterior a 30 dias da data de geração, entra nesta lista</li>
+<li><strong>Limite:</strong> top 50 artefatos</li>
+</ul>
+<hr />
+<h3 id="6-infraestrutura">6. Infraestrutura<a class="headerlink" href="#6-infraestrutura" title="Permanent link">&para;</a></h3>
+<p>Análise de capacidades e workloads do tenant. Requer <code>capacities.csv</code>.</p>
+<h4 id="tabela-capacidades">Tabela: Capacidades<a class="headerlink" href="#tabela-capacidades" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>capacities.csv</code></li>
+<li><strong>Colunas disponíveis:</strong> Nome (<code>displayName</code>), SKU, Estado (<code>state</code>), Região (<code>region</code>)</li>
+</ul>
+<h4 id="grafico-workspaces-por-capacidade-barra">Gráfico: Workspaces por Capacidade (barra)<a class="headerlink" href="#grafico-workspaces-por-capacidade-barra" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workspaces.csv</code> → <code>capacityId</code>; cross-reference com <code>capacities.csv</code> → <code>displayName</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> do <code>capacityId</code> em workspaces, mapeado para nome da capacidade</li>
+</ul>
+<h4 id="grafico-capacidades-por-sku-barra">Gráfico: Capacidades por SKU (barra)<a class="headerlink" href="#grafico-capacidades-por-sku-barra" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>capacities.csv</code> → coluna <code>sku</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> — P1, P2, F2, F64, A1, etc.</li>
+</ul>
+<h4 id="workloads-por-estado">Workloads por Estado<a class="headerlink" href="#workloads-por-estado" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Fonte:</strong> <code>workloads.csv</code> → coluna <code>state</code></li>
+<li><strong>Regra:</strong> <code>value_counts()</code> — Enabled, Disabled, Unsupported</li>
+</ul>
+<blockquote>
+<p><strong>Nota:</strong> Workloads são coletados apenas para capacidades Gen1 (P-SKU e A-SKU). Capacidades Fabric (F-SKU) não expõem workloads via API.</p>
+</blockquote>
+<hr />
+<h3 id="7-dominios-do-tenant">7. Domínios do Tenant<a class="headerlink" href="#7-dominios-do-tenant" title="Permanent link">&para;</a></h3>
+<p>Lista de domínios e sub-domínios configurados. Requer <code>domains.csv</code>.</p>
+<ul>
+<li><strong>Fonte:</strong> <code>domains.csv</code></li>
+<li><strong>Colunas:</strong> Nome (<code>displayName</code>), Descrição (<code>description</code>), ID do domínio pai (<code>parentDomainId</code>)</li>
+<li><strong>Regra de hierarquia:</strong> se <code>parentDomainId</code> é nulo/vazio = <strong>Raiz</strong>; caso contrário = <strong>Sub-domínio</strong></li>
+<li><strong>Limite:</strong> top 100 domínios</li>
+</ul>
+<hr />
+<h3 id="8-findings-de-governanca">8. Findings de Governança<a class="headerlink" href="#8-findings-de-governanca" title="Permanent link">&para;</a></h3>
+<p>Lista priorizada de alertas gerados automaticamente com base nos dados coletados. Os findings são ordenados por severidade e exibidos mesmo quando os dados são parciais.</p>
+<table>
+<thead>
+<tr>
+<th>Severidade</th>
+<th>Cor</th>
+<th>Finding</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CRITICAL</strong></td>
+<td>Vermelho</td>
+<td>Datasets sem owner</td>
+<td><code>configuredBy</code> nulo ou vazio em <code>datasets.csv</code></td>
+</tr>
+<tr>
+<td><strong>HIGH</strong></td>
+<td>Laranja</td>
+<td>Usuários externos com acesso</td>
+<td>Emails com <code>#EXT#</code> em qualquer arquivo de acesso</td>
+</tr>
+<tr>
+<td><strong>HIGH</strong></td>
+<td>Laranja</td>
+<td>Refreshes com falha</td>
+<td><code>status == "Failed"</code> em <code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td><strong>MEDIUM</strong></td>
+<td>Azul</td>
+<td>Workspaces com 1 único usuário</td>
+<td><code>nunique(user_email) == 1</code> por workspace em <code>workspace_access.csv</code></td>
+</tr>
+<tr>
+<td><strong>MEDIUM</strong></td>
+<td>Azul</td>
+<td>Datasets sem refresh há 30+ dias</td>
+<td>Último <code>start_time</code> &gt; 30 dias em <code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td><strong>OK</strong></td>
+<td>Verde</td>
+<td>Nenhum finding crítico</td>
+<td>Exibido apenas quando nenhum finding acima for detectado</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Findings só aparecem quando os dados necessários estão disponíveis. Se <code>refresh_history.csv</code> não foi coletado, findings relacionados a refresh não serão gerados.</p>
+</blockquote>
+<hr />
+<h2 id="dados-necessarios-por-secao">Dados Necessários por Seção<a class="headerlink" href="#dados-necessarios-por-secao" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Seção</th>
+<th>Arquivo(s) necessário(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resumo Executivo</td>
+<td>Qualquer arquivo da pasta</td>
+</tr>
+<tr>
+<td>Inventário</td>
+<td><code>workspaces.csv</code>, <code>summary.json</code> ou CSVs de artefatos</td>
+</tr>
+<tr>
+<td>Workspaces — Detalhe</td>
+<td><code>workspaces.csv</code></td>
+</tr>
+<tr>
+<td>Acesso &amp; Governança</td>
+<td><code>workspace_access.csv</code> (mínimo)</td>
+</tr>
+<tr>
+<td>Saúde do Refresh</td>
+<td><code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td>Infraestrutura</td>
+<td><code>capacities.csv</code></td>
+</tr>
+<tr>
+<td>Domínios</td>
+<td><code>domains.csv</code></td>
+</tr>
+<tr>
+<td>Findings</td>
+<td>Qualquer combinação dos acima</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="saida">Saída<a class="headerlink" href="#saida" title="Permanent link">&para;</a></h2>
+<p>Dois arquivos HTML são gerados na pasta de origem dos dados (ou na pasta informada via <code>--output</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>output/20260227_143000/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── report.html         # Português
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>└── report.en.html      # Inglês
+</code></pre></div>
+<p>O arquivo HTML é <strong>standalone</strong>: todos os gráficos Plotly e o CSS Bootstrap são carregados via CDN. O Plotly JS é incluído uma única vez no <code>&lt;head&gt;</code> do documento.</p>
+<hr />
+<h2 id="limitacoes">Limitações<a class="headerlink" href="#limitacoes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Seções ausentes: se um arquivo de dados não existe, a seção correspondente exibe um aviso discreto ("dados não disponíveis") em vez de erro</li>
+<li>Limites de tabelas: 50 linhas para falhas e datasets desatualizados; 20 para workspaces com 1 usuário; 10 para top workspaces/usuários</li>
+<li>Refresh history: a API do Power BI retorna no máximo os últimos refreshes por dataset (veja <a href="../limitations/">limitações</a>)</li>
+<li>Workloads: disponíveis apenas para capacidades Gen1 (P-SKU, A-SKU)</li>
+<li>Gráficos: requerem conexão com CDN do Plotly e Bootstrap para renderizar corretamente</li>
+</ul>
+<hr />
+<blockquote>
+<p>📘 <a href="../README.md">Voltar ao README</a> | <a href="../collectors/">Guia de Coletores</a> | <a href="../limitations/">Limitações</a></p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar ao topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../diff/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Diff de Snapshots">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Diff de Snapshots
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../exporters/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Exportadores">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Exportadores
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Luciano Borba — Power Tuning
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/luhborba" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/luhborba" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://youtube.com/@luhborba" target="_blank" rel="noopener" title="youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M549.7 124.1c-6.2-23.7-24.8-42.3-48.3-48.6C458.9 64 288.1 64 288.1 64S117.3 64 74.7 75.5c-23.5 6.3-42 24.9-48.3 48.6C15 167 15 256.4 15 256.4s0 89.4 11.4 132.3c6.3 23.6 24.8 41.5 48.3 47.8C117.3 448 288.1 448 288.1 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232.2 337.6V175.2l142.7 81.2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://instagram.com/lrdataconsult" target="_blank" rel="noopener" title="instagram.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M224.3 141a115 115 0 1 0-.6 230 115 115 0 1 0 .6-230m-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1-.6-149.2m93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1-53.6 0m129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8M399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

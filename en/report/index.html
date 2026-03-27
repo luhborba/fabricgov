@@ -1,0 +1,2322 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Biblioteca Python para assessment automatizado de governança em Microsoft Fabric">
+      
+      
+      
+        <link rel="canonical" href="https://luhborba.github.io/fabricgov/en/report/">
+      
+      
+        <link rel="prev" href="../diff/">
+      
+      
+        <link rel="next" href="../exporters/">
+      
+      
+        
+          <link rel="alternate" href="../../report/" hreflang="pt">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/logo-fabricgov.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>HTML Report - fabricgov</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#governance-report-complete-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="fabricgov" class="md-header__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            fabricgov
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              HTML Report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../report/" hreflang="pt" class="md-select__link">
+              Português
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/luhborba/fabricgov" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../authentication/" class="md-tabs__link">
+          
+  
+  
+  CLI Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/" class="md-tabs__link">
+          
+  
+  
+  Python Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../examples/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Examples
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../limitations/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="fabricgov" class="md-nav__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    fabricgov
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/luhborba/fabricgov" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CLI Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyvault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key Vault
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collectors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Activity Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Snapshot Diff
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML Report
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Sections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Report Sections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-artifacts-by-type-horizontal-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Artifacts by Type (horizontal bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-workspace-types-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Workspace Types (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-dedicated-vs-shared-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Dedicated vs Shared (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-workspaces-full-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workspaces — Full Detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Workspaces — Full Detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-kpi-cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal KPI cards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-all-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: All Workspaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-top-10-workspaces-horizontal-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Top 10 Workspaces (horizontal bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cards-artifacts-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cards: Artifacts by Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-access-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Access &amp; Governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Access &amp; Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-role-distribution-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Role Distribution (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-principal-type-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Principal Type (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-external-users-with-access-ext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: External Users with Access (#EXT#)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-10-users-by-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top 10 Users by Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspaces-with-only-1-user-single-point-of-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspaces with Only 1 User (Single Point of Failure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-refresh-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Refresh Health
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Refresh Health">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-refresh-status-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Refresh Status (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-refreshes-per-day-last-30-days-line-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Refreshes per Day — Last 30 Days (line chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-failed-refreshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Failed Refreshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-datasets-without-refresh-in-the-last-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Datasets without Refresh in the Last 30 Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-capacities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Capacities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-workspaces-by-capacity-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Workspaces by Capacity (bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-capacities-by-sku-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Capacities by SKU (bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workloads-by-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workloads by State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-tenant-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Tenant Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-governance-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Governance Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-requirements-by-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Requirements by Section
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exporters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API — FabricGov
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Sections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Report Sections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-artifacts-by-type-horizontal-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Artifacts by Type (horizontal bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-workspace-types-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Workspace Types (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-dedicated-vs-shared-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Dedicated vs Shared (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-workspaces-full-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workspaces — Full Detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Workspaces — Full Detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-kpi-cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal KPI cards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-all-workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: All Workspaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-top-10-workspaces-horizontal-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Top 10 Workspaces (horizontal bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cards-artifacts-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cards: Artifacts by Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-access-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Access &amp; Governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Access &amp; Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-role-distribution-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Role Distribution (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-principal-type-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Principal Type (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-external-users-with-access-ext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: External Users with Access (#EXT#)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-10-users-by-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top 10 Users by Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspaces-with-only-1-user-single-point-of-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspaces with Only 1 User (Single Point of Failure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-refresh-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Refresh Health
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Refresh Health">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-refresh-status-donut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Refresh Status (donut)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-refreshes-per-day-last-30-days-line-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Refreshes per Day — Last 30 Days (line chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-failed-refreshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Failed Refreshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-datasets-without-refresh-in-the-last-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Datasets without Refresh in the Last 30 Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-capacities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table: Capacities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-workspaces-by-capacity-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Workspaces by Capacity (bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-capacities-by-sku-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart: Capacities by SKU (bar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workloads-by-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workloads by State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-tenant-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Tenant Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-governance-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Governance Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-requirements-by-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Requirements by Section
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="governance-report-complete-guide">Governance Report — Complete Guide<a class="headerlink" href="#governance-report-complete-guide" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Documentation for <code>fabricgov report</code>: how to generate it, what each section shows, where data comes from, and what rules are applied.</p>
+</blockquote>
+<hr />
+<h2 id="generation">Generation<a class="headerlink" href="#generation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>fabricgov<span class="w"> </span>report<span class="w">                                       </span><span class="c1"># most recent folder in output/</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>fabricgov<span class="w"> </span>report<span class="w"> </span>--from<span class="w"> </span>output/20260227_143000/<span class="w">        </span><span class="c1"># specific folder</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>fabricgov<span class="w"> </span>report<span class="w"> </span>--from<span class="w"> </span>output/20260227_143000/<span class="w"> </span>--open<span class="w"> </span><span class="c1"># generate and open in browser</span>
+</code></pre></div>
+<p>The command generates two standalone HTML files in the output folder:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Language</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>report.html</code></td>
+<td>Portuguese</td>
+</tr>
+<tr>
+<td><code>report.en.html</code></td>
+<td>English</td>
+</tr>
+</tbody>
+</table>
+<p>The files are <strong>self-contained</strong> — no server required, shareable via email or cloud storage. Plotly and Bootstrap are loaded via CDN.</p>
+<blockquote>
+<p><strong>Required data:</strong> at least one <code>.csv</code> or <code>.json</code> file in the output folder. Sections whose data doesn't exist are hidden automatically.</p>
+</blockquote>
+<hr />
+<h2 id="report-sections">Report Sections<a class="headerlink" href="#report-sections" title="Permanent link">&para;</a></h2>
+<h3 id="1-executive-summary">1. Executive Summary<a class="headerlink" href="#1-executive-summary" title="Permanent link">&para;</a></h3>
+<p>Tenant overview in colored KPI cards. Available whenever any data is present.</p>
+<table>
+<thead>
+<tr>
+<th>KPI</th>
+<th>Source</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workspaces</strong></td>
+<td><code>summary.json</code> → <code>total_workspaces</code>; fallback: <code>len(workspaces.csv)</code></td>
+<td>Total collected workspaces</td>
+</tr>
+<tr>
+<td><strong>Total Artifacts</strong></td>
+<td><code>summary.json</code> → <code>total_items</code>; fallback: sum of all artifact CSVs</td>
+<td>Sum of all items across all artifact types</td>
+</tr>
+<tr>
+<td><strong>Unique Users</strong></td>
+<td>Union of <code>user_email</code> across <code>workspace_access.csv</code>, <code>report_access.csv</code>, <code>dataset_access.csv</code>, <code>dataflow_access.csv</code></td>
+<td>Distinct email addresses across all access files</td>
+</tr>
+<tr>
+<td><strong>External Users</strong></td>
+<td>Same access files</td>
+<td>Emails containing <code>#EXT#</code> (Azure AD guest pattern)</td>
+</tr>
+<tr>
+<td><strong>Datasets without Owner</strong></td>
+<td><code>datasets.csv</code> → <code>configuredBy</code> column</td>
+<td>Rows where <code>configuredBy</code> is null or empty</td>
+</tr>
+<tr>
+<td><strong>Refresh Success Rate</strong></td>
+<td><code>refresh_history.csv</code> → <code>status</code> column</td>
+<td><code>status == "Completed"</code> ÷ total rows × 100</td>
+</tr>
+<tr>
+<td><strong>Workspaces on Dedicated Capacity</strong></td>
+<td><code>workspaces.csv</code> → <code>isOnDedicatedCapacity</code> column</td>
+<td>Values <code>true</code>, <code>1</code>, or <code>yes</code> (case-insensitive, type-agnostic)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Card color coding:</strong>
+- Blue — inventory metrics (counts)
+- Yellow / Red — risk metrics (external users, no owner, failures)
+- Green — health metrics (success rate, dedicated capacity)</p>
+<hr />
+<h3 id="2-inventory">2. Inventory<a class="headerlink" href="#2-inventory" title="Permanent link">&para;</a></h3>
+<p>Overview of artifacts and workspaces with three charts.</p>
+<h4 id="chart-artifacts-by-type-horizontal-bar">Chart: Artifacts by Type (horizontal bar)<a class="headerlink" href="#chart-artifacts-by-type-horizontal-bar" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>summary.json</code> → <code>items_by_type</code>; fallback: row count of each artifact CSV present in the folder</li>
+<li><strong>Rule:</strong> top 12 types by count, sorted descending</li>
+<li><strong>Recognized artifact CSVs:</strong> <code>reports</code>, <code>datasets</code>, <code>dataflows</code>, <code>dashboards</code>, <code>datamarts</code>, <code>lakehouses</code>, <code>warehouses</code>, <code>notebooks</code>, <code>datasourceInstances</code>, <code>paginatedReports</code>, <code>Eventstream</code>, <code>Eventhouse</code>, <code>KQLDatabase</code>, <code>KQLDashboard</code>, <code>Reflex</code>, <code>DataPipeline</code>, <code>MirroredDatabase</code>, <code>SQLAnalyticsEndpoint</code></li>
+</ul>
+<h4 id="chart-workspace-types-donut">Chart: Workspace Types (donut)<a class="headerlink" href="#chart-workspace-types-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspaces.csv</code> → <code>type</code> column</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> — distribution by type (<code>Workspace</code>, <code>PersonalGroup</code>, etc.)</li>
+</ul>
+<h4 id="chart-dedicated-vs-shared-donut">Chart: Dedicated vs Shared (donut)<a class="headerlink" href="#chart-dedicated-vs-shared-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspaces.csv</code> → <code>isOnDedicatedCapacity</code> column</li>
+<li><strong>Rule:</strong> values <code>true/1/yes</code> = Dedicated; all others = Shared</li>
+</ul>
+<hr />
+<h3 id="3-workspaces-full-detail">3. Workspaces — Full Detail<a class="headerlink" href="#3-workspaces-full-detail" title="Permanent link">&para;</a></h3>
+<p>Dedicated section with details for all collected workspaces. Requires <code>workspaces.csv</code>.</p>
+<h4 id="internal-kpi-cards">Internal KPI cards<a class="headerlink" href="#internal-kpi-cards" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Total Workspaces</li>
+<li>On Dedicated Capacity</li>
+<li>On Shared Capacity</li>
+<li>Total Artifacts</li>
+</ul>
+<h4 id="table-all-workspaces">Table: All Workspaces<a class="headerlink" href="#table-all-workspaces" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspaces.csv</code> + cross-count with artifact CSVs</li>
+<li><strong>Columns:</strong> Name, Type, State, Capacity (Dedicated/Shared), Capacity ID, Artifacts</li>
+<li><strong>Ordering:</strong> descending by artifact count</li>
+<li><strong>How artifact count is calculated:</strong> for each artifact CSV that contains a <code>workspace_id</code> column, count rows per workspace and accumulate</li>
+</ul>
+<h4 id="chart-top-10-workspaces-horizontal-bar">Chart: Top 10 Workspaces (horizontal bar)<a class="headerlink" href="#chart-top-10-workspaces-horizontal-bar" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> cross-reference workspace_id → row count from artifact CSVs</li>
+<li><strong>Rule:</strong> top 10 by total artifacts; names truncated at 35 characters</li>
+</ul>
+<h4 id="cards-artifacts-by-type">Cards: Artifacts by Type<a class="headerlink" href="#cards-artifacts-by-type" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>artifacts_by_type</code> (same as Inventory section)</li>
+<li>Individual cards per type with count</li>
+</ul>
+<hr />
+<h3 id="4-access-governance">4. Access &amp; Governance<a class="headerlink" href="#4-access-governance" title="Permanent link">&para;</a></h3>
+<p>Permission analysis and access exposure. Requires at least one <code>*_access.csv</code> file.</p>
+<p><strong>Files read:</strong>
+- <code>workspace_access.csv</code> — workspace roles
+- <code>report_access.csv</code> — report permissions
+- <code>dataset_access.csv</code> — dataset permissions
+- <code>dataflow_access.csv</code> — dataflow permissions</p>
+<h4 id="chart-role-distribution-donut">Chart: Role Distribution (donut)<a class="headerlink" href="#chart-role-distribution-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspace_access.csv</code> → <code>role</code> column</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> — shows Admin, Member, Contributor, Viewer, and others</li>
+</ul>
+<h4 id="chart-principal-type-donut">Chart: Principal Type (donut)<a class="headerlink" href="#chart-principal-type-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspace_access.csv</code> → <code>principal_type</code> column</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> — User, Group, App, ServicePrincipal, etc.</li>
+</ul>
+<h4 id="table-external-users-with-access-ext">Table: External Users with Access (#EXT#)<a class="headerlink" href="#table-external-users-with-access-ext" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> all <code>*_access.csv</code> files → <code>user_email</code> column</li>
+<li><strong>Rule:</strong> emails containing <code>#EXT#</code> (Azure AD B2B guests)</li>
+<li><strong>Columns:</strong> Email, Roles (union across all files), workspace count</li>
+<li><strong>Limit:</strong> top 50 by workspace count</li>
+</ul>
+<h4 id="top-10-users-by-access">Top 10 Users by Access<a class="headerlink" href="#top-10-users-by-access" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspace_access.csv</code></li>
+<li><strong>Rule:</strong> <code>groupby("user_email")["workspace_id"].nunique()</code> — count of distinct workspaces per user</li>
+<li><strong>Columns:</strong> Email, Workspaces (count)</li>
+</ul>
+<h4 id="workspaces-with-only-1-user-single-point-of-failure">Workspaces with Only 1 User (Single Point of Failure)<a class="headerlink" href="#workspaces-with-only-1-user-single-point-of-failure" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspace_access.csv</code></li>
+<li><strong>Rule:</strong> <code>groupby("workspace_id")["user_email"].nunique() == 1</code> — identifies workspaces where only one email is listed</li>
+<li><strong>Limit:</strong> top 20</li>
+<li><strong>Risk:</strong> if that user leaves the organization, the workspace will have no administrator</li>
+</ul>
+<hr />
+<h3 id="5-refresh-health">5. Refresh Health<a class="headerlink" href="#5-refresh-health" title="Permanent link">&para;</a></h3>
+<p>Analysis of dataset and dataflow execution history. Requires <code>refresh_history.csv</code>.</p>
+<h4 id="chart-refresh-status-donut">Chart: Refresh Status (donut)<a class="headerlink" href="#chart-refresh-status-donut" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>refresh_history.csv</code> → <code>status</code> column</li>
+<li><strong>Colors:</strong> Completed = green, Failed = red, Unknown/Disabled = gray/orange</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> across all history records</li>
+</ul>
+<h4 id="chart-refreshes-per-day-last-30-days-line-chart">Chart: Refreshes per Day — Last 30 Days (line chart)<a class="headerlink" href="#chart-refreshes-per-day-last-30-days-line-chart" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>refresh_history.csv</code> → <code>start_time</code> column</li>
+<li><strong>Rule:</strong> <code>pd.to_datetime(start_time)</code> → grouped by date; filtered to the last 30 days from report generation time</li>
+<li><strong>Records without valid <code>start_time</code>:</strong> silently ignored</li>
+</ul>
+<h4 id="table-failed-refreshes">Table: Failed Refreshes<a class="headerlink" href="#table-failed-refreshes" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>refresh_history.csv</code></li>
+<li><strong>Rule:</strong> <code>status in ["Failed", "Error", "Disabled"]</code> (case-insensitive)</li>
+<li><strong>Columns:</strong> Artifact, Workspace, Start, Status, Error (when available in <code>service_exception_json</code>)</li>
+<li><strong>Limit:</strong> top 50 records</li>
+</ul>
+<h4 id="table-datasets-without-refresh-in-the-last-30-days">Table: Datasets without Refresh in the Last 30 Days<a class="headerlink" href="#table-datasets-without-refresh-in-the-last-30-days" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>refresh_history.csv</code></li>
+<li><strong>Rule:</strong> for each artifact (<code>artifact_name</code>), takes the most recent <code>start_time</code>; if it is older than 30 days from generation date, it appears in this list</li>
+<li><strong>Limit:</strong> top 50 artifacts</li>
+</ul>
+<hr />
+<h3 id="6-infrastructure">6. Infrastructure<a class="headerlink" href="#6-infrastructure" title="Permanent link">&para;</a></h3>
+<p>Analysis of tenant capacities and workloads. Requires <code>capacities.csv</code>.</p>
+<h4 id="table-capacities">Table: Capacities<a class="headerlink" href="#table-capacities" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>capacities.csv</code></li>
+<li><strong>Available columns:</strong> Name (<code>displayName</code>), SKU, State (<code>state</code>), Region (<code>region</code>)</li>
+</ul>
+<h4 id="chart-workspaces-by-capacity-bar">Chart: Workspaces by Capacity (bar)<a class="headerlink" href="#chart-workspaces-by-capacity-bar" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workspaces.csv</code> → <code>capacityId</code>; cross-reference with <code>capacities.csv</code> → <code>displayName</code></li>
+<li><strong>Rule:</strong> <code>value_counts()</code> of <code>capacityId</code> in workspaces, mapped to capacity name</li>
+</ul>
+<h4 id="chart-capacities-by-sku-bar">Chart: Capacities by SKU (bar)<a class="headerlink" href="#chart-capacities-by-sku-bar" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>capacities.csv</code> → <code>sku</code> column</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> — P1, P2, F2, F64, A1, etc.</li>
+</ul>
+<h4 id="workloads-by-state">Workloads by State<a class="headerlink" href="#workloads-by-state" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Source:</strong> <code>workloads.csv</code> → <code>state</code> column</li>
+<li><strong>Rule:</strong> <code>value_counts()</code> — Enabled, Disabled, Unsupported</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> Workloads are only collected for Gen1 capacities (P-SKU and A-SKU). Fabric capacities (F-SKU) do not expose workloads via the API.</p>
+</blockquote>
+<hr />
+<h3 id="7-tenant-domains">7. Tenant Domains<a class="headerlink" href="#7-tenant-domains" title="Permanent link">&para;</a></h3>
+<p>List of configured domains and sub-domains. Requires <code>domains.csv</code>.</p>
+<ul>
+<li><strong>Source:</strong> <code>domains.csv</code></li>
+<li><strong>Columns:</strong> Name (<code>displayName</code>), Description (<code>description</code>), Parent Domain ID (<code>parentDomainId</code>)</li>
+<li><strong>Hierarchy rule:</strong> if <code>parentDomainId</code> is null/empty = <strong>Root</strong>; otherwise = <strong>Sub-domain</strong></li>
+<li><strong>Limit:</strong> top 100 domains</li>
+</ul>
+<hr />
+<h3 id="8-governance-findings">8. Governance Findings<a class="headerlink" href="#8-governance-findings" title="Permanent link">&para;</a></h3>
+<p>Prioritized list of alerts generated automatically based on collected data. Findings are ordered by severity and displayed even when data is partial.</p>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Color</th>
+<th>Finding</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CRITICAL</strong></td>
+<td>Red</td>
+<td>Datasets without owner</td>
+<td><code>configuredBy</code> null or empty in <code>datasets.csv</code></td>
+</tr>
+<tr>
+<td><strong>HIGH</strong></td>
+<td>Orange</td>
+<td>External users with access</td>
+<td>Emails with <code>#EXT#</code> in any access file</td>
+</tr>
+<tr>
+<td><strong>HIGH</strong></td>
+<td>Orange</td>
+<td>Failed refreshes</td>
+<td><code>status == "Failed"</code> in <code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td><strong>MEDIUM</strong></td>
+<td>Blue</td>
+<td>Workspaces with 1 unique user</td>
+<td><code>nunique(user_email) == 1</code> per workspace in <code>workspace_access.csv</code></td>
+</tr>
+<tr>
+<td><strong>MEDIUM</strong></td>
+<td>Blue</td>
+<td>Datasets without refresh in 30+ days</td>
+<td>Most recent <code>start_time</code> &gt; 30 days in <code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td><strong>OK</strong></td>
+<td>Green</td>
+<td>No critical findings</td>
+<td>Displayed only when none of the above are detected</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Findings only appear when the required data is available. If <code>refresh_history.csv</code> was not collected, refresh-related findings will not be generated.</p>
+</blockquote>
+<hr />
+<h2 id="data-requirements-by-section">Data Requirements by Section<a class="headerlink" href="#data-requirements-by-section" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Required file(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Executive Summary</td>
+<td>Any file in the folder</td>
+</tr>
+<tr>
+<td>Inventory</td>
+<td><code>workspaces.csv</code>, <code>summary.json</code>, or artifact CSVs</td>
+</tr>
+<tr>
+<td>Workspaces — Detail</td>
+<td><code>workspaces.csv</code></td>
+</tr>
+<tr>
+<td>Access &amp; Governance</td>
+<td><code>workspace_access.csv</code> (minimum)</td>
+</tr>
+<tr>
+<td>Refresh Health</td>
+<td><code>refresh_history.csv</code></td>
+</tr>
+<tr>
+<td>Infrastructure</td>
+<td><code>capacities.csv</code></td>
+</tr>
+<tr>
+<td>Domains</td>
+<td><code>domains.csv</code></td>
+</tr>
+<tr>
+<td>Findings</td>
+<td>Any combination of the above</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
+<p>Two HTML files are generated in the data source folder (or the folder specified via <code>--output</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>output/20260227_143000/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── report.html         # Portuguese
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>└── report.en.html      # English
+</code></pre></div>
+<p>The HTML file is <strong>standalone</strong>: all Plotly charts and Bootstrap CSS are loaded via CDN. Plotly JS is included once in the document <code>&lt;head&gt;</code>.</p>
+<hr />
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Missing sections: if a data file doesn't exist, the corresponding section displays a subtle notice ("data not available") instead of an error</li>
+<li>Table limits: 50 rows for failures and stale datasets; 20 for single-user workspaces; 10 for top workspaces/users</li>
+<li>Refresh history: the Power BI API returns only the most recent refreshes per dataset (see <a href="../limitations/">limitations</a>)</li>
+<li>Workloads: available only for Gen1 capacities (P-SKU, A-SKU)</li>
+<li>Charts: require CDN connectivity for Plotly and Bootstrap to render correctly</li>
+</ul>
+<hr />
+<blockquote>
+<p>📘 <a href="../../README.en.md">Back to README</a> | <a href="../collectors/">Collectors Guide</a> | <a href="../limitations/">Limitations</a></p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../diff/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Snapshot Diff">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Snapshot Diff
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../exporters/" class="md-footer__link md-footer__link--next" aria-label="Next: Exporters">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Exporters
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Luciano Borba — Power Tuning
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/luhborba" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/luhborba" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://youtube.com/@luhborba" target="_blank" rel="noopener" title="youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M549.7 124.1c-6.2-23.7-24.8-42.3-48.3-48.6C458.9 64 288.1 64 288.1 64S117.3 64 74.7 75.5c-23.5 6.3-42 24.9-48.3 48.6C15 167 15 256.4 15 256.4s0 89.4 11.4 132.3c6.3 23.6 24.8 41.5 48.3 47.8C117.3 448 288.1 448 288.1 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232.2 337.6V175.2l142.7 81.2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://instagram.com/lrdataconsult" target="_blank" rel="noopener" title="instagram.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M224.3 141a115 115 0 1 0-.6 230 115 115 0 1 0 .6-230m-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1-.6-149.2m93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1-53.6 0m129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8M399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

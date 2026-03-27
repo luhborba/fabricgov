@@ -1,0 +1,2638 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Biblioteca Python para assessment automatizado de governança em Microsoft Fabric">
+      
+      
+      
+        <link rel="canonical" href="https://luhborba.github.io/fabricgov/authentication/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../keyvault/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="pt">
+        
+          <link rel="alternate" href="../en/authentication/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../assets/logo-fabricgov.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Autenticação - fabricgov</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guia-de-autenticacao" class="md-skip">
+          Ir para o conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="fabricgov" class="md-header__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            fabricgov
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Autenticação
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="indigo"  aria-label="Mudar para tema claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para tema claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Selecione o idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="pt" class="md-select__link">
+              Português
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../en/authentication/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando a pesquisa
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/luhborba/fabricgov" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Guia CLI
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/" class="md-tabs__link">
+          
+  
+  
+  Guia Python
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../examples/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Exemplos
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../limitations/" class="md-tabs__link">
+          
+  
+  
+  Referência
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="fabricgov" class="md-nav__button md-logo" aria-label="fabricgov" data-md-component="logo">
+      
+  <img src="../assets/logo-fabricgov.png" alt="logo">
+
+    </a>
+    fabricgov
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/luhborba/fabricgov" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    luhborba/fabricgov
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia CLI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia CLI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autenticação
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autenticação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#service-principal-automacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔐 Service Principal (Automação)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔐 Service Principal (Automação)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pré-requisitos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pré-requisitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-criar-app-registration-no-azure-ad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Criar App Registration no Azure AD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-copiar-credenciais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Copiar Credenciais
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-criar-client-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Criar Client Secret
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-configurar-permissoes-da-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Configurar Permissões da API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-adicionar-sp-ao-grupo-de-fabric-administrators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Adicionar SP ao Grupo de Fabric Administrators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-adicionar-sp-ao-grupo-de-administradores-do-fabric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Adicionar SP ao Grupo de Administradores do Fabric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracao-no-projeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração no Projeto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuração no Projeto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcao-1-via-arquivo-env-recomendado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 1: Via arquivo .env (recomendado)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcao-2-via-parametros-diretos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 2: Via parâmetros diretos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcao-3-via-variaveis-de-ambiente-do-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 3: Via variáveis de ambiente do sistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-flow-interativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌐 Device Flow (Interativo)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌐 Device Flow (Interativo)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vantagens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vantagens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-basico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso Básico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-avancado-tenant-especifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso Avançado (Tenant Específico)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-completo_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-de-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache de Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-key-vault-producao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔑 Azure Key Vault (Produção)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔑 Azure Key Vault (Produção)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisitos_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pré-requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#criando-os-secrets-no-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Criando os secrets no vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurando-o-fabricgov" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurando o fabricgov
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-o-vault-e-acessado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como o vault é acessado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparacao-dos-tres-metodos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Comparação dos três métodos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tratamento-de-erros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Tratamento de Erros
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Tratamento de Erros">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#erros-comuns-do-service-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erros comuns do Service Principal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Erros comuns do Service Principal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-authenticationerror-tenant-id-invalido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. AuthenticationError: Tenant ID inválido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-unauthorizederror-token-invalido-ou-expirado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. UnauthorizedError: Token inválido ou expirado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-forbiddenerror-acesso-negado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ForbiddenError: Acesso negado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#erros-comuns-do-device-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erros comuns do Device Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Erros comuns do Device Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-device-flow-expirou" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Device Flow expirou
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-usuario-sem-permissoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Usuário sem permissões
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boas-praticas-de-seguranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔒 Boas Práticas de Segurança
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔒 Boas Práticas de Segurança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#para-service-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Service Principal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#para-device-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Device Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recursos-adicionais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Recursos Adicionais
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyvault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key Vault
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coletores
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atividades
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diff de Snapshots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relatório HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exportadores
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia Python
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia Python
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API — FabricGov
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exemplos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referência
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limitações
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuindo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#service-principal-automacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔐 Service Principal (Automação)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔐 Service Principal (Automação)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pré-requisitos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pré-requisitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-criar-app-registration-no-azure-ad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Criar App Registration no Azure AD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-copiar-credenciais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Copiar Credenciais
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-criar-client-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Criar Client Secret
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-configurar-permissoes-da-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Configurar Permissões da API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-adicionar-sp-ao-grupo-de-fabric-administrators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Adicionar SP ao Grupo de Fabric Administrators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-adicionar-sp-ao-grupo-de-administradores-do-fabric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Adicionar SP ao Grupo de Administradores do Fabric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracao-no-projeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração no Projeto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuração no Projeto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcao-1-via-arquivo-env-recomendado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 1: Via arquivo .env (recomendado)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcao-2-via-parametros-diretos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 2: Via parâmetros diretos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcao-3-via-variaveis-de-ambiente-do-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opção 3: Via variáveis de ambiente do sistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-flow-interativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌐 Device Flow (Interativo)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌐 Device Flow (Interativo)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vantagens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vantagens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-basico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso Básico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-avancado-tenant-especifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso Avançado (Tenant Específico)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-completo_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-de-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache de Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-key-vault-producao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔑 Azure Key Vault (Produção)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔑 Azure Key Vault (Produção)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usar_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando usar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisitos_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pré-requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#criando-os-secrets-no-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Criando os secrets no vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurando-o-fabricgov" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurando o fabricgov
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-o-vault-e-acessado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como o vault é acessado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparacao-dos-tres-metodos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Comparação dos três métodos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tratamento-de-erros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Tratamento de Erros
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Tratamento de Erros">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#erros-comuns-do-service-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erros comuns do Service Principal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Erros comuns do Service Principal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-authenticationerror-tenant-id-invalido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. AuthenticationError: Tenant ID inválido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-unauthorizederror-token-invalido-ou-expirado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. UnauthorizedError: Token inválido ou expirado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-forbiddenerror-acesso-negado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ForbiddenError: Acesso negado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#erros-comuns-do-device-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erros comuns do Device Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Erros comuns do Device Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-device-flow-expirou" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Device Flow expirou
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-usuario-sem-permissoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Usuário sem permissões
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boas-praticas-de-seguranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔒 Boas Práticas de Segurança
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔒 Boas Práticas de Segurança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#para-service-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Service Principal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#para-device-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Device Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recursos-adicionais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Recursos Adicionais
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="guia-de-autenticacao">Guia de Autenticação<a class="headerlink" href="#guia-de-autenticacao" title="Permanent link">&para;</a></h1>
+<p>O <strong>fabricgov</strong> suporta três modos de autenticação para acessar as APIs do Microsoft Fabric e Power BI:</p>
+<ol>
+<li><strong>Service Principal</strong> — autenticação não-interativa (recomendado para automação)</li>
+<li><strong>Device Flow</strong> — autenticação interativa via browser (recomendado para uso manual)</li>
+<li><strong>Azure Key Vault</strong> — Service Principal sem credenciais em disco (recomendado para produção)</li>
+</ol>
+<hr />
+<h2 id="service-principal-automacao">🔐 Service Principal (Automação)<a class="headerlink" href="#service-principal-automacao" title="Permanent link">&para;</a></h2>
+<h3 id="quando-usar">Quando usar<a class="headerlink" href="#quando-usar" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Scripts automatizados</li>
+<li>CI/CD pipelines</li>
+<li>Notebooks agendados</li>
+<li>Ambientes sem interação humana</li>
+</ul>
+<h3 id="pre-requisitos">Pré-requisitos<a class="headerlink" href="#pre-requisitos" title="Permanent link">&para;</a></h3>
+<h4 id="1-criar-app-registration-no-azure-ad">1. Criar App Registration no Azure AD<a class="headerlink" href="#1-criar-app-registration-no-azure-ad" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Acesse o <a href="https://portal.azure.com">Azure Portal</a></li>
+<li>Navegue até <strong>Azure Active Directory</strong> → <strong>App registrations</strong></li>
+<li>Clique em <strong>New registration</strong></li>
+<li>Configure:</li>
+<li><strong>Name:</strong> <code>fabricgov-automation</code> (ou qualquer nome)</li>
+<li><strong>Supported account types:</strong> "Accounts in this organizational directory only"</li>
+<li><strong>Redirect URI:</strong> deixe em branco</li>
+<li>Clique em <strong>Register</strong></li>
+</ol>
+<h4 id="2-copiar-credenciais">2. Copiar Credenciais<a class="headerlink" href="#2-copiar-credenciais" title="Permanent link">&para;</a></h4>
+<p>Após criar o App Registration:</p>
+<ul>
+<li><strong>Application (client) ID</strong> → copie para <code>FABRICGOV_CLIENT_ID</code></li>
+<li><strong>Directory (tenant) ID</strong> → copie para <code>FABRICGOV_TENANT_ID</code></li>
+</ul>
+<h4 id="3-criar-client-secret">3. Criar Client Secret<a class="headerlink" href="#3-criar-client-secret" title="Permanent link">&para;</a></h4>
+<ol>
+<li>No menu lateral, vá em <strong>Certificates &amp; secrets</strong></li>
+<li>Clique em <strong>New client secret</strong></li>
+<li>Configure:</li>
+<li><strong>Description:</strong> <code>fabricgov-secret</code></li>
+<li><strong>Expires:</strong> 24 months (ou conforme política da empresa)</li>
+<li>Clique em <strong>Add</strong></li>
+<li><strong>IMPORTANTE:</strong> Copie o <strong>Value</strong> imediatamente (só aparece uma vez) → <code>FABRICGOV_CLIENT_SECRET</code></li>
+</ol>
+<h4 id="4-configurar-permissoes-da-api">4. Configurar Permissões da API<a class="headerlink" href="#4-configurar-permissoes-da-api" title="Permanent link">&para;</a></h4>
+<ol>
+<li>No menu lateral, vá em <strong>API permissions</strong></li>
+<li>Clique em <strong>Add a permission</strong></li>
+<li>Selecione <strong>Power BI Service</strong></li>
+<li>Escolha <strong>Application permissions</strong> (não "Delegated")</li>
+<li>Adicione as seguintes permissões:</li>
+<li><code>Tenant.Read.All</code></li>
+<li><code>Workspace.ReadWrite.All</code></li>
+<li>Clique em <strong>Add permissions</strong></li>
+<li><strong>CRÍTICO:</strong> Clique em <strong>Grant admin consent for [seu tenant]</strong></li>
+<li>Só um admin do tenant pode fazer isso</li>
+<li>Sem isso, o SP não funcionará</li>
+</ol>
+<h4 id="5-adicionar-sp-ao-grupo-de-fabric-administrators">5. Adicionar SP ao Grupo de Fabric Administrators<a class="headerlink" href="#5-adicionar-sp-ao-grupo-de-fabric-administrators" title="Permanent link">&para;</a></h4>
+<ol>
+<li>No <a href="https://app.powerbi.com">Portal do Power BI</a></li>
+<li>Vá em <strong>Settings</strong> (engrenagem) → <strong>Admin portal</strong></li>
+<li>No menu lateral, <strong>Tenant settings</strong></li>
+<li>Role até <strong>Admin API settings</strong></li>
+<li>Habilite:</li>
+<li><strong>Service principals can use Fabric APIs</strong></li>
+<li><strong>Service principals can access read-only admin APIs</strong></li>
+<li>Adicione o Service Principal ao grupo permitido (ou deixe "Apply to the entire organization")</li>
+<li>Clique em <strong>Apply</strong></li>
+</ol>
+<h4 id="6-adicionar-sp-ao-grupo-de-administradores-do-fabric">6. Adicionar SP ao Grupo de Administradores do Fabric<a class="headerlink" href="#6-adicionar-sp-ao-grupo-de-administradores-do-fabric" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Ainda no <strong>Admin portal</strong></li>
+<li>Vá em <strong>Capacity settings</strong> → selecione sua capacidade</li>
+<li>Em <strong>Administrators</strong>, adicione o App Registration (busque pelo nome ou client_id)</li>
+<li>Salve as alterações</li>
+</ol>
+<hr />
+<h3 id="configuracao-no-projeto">Configuração no Projeto<a class="headerlink" href="#configuracao-no-projeto" title="Permanent link">&para;</a></h3>
+<h4 id="opcao-1-via-arquivo-env-recomendado">Opção 1: Via arquivo <code>.env</code> (recomendado)<a class="headerlink" href="#opcao-1-via-arquivo-env-recomendado" title="Permanent link">&para;</a></h4>
+<p>Crie um arquivo <code>.env</code> na raiz do projeto:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>FABRICGOV_TENANT_ID=00000000-0000-0000-0000-000000000000
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>FABRICGOV_CLIENT_ID=11111111-1111-1111-1111-111111111111
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>FABRICGOV_CLIENT_SECRET=seu-client-secret-aqui
+</code></pre></div></p>
+<p><strong>Uso no código:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePrincipalAuth</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Lê automaticamente do .env</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">ServicePrincipalAuth</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+</code></pre></div></p>
+<h4 id="opcao-2-via-parametros-diretos">Opção 2: Via parâmetros diretos<a class="headerlink" href="#opcao-2-via-parametros-diretos" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePrincipalAuth</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">ServicePrincipalAuth</span><span class="o">.</span><span class="n">from_params</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">tenant_id</span><span class="o">=</span><span class="s2">&quot;00000000-0000-0000-0000-000000000000&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">client_secret</span><span class="o">=</span><span class="s2">&quot;seu-client-secret-aqui&quot;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
+</code></pre></div>
+<h4 id="opcao-3-via-variaveis-de-ambiente-do-sistema">Opção 3: Via variáveis de ambiente do sistema<a class="headerlink" href="#opcao-3-via-variaveis-de-ambiente-do-sistema" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FABRICGOV_TENANT_ID</span><span class="o">=</span><span class="s2">&quot;00000000-0000-0000-0000-000000000000&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FABRICGOV_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FABRICGOV_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;seu-client-secret-aqui&quot;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePrincipalAuth</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Lê das variáveis de ambiente do sistema</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">ServicePrincipalAuth</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+</code></pre></div></p>
+<hr />
+<h3 id="exemplo-completo">Exemplo Completo<a class="headerlink" href="#exemplo-completo" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePrincipalAuth</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.collectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkspaceInventoryCollector</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForbiddenError</span><span class="p">,</span> <span class="n">UnauthorizedError</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="c1"># Autentica via .env</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">auth</span> <span class="o">=</span> <span class="n">ServicePrincipalAuth</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="c1"># Usa em qualquer coletor</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">collector</span> <span class="o">=</span> <span class="n">WorkspaceInventoryCollector</span><span class="p">(</span><span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Coletados </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">][</span><span class="s1">&#39;total_workspaces&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> workspaces&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="k">except</span> <span class="n">UnauthorizedError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Credenciais inválidas: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="k">except</span> <span class="n">ForbiddenError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Sem permissões: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   → Verifique se o SP está no grupo de Fabric Administrators&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="device-flow-interativo">🌐 Device Flow (Interativo)<a class="headerlink" href="#device-flow-interativo" title="Permanent link">&para;</a></h2>
+<h3 id="quando-usar_1">Quando usar<a class="headerlink" href="#quando-usar_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Uso manual via terminal</li>
+<li>Desenvolvimento local</li>
+<li>Ambientes onde não é possível criar Service Principal</li>
+<li>Quando o usuário precisa autenticar com suas próprias credenciais</li>
+</ul>
+<h3 id="vantagens">Vantagens<a class="headerlink" href="#vantagens" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Não precisa de <code>tenant_id</code> nem <code>client_id</code> (usa padrões públicos)</li>
+<li>✅ Não precisa criar App Registration no Azure AD</li>
+<li>✅ Suporta MFA automaticamente</li>
+<li>✅ Cache de token entre execuções (válido por ~1h)</li>
+</ul>
+<h3 id="requisitos">Requisitos<a class="headerlink" href="#requisitos" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Usuário deve ter permissões de <strong>Fabric Administrator</strong> no tenant</li>
+<li>Acesso a um browser para autenticação</li>
+</ul>
+<hr />
+<h3 id="configuracao">Configuração<a class="headerlink" href="#configuracao" title="Permanent link">&para;</a></h3>
+<p><strong>Nenhuma configuração necessária!</strong> O Device Flow usa:
+- Client ID público do Azure CLI
+- Endpoint multi-tenant (<code>/common</code>) que descobre o tenant automaticamente</p>
+<hr />
+<h3 id="uso-basico">Uso Básico<a class="headerlink" href="#uso-basico" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceFlowAuth</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Não precisa de parâmetros</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">DeviceFlowAuth</span><span class="p">()</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Na primeira execução, exibe:</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># ──────────────────────────────────────────────────────────────────</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1">#   AUTENTICAÇÃO NECESSÁRIA</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="c1"># ──────────────────────────────────────────────────────────────────</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1">#   1. Acesse: https://microsoft.com/devicelogin</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="c1">#   2. Digite o código: ABC12DEF</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1">#   3. Autentique com sua conta Microsoft</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="c1"># ──────────────────────────────────────────────────────────────────</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="c1">#   Aguardando autenticação...</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="c1"># ──────────────────────────────────────────────────────────────────</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="c1"># Após autenticar no browser, o script continua automaticamente</span>
+</code></pre></div>
+<hr />
+<h3 id="uso-avancado-tenant-especifico">Uso Avançado (Tenant Específico)<a class="headerlink" href="#uso-avancado-tenant-especifico" title="Permanent link">&para;</a></h3>
+<p>Se você quiser forçar autenticação em um tenant específico:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">DeviceFlowAuth</span><span class="p">(</span><span class="n">tenant_id</span><span class="o">=</span><span class="s2">&quot;seu-tenant-id&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Se você tiver um App Registration próprio com permissões customizadas:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">DeviceFlowAuth</span><span class="p">(</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">tenant_id</span><span class="o">=</span><span class="s2">&quot;seu-tenant-id&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;seu-client-id&quot;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">)</span>
+</code></pre></div></p>
+<hr />
+<h3 id="exemplo-completo_1">Exemplo Completo<a class="headerlink" href="#exemplo-completo_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceFlowAuth</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fabricgov.collectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkspaceInventoryCollector</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Autentica via Device Flow</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">DeviceFlowAuth</span><span class="p">()</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Usa em qualquer coletor</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">collector</span> <span class="o">=</span> <span class="n">WorkspaceInventoryCollector</span><span class="p">(</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="n">progress_callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="p">)</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="n">result</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✓ Coletados </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">][</span><span class="s1">&#39;total_workspaces&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> workspaces&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Total de itens: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">][</span><span class="s1">&#39;total_items&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Output:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>──────────────────────────────────────────────────────────────────
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  AUTENTICAÇÃO NECESSÁRIA
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>──────────────────────────────────────────────────────────────────
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  1. Acesse: https://microsoft.com/devicelogin
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  2. Digite o código: ABC12DEF
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  3. Autentique com sua conta Microsoft
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>──────────────────────────────────────────────────────────────────
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>  Aguardando autenticação...
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>──────────────────────────────────────────────────────────────────
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>[16:33:36] Listando workspaces do tenant...
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>[16:33:36] Encontrados 302 workspaces
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>...
+</code></pre></div></p>
+<hr />
+<h3 id="cache-de-token">Cache de Token<a class="headerlink" href="#cache-de-token" title="Permanent link">&para;</a></h3>
+<p>O MSAL mantém cache de token em memória. Isso significa:</p>
+<ul>
+<li><strong>Primeira execução:</strong> pede autenticação</li>
+<li><strong>Execuções seguintes (mesma sessão Python):</strong> usa token em cache</li>
+<li><strong>Nova sessão Python:</strong> pede autenticação novamente</li>
+</ul>
+<p>O token tem validade de ~1 hora. Após expirar, o Device Flow é reiniciado automaticamente.</p>
+<hr />
+<h2 id="azure-key-vault-producao">🔑 Azure Key Vault (Produção)<a class="headerlink" href="#azure-key-vault-producao" title="Permanent link">&para;</a></h2>
+<h3 id="quando-usar_2">Quando usar<a class="headerlink" href="#quando-usar_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ambientes de produção onde não é seguro armazenar <code>client_secret</code> em disco</li>
+<li>Empresas que já centralizam credenciais em um Key Vault corporativo</li>
+<li>CI/CD pipelines com Managed Identity (Azure DevOps, GitHub Actions com OIDC)</li>
+</ul>
+<h3 id="pre-requisitos_1">Pré-requisitos<a class="headerlink" href="#pre-requisitos_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Key Vault criado</strong> no Azure com os 3 secrets do SP</li>
+<li><strong>Role atribuída:</strong> <code>Key Vault Secrets User</code> para seu usuário/SP no vault</li>
+<li><strong>Dependências instaladas:</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pip<span class="w"> </span>install<span class="w"> </span>fabricgov<span class="o">[</span>keyvault<span class="o">]</span>
+</code></pre></div></li>
+</ol>
+<h3 id="criando-os-secrets-no-vault">Criando os secrets no vault<a class="headerlink" href="#criando-os-secrets-no-vault" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--vault-name<span class="w"> </span>meu-vault<span class="w"> </span>--name<span class="w"> </span>fabricgov-tenant-id<span class="w">     </span>--value<span class="w"> </span><span class="s2">&quot;seu-tenant-id&quot;</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--vault-name<span class="w"> </span>meu-vault<span class="w"> </span>--name<span class="w"> </span>fabricgov-client-id<span class="w">     </span>--value<span class="w"> </span><span class="s2">&quot;seu-client-id&quot;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--vault-name<span class="w"> </span>meu-vault<span class="w"> </span>--name<span class="w"> </span>fabricgov-client-secret<span class="w"> </span>--value<span class="w"> </span><span class="s2">&quot;seu-client-secret&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Os nomes são livres — os defaults acima podem ser substituídos via <code>--tenant-id-secret</code>, <code>--client-id-secret</code> e <code>--client-secret-secret</code>.</p>
+</blockquote>
+<h3 id="configurando-o-fabricgov">Configurando o fabricgov<a class="headerlink" href="#configurando-o-fabricgov" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Com nomes padrão</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>fabricgov<span class="w"> </span>auth<span class="w"> </span>keyvault<span class="w"> </span>--vault-url<span class="w"> </span>https://meu-vault.vault.azure.net/
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Com nomes personalizados</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>fabricgov<span class="w"> </span>auth<span class="w"> </span>keyvault<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span>--vault-url<span class="w"> </span>https://meu-vault.vault.azure.net/<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span>--tenant-id-secret<span class="w">     </span>pbi-tenant<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span>--client-id-secret<span class="w">     </span>pbi-client<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">    </span>--client-secret-secret<span class="w"> </span>pbi-secret
+</code></pre></div>
+<p>O que é salvo localmente (apenas referências, nunca credenciais):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;last_auth_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;keyvault&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;vault_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://meu-vault.vault.azure.net/&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;secret_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">&quot;tenant_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fabricgov-tenant-id&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nt">&quot;client_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fabricgov-client-id&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nt">&quot;client_secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fabricgov-client-secret&quot;</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">}</span>
+</code></pre></div></p>
+<h3 id="como-o-vault-e-acessado">Como o vault é acessado<a class="headerlink" href="#como-o-vault-e-acessado" title="Permanent link">&para;</a></h3>
+<p>A autenticação no próprio vault usa <code>DefaultAzureCredential</code>, que tenta em ordem:</p>
+<table>
+<thead>
+<tr>
+<th>Ambiente</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desenvolvimento local</td>
+<td><code>az login</code> (Azure CLI)</td>
+</tr>
+<tr>
+<td>Azure VM / Container</td>
+<td>Managed Identity</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>Env vars <code>AZURE_CLIENT_ID</code> + <code>AZURE_TENANT_ID</code> + <code>AZURE_CLIENT_SECRET</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📘 <a href="../keyvault/">Guia completo do Key Vault →</a></p>
+</blockquote>
+<hr />
+<h2 id="comparacao-dos-tres-metodos">🔄 Comparação dos três métodos<a class="headerlink" href="#comparacao-dos-tres-metodos" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th style="text-align: center;">Service Principal</th>
+<th style="text-align: center;">Device Flow</th>
+<th style="text-align: center;">Key Vault</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Setup</strong></td>
+<td style="text-align: center;">App Registration</td>
+<td style="text-align: center;">Zero</td>
+<td style="text-align: center;">App Reg + Vault</td>
+</tr>
+<tr>
+<td><strong>Credenciais em disco</strong></td>
+<td style="text-align: center;">⚠️ <code>.env</code> local</td>
+<td style="text-align: center;">❌ Nenhuma</td>
+<td style="text-align: center;">✅ Nunca</td>
+</tr>
+<tr>
+<td><strong>Interação</strong></td>
+<td style="text-align: center;">Não-interativa</td>
+<td style="text-align: center;">Browser</td>
+<td style="text-align: center;">Não-interativa</td>
+</tr>
+<tr>
+<td><strong>Automação / CI-CD</strong></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>Desenvolvimento local</strong></td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅ (com az login)</td>
+</tr>
+<tr>
+<td><strong>Produção enterprise</strong></td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅ Recomendado</td>
+</tr>
+<tr>
+<td><strong>Dep. extra</strong></td>
+<td style="text-align: center;">Nenhuma</td>
+<td style="text-align: center;">Nenhuma</td>
+<td style="text-align: center;"><code>fabricgov[keyvault]</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tratamento-de-erros">🛡️ Tratamento de Erros<a class="headerlink" href="#tratamento-de-erros" title="Permanent link">&para;</a></h2>
+<h3 id="erros-comuns-do-service-principal">Erros comuns do Service Principal<a class="headerlink" href="#erros-comuns-do-service-principal" title="Permanent link">&para;</a></h3>
+<h4 id="1-authenticationerror-tenant-id-invalido">1. <code>AuthenticationError: Tenant ID inválido</code><a class="headerlink" href="#1-authenticationerror-tenant-id-invalido" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Falha ao inicializar autenticação.
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Tenant ID inválido ou inacessível: invalid-tenant
+</code></pre></div>
+<p><strong>Solução:</strong> Verifique o <code>FABRICGOV_TENANT_ID</code> no <code>.env</code>. Deve ser um GUID válido do seu tenant.</p>
+<hr />
+<h4 id="2-unauthorizederror-token-invalido-ou-expirado">2. <code>UnauthorizedError: Token inválido ou expirado</code><a class="headerlink" href="#2-unauthorizederror-token-invalido-ou-expirado" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>[401] Token inválido ou expirado. Verifique as credenciais.
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Endpoint: /v1.0/myorg/admin/groups
+</code></pre></div>
+<p><strong>Solução:</strong> Verifique:
+- <code>FABRICGOV_CLIENT_SECRET</code> está correto
+- O secret não expirou (Azure AD → App registrations → Certificates &amp; secrets)</p>
+<hr />
+<h4 id="3-forbiddenerror-acesso-negado">3. <code>ForbiddenError: Acesso negado</code><a class="headerlink" href="#3-forbiddenerror-acesso-negado" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>[403] Acesso negado. O Service Principal precisa de permissões de Fabric Administrator.
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>Endpoint: /v1.0/myorg/admin/groups
+</code></pre></div>
+<p><strong>Solução:</strong> 
+1. Verifique se o SP tem permissões <code>Tenant.Read.All</code> <strong>concedidas via admin consent</strong>
+2. Confirme que o SP está no grupo de <strong>Fabric Administrators</strong>
+3. Aguarde até 15 minutos para as permissões propagarem</p>
+<hr />
+<h3 id="erros-comuns-do-device-flow">Erros comuns do Device Flow<a class="headerlink" href="#erros-comuns-do-device-flow" title="Permanent link">&para;</a></h3>
+<h4 id="1-device-flow-expirou">1. Device Flow expirou<a class="headerlink" href="#1-device-flow-expirou" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>AuthenticationError: Falha na autenticação via Device Flow.
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>Erro: authorization_pending
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>Detalhe: Flow expirou sem autenticação
+</code></pre></div>
+<p><strong>Solução:</strong> O código expira em 15 minutos. Execute novamente e autentique mais rápido.</p>
+<hr />
+<h4 id="2-usuario-sem-permissoes">2. Usuário sem permissões<a class="headerlink" href="#2-usuario-sem-permissoes" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>[403] Acesso negado.
+</code></pre></div>
+<p><strong>Solução:</strong> O usuário que autenticou precisa ser <strong>Fabric Administrator</strong> no tenant.</p>
+<hr />
+<h2 id="boas-praticas-de-seguranca">🔒 Boas Práticas de Segurança<a class="headerlink" href="#boas-praticas-de-seguranca" title="Permanent link">&para;</a></h2>
+<h3 id="para-service-principal">Para Service Principal<a class="headerlink" href="#para-service-principal" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>FAÇA:</strong>
+- Use <code>.env</code> e adicione ao <code>.gitignore</code>
+- Rotacione client secrets a cada 6-12 meses
+- Use Key Vault para ambientes de produção
+- Limite permissões ao mínimo necessário
+- Monitore uso do SP via Azure AD logs</p>
+<p>❌ <strong>NÃO FAÇA:</strong>
+- Commitar credenciais no Git
+- Compartilhar secrets via email/chat
+- Usar o mesmo SP em múltiplos ambientes
+- Deixar secrets em código hardcoded</p>
+<hr />
+<h3 id="para-device-flow">Para Device Flow<a class="headerlink" href="#para-device-flow" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>FAÇA:</strong>
+- Use em ambientes de desenvolvimento
+- Revogue sessões antigas periodicamente
+- Monitore acessos via Fabric logs</p>
+<p>❌ <strong>NÃO FAÇA:</strong>
+- Usar em automação/CI-CD
+- Compartilhar tokens entre usuários
+- Deixar sessões abertas em máquinas compartilhadas</p>
+<hr />
+<h2 id="recursos-adicionais">📚 Recursos Adicionais<a class="headerlink" href="#recursos-adicionais" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app">Azure AD App Registrations</a></li>
+<li><a href="https://learn.microsoft.com/power-bi/developer/embedded/embed-service-principal">Power BI Service Principal</a></li>
+<li><a href="https://learn.microsoft.com/rest/api/power-bi/admin">Fabric Admin APIs</a></li>
+<li><a href="https://msal-python.readthedocs.io/">MSAL Python Documentation</a></li>
+<li><a href="../keyvault/">Azure Key Vault — Guia fabricgov</a></li>
+</ul>
+<hr />
+<p><strong><a href="../README.md">← Voltar ao README</a></strong> | <strong><a href="../collectors/">Próximo: Coletores →</a></strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar ao topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Anterior: Início">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Início
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../keyvault/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Key Vault">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Key Vault
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Luciano Borba — Power Tuning
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/luhborba" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/luhborba" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://youtube.com/@luhborba" target="_blank" rel="noopener" title="youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M549.7 124.1c-6.2-23.7-24.8-42.3-48.3-48.6C458.9 64 288.1 64 288.1 64S117.3 64 74.7 75.5c-23.5 6.3-42 24.9-48.3 48.6C15 167 15 256.4 15 256.4s0 89.4 11.4 132.3c6.3 23.6 24.8 41.5 48.3 47.8C117.3 448 288.1 448 288.1 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232.2 337.6V175.2l142.7 81.2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://instagram.com/lrdataconsult" target="_blank" rel="noopener" title="instagram.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M224.3 141a115 115 0 1 0-.6 230 115 115 0 1 0 .6-230m-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1-.6-149.2m93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1-53.6 0m129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8M399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
