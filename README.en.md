@@ -6,8 +6,9 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Poetry](https://img.shields.io/badge/poetry-1.8+-purple.svg)](https://python-poetry.org/)
 [![PyPI version](https://badge.fury.io/py/fabricgov.svg)](https://pypi.org/project/fabricgov/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://luhborba.github.io/fabricgov/)
 
-> 🇧🇷 **Documentação em Português:** [README.md](README.md)
+> 🇧🇷 **Documentação em Português:** [README.md](README.md) | 📚 **Full documentation:** [luhborba.github.io/fabricgov](https://luhborba.github.io/fabricgov/)
 
 ---
 

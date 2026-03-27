@@ -2,13 +2,13 @@
 
 > Biblioteca Python para assessment automatizado de governança em ambientes Microsoft Fabric
 
-> 🇺🇸 **English documentation:** [README.en.md](README.en.md)
+> 🇺🇸 **English documentation:** [README.en.md](README.en.md) | 📚 **Documentação completa:** [luhborba.github.io/fabricgov](https://luhborba.github.io/fabricgov/)
 
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Poetry](https://img.shields.io/badge/poetry-1.8+-purple.svg)](https://python-poetry.org/)
 [![PyPI version](https://badge.fury.io/py/fabricgov.svg)](https://pypi.org/project/fabricgov/)
-[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://luhborba.github.io/fabricgov/)
 
 ---
 
