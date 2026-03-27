@@ -1,0 +1,28 @@
+/* ── Logo size (+20%) ──────────────────────────────────── */
+.md-header__button.md-logo img {
+  height: 48px;
+  width: auto;
+}
+
+/* ── Navbar color ──────────────────────────────────────── */
+:root {
+  --md-primary-fg-color: #263238;
+  --md-primary-fg-color--light: #37474F;
+  --md-primary-fg-color--dark:  #1C262B;
+}
+
+/* ── Cores de destaque no modo escuro ──────────────────── */
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #4FC3F7;          /* links ativos, hover */
+  --md-typeset-a-color: #4FC3F7;          /* links no conteúdo  */
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: #4FC3F7;
+}
+
+[data-md-color-scheme="slate"] .md-toc__link--active,
+[data-md-color-scheme="slate"] .md-toc__link:hover {
+  color: #4FC3F7;
+}

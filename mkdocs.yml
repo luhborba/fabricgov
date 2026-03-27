@@ -8,17 +8,17 @@ copyright: "Copyright &copy; 2026 Luciano Borba — Power Tuning"
 theme:
   name: material
   language: pt
-  logo: assets/logo.png
-  favicon: assets/logo.png
+  logo: assets/logo-fabricgov.png
+  favicon: assets/logo-fabricgov.png
   palette:
     - scheme: default
-      primary: indigo
+      primary: custom
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: Mudar para tema escuro
     - scheme: slate
-      primary: indigo
+      primary: custom
       accent: indigo
       toggle:
         icon: material/brightness-4
@@ -53,7 +53,9 @@ plugins:
           build: true
           nav_translations:
             Início: Home
-            Guias: Guides
+            Guia CLI: CLI Guide
+            Guia Python: Python Guide
+            Exemplos: Examples
             Referência: Reference
             Autenticação: Authentication
             Coletores: Collectors
@@ -63,6 +65,9 @@ plugins:
             Exportadores: Exporters
             Limitações: Limitations
             Contribuindo: Contributing
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition
@@ -80,8 +85,7 @@ markdown_extensions:
 
 nav:
   - Início: index.md
-  - Guias:
-    - Python API: api.md
+  - Guia CLI:
     - Autenticação: authentication.md
     - Key Vault: keyvault.md
     - Coletores: collectors.md
@@ -89,6 +93,9 @@ nav:
     - Diff de Snapshots: diff.md
     - Relatório HTML: report.md
     - Exportadores: exporters.md
+  - Guia Python:
+    - api.md
+  - Exemplos: examples.md
   - Referência:
     - Limitações: limitations.md
     - Contribuindo: contributing.md

@@ -5,6 +5,25 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.0.0] - 2026-03-27
+
+### Added
+
+#### MkDocs — Documentação oficial
+- Site de documentação com **MkDocs Material** em PT e EN via plugin `mkdocs-static-i18n`
+- Navegação com abas: **Guia CLI**, **Guia Python**, **Exemplos**, **Referência**
+- Página inicial (`docs/index.md` / `docs/en/index.md`) com quick start CLI + Python
+- Página de exemplos (`docs/examples.md` / `docs/en/examples.md`) — 10 cenários práticos com tabs CLI/Python: auditoria completa, datasets sem owner, refreshes com falha, usuários externos, comparação semanal, relatório para board, GitHub Actions, Jupyter Notebook, filtro de atividades, Key Vault
+- CSS customizado: cor da barra `#263238`, logo 48px, cores de destaque visíveis no modo escuro
+- Logo `docs/assets/logo-fabricgov.png`
+- Grupo de dependências `[tool.poetry.group.docs]`: `mkdocs`, `mkdocs-material`, `mkdocs-static-i18n`
+
+### Changed
+- `pyproject.toml`: campo `documentation` atualizado para `https://luhborba.github.io/fabricgov/`
+- `README.md` e `README.en.md`: roadmap v1.0.0 marcado como concluído
+
+---
+
 ## [0.9.0] - 2026-03-13
 
 ### Added

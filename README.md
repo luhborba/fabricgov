@@ -368,10 +368,10 @@ output/
 - [x] `fabricgov diff` — comparação de dois snapshots de output (workspaces, artefatos, acesso, refresh, findings)
 
 
-### 🎯 v1.0.0 (Em desenvolvimento))
+### ✅ v1.0.0
 - [x] `FabricGov` Python API — facade de alto nível para uso programático sem CLI
 - [x] Relatório HTML: seções Atividade e Tendências (Activity/Trends com dados do `activity_events.csv` e `diff.json`)
-- [ ] MkDocs para documentação
+- [x] MkDocs — documentação oficial PT + EN com Material theme, Guia CLI, Guia Python, Exemplos
 
 > 📘 [Ver changelog completo →](CHANGELOG.md)
 
@@ -379,6 +379,7 @@ output/
 
 ## 📚 Documentação
 
+- **[Documentação completa](https://luhborba.github.io/fabricgov/)** — MkDocs PT + EN
 - **[Python API](docs/api.md)** — Uso programático com a classe `FabricGov`
 - **[Autenticação](docs/authentication.md)** — Service Principal, Device Flow, Key Vault
 - **[Key Vault](docs/keyvault.md)** — Credenciais sem texto plano em disco

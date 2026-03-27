@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "fabricgov"
-version = "0.9.0"
+version = "1.0.0"
 description = "Biblioteca Python para extração automatizada de dados para governança em Microsoft Fabric"
 authors = ["Luciano Borba <luhborbafilho@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/luhborba/fabricgov"
 repository = "https://github.com/luhborba/fabricgov"
-documentation = "https://github.com/luhborba/fabricgov/tree/main/docs"
+documentation = "https://luhborba.github.io/fabricgov/"
 keywords = ["microsoft-fabric", "power-bi", "governance", "data-engineering", "assessment"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -37,6 +37,7 @@ jinja2 = "^3.1"
 pandas = "^2.0"
 azure-keyvault-secrets = {version = ">=4.7", optional = true}
 azure-identity = {version = ">=1.15", optional = true}
+mkdocs = "^1.6.1"
 
 [tool.poetry.extras]
 keyvault = ["azure-keyvault-secrets", "azure-identity"]
