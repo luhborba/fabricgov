@@ -1205,8 +1205,8 @@ def all_collect(format, output, resume, limit, progress, days):
         click.echo(f"▶️  PASSO 3: ACESSOS")
         click.echo(f"{'='*70}")
         _checkpoint_abort = False
-        # Se checkpointed E --resume, passa resume=True para retomar checkpoint interno
-        inner_resume = resume and step_status == "checkpointed"
+        # Sempre passa o --resume do usuário: o collector só retoma se o arquivo existir
+        inner_resume = resume
         try:
             ctx.invoke(
                 all_access,
@@ -1241,7 +1241,7 @@ def all_collect(format, output, resume, limit, progress, days):
         click.echo(f"▶️  PASSO 4: REFRESH")
         click.echo(f"{'='*70}")
         _checkpoint_abort = False
-        inner_resume = resume and step_status == "checkpointed"
+        inner_resume = resume
         try:
             ctx.invoke(
                 all_refresh,

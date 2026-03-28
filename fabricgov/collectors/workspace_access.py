@@ -177,11 +177,12 @@ class WorkspaceAccessCollector(BaseCollector):
             except TooManyRequestsError as e:
                 # Rate limit - salva checkpoint e interrompe
                 self._progress(f"⚠️  Rate limit atingido no workspace {idx}")
+                if self._checkpoint is None:
+                    raise
                 self._save_checkpoint(
                     processed_ids, workspace_access, errors,
                     len(processed_ids), total_expected
                 )
-                
                 raise CheckpointSavedException(
                     checkpoint_file=str(self._checkpoint.checkpoint_file),
                     progress=f"{len(processed_ids)}/{total_expected}",
