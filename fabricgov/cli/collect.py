@@ -925,14 +925,16 @@ def all_access(format, output, resume, progress, run_dir):
 
     ctx = click.get_current_context()
     for cmd_name, label, ckpt_name in collectors_to_run:
-        output_dir = Path(run_dir) if run_dir else Path(output)
-        ckpt_path = output_dir / ckpt_name
+        session_dir = Path(run_dir) if run_dir else Path(output)
+        root_ckpt = Path(output) / ckpt_name  # checkpoints ficam na raiz do output/
 
-        # Se resume=True e não há checkpoint deste coletor E o CSV de saída já existe,
-        # significa que ele completou numa execução anterior — pode pular.
+        # Se resume=True e o CSV já existe na pasta da sessão,
+        # este coletor completou em execução anterior — pula e limpa checkpoint stale.
         csv_name = cmd_name.replace('-', '_') + ".csv"
-        csv_done = (output_dir / csv_name).exists() and not ckpt_path.exists()
+        csv_done = (session_dir / csv_name).exists()
         if resume and csv_done:
+            if root_ckpt.exists():
+                root_ckpt.unlink()  # remove checkpoint stale
             click.echo(f"⏭️  {label}: já concluído, pulando.")
             click.echo()
             continue
