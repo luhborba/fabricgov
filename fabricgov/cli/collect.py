@@ -917,14 +917,26 @@ def all_access(format, output, resume, progress, run_dir):
     click.echo()
 
     collectors_to_run = [
-        ('workspace-access', 'Workspaces'),
-        ('report-access', 'Reports'),
-        ('dataset-access', 'Datasets'),
-        ('dataflow-access', 'Dataflows'),
+        ('workspace-access', 'Workspaces', 'checkpoint_workspace_access.json'),
+        ('report-access',    'Reports',    'checkpoint_report_access.json'),
+        ('dataset-access',   'Datasets',   'checkpoint_dataset_access.json'),
+        ('dataflow-access',  'Dataflows',  'checkpoint_dataflow_access.json'),
     ]
 
     ctx = click.get_current_context()
-    for cmd_name, label in collectors_to_run:
+    for cmd_name, label, ckpt_name in collectors_to_run:
+        output_dir = Path(run_dir) if run_dir else Path(output)
+        ckpt_path = output_dir / ckpt_name
+
+        # Se resume=True e não há checkpoint deste coletor E o CSV de saída já existe,
+        # significa que ele completou numa execução anterior — pode pular.
+        csv_name = cmd_name.replace('-', '_') + ".csv"
+        csv_done = (output_dir / csv_name).exists() and not ckpt_path.exists()
+        if resume and csv_done:
+            click.echo(f"⏭️  {label}: já concluído, pulando.")
+            click.echo()
+            continue
+
         click.echo(f"▶️  Iniciando coleta: {label}")
         click.echo("-"*70)
 
@@ -1334,7 +1346,27 @@ def all_collect(format, output, resume, limit, progress, days):
         if pending:
             click.echo("Checkpoints pendentes:")
             for cp in pending:
-                click.echo(f"  💾 {cp}")
+                ckpt_path = Path(output) / cp
+                progress_str = ""
+                cycles_str = ""
+                try:
+                    with open(ckpt_path, encoding="utf-8") as f:
+                        ckpt = json.load(f)
+                    prog = ckpt.get("progress", "")
+                    if "/" in prog:
+                        done, total = prog.split("/")
+                        done, total = int(done), int(total)
+                        remaining = total - done
+                        # ~200 req/hora por ciclo
+                        cycles = max(1, -(-remaining // 200))
+                        progress_str = f"{done}/{total}"
+                        cycles_str = f" → ~{cycles} ciclo(s) restante(s)"
+                except Exception:
+                    pass
+                label = f"  💾 {cp}"
+                if progress_str:
+                    label += f"  ({progress_str}{cycles_str})"
+                click.echo(label)
         click.echo()
         click.echo("Execute novamente para retomar: fabricgov collect all --resume")
 

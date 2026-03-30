@@ -30,18 +30,30 @@ Este documento lista as limitações técnicas da biblioteca **fabricgov**, incl
 - Tenants grandes (1000+): requer múltiplas sessões ao longo de várias horas
 
 **Solução implementada:**
-- Sistema de checkpoint automático
-- Coleta pode ser retomada em múltiplas execuções
-- Scripts param ao detectar rate limit (fail fast)
+- Sistema de checkpoint automático — salva progresso a cada 100 itens
+- Coleta pode ser retomada em múltiplas execuções com `fabricgov collect all --resume`
+- Scripts param ao detectar rate limit (fail fast) e informam o progresso atual
+- O resumo final exibe os checkpoints pendentes com progresso e estimativa de ciclos restantes
 
 **Estimativa de tempo:**
-| Quantidade | Tempo total | Execuções necessárias |
-|------------|-------------|----------------------|
-| 100 itens | ~5 min | 1 |
-| 200 itens | ~10 min | 1 |
-| 500 itens | ~1h (com pausas) | 3 |
-| 1000 itens | ~3-5h (com pausas) | 5-7 |
-| 2000 itens | ~8-12h (com pausas) | 10-15 |
+| Quantidade total de itens | Tempo total | Execuções necessárias |
+|--------------------------|-------------|----------------------|
+| < 200 | ~10 min | 1 |
+| 500 | ~1h (com pausas) | 3 |
+| 1000 | ~3-5h (com pausas) | 5-7 |
+| 2000+ | ~8-12h (com pausas) | 10-15 |
+
+> **Exemplo real:** tenant com 692 reports + 412 datasets + N dataflows ≈ 1.100 requests → ~6 ciclos de ~1h cada.
+
+**Melhorias planejadas para versões futuras:**
+
+| Opção | Descrição | Impacto |
+|-------|-----------|---------|
+| **Auto-retry com sleep** | Ao bater rate limit, dorme automaticamente e retoma (sem intervenção humana) | Alta — resolve o problema por completo |
+| **Throttle proativo** | Delay configurável entre requests para nunca bater o limite | Alta — coleta lenta mas contínua |
+| **`collect all --full`** | Por padrão, `collect all` coleta apenas o que é rápido; acessos de report/dataset/dataflow são opt-in | Média — separa coleta rápida da demorada |
+
+Até lá, a estratégia recomendada é rodar `fabricgov collect all --resume` após cada rate limit (aguardando ~1h entre execuções) e verificar o progresso no resumo final.
 
 ---
 
