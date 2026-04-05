@@ -223,3 +223,4 @@ output/.auth_config.json
 # Arquivo Internos do Projeto
 PROJECT_SUMMARY.md
 PROJETO_CONTEXTO_COMPLETO.md
+.claude/
