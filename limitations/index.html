@@ -1892,17 +1892,48 @@
 - Tenants médios (200-1000): requer 2-5 execuções
 - Tenants grandes (1000+): requer múltiplas sessões ao longo de várias horas</p>
 <p><strong>Solução implementada:</strong>
-- Sistema de checkpoint automático
-- Coleta pode ser retomada em múltiplas execuções
-- Scripts param ao detectar rate limit (fail fast)</p>
+- Sistema de checkpoint automático — salva progresso a cada 100 itens
+- Coleta pode ser retomada em múltiplas execuções com <code>fabricgov collect all --resume</code>
+- Scripts param ao detectar rate limit (fail fast) e informam o progresso atual
+- O resumo final exibe os checkpoints pendentes com progresso e estimativa de ciclos restantes</p>
 <p><strong>Estimativa de tempo:</strong>
-| Quantidade | Tempo total | Execuções necessárias |
-|------------|-------------|----------------------|
-| 100 itens | ~5 min | 1 |
-| 200 itens | ~10 min | 1 |
-| 500 itens | ~1h (com pausas) | 3 |
-| 1000 itens | ~3-5h (com pausas) | 5-7 |
-| 2000 itens | ~8-12h (com pausas) | 10-15 |</p>
+| Quantidade total de itens | Tempo total | Execuções necessárias |
+|--------------------------|-------------|----------------------|
+| &lt; 200 | ~10 min | 1 |
+| 500 | ~1h (com pausas) | 3 |
+| 1000 | ~3-5h (com pausas) | 5-7 |
+| 2000+ | ~8-12h (com pausas) | 10-15 |</p>
+<blockquote>
+<p><strong>Exemplo real:</strong> tenant com 692 reports + 412 datasets + N dataflows ≈ 1.100 requests → ~6 ciclos de ~1h cada.</p>
+</blockquote>
+<p><strong>Melhorias planejadas para versões futuras:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Opção</th>
+<th>Descrição</th>
+<th>Impacto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auto-retry com sleep</strong></td>
+<td>Ao bater rate limit, dorme automaticamente e retoma (sem intervenção humana)</td>
+<td>Alta — resolve o problema por completo</td>
+</tr>
+<tr>
+<td><strong>Throttle proativo</strong></td>
+<td>Delay configurável entre requests para nunca bater o limite</td>
+<td>Alta — coleta lenta mas contínua</td>
+</tr>
+<tr>
+<td><strong><code>collect all --full</code></strong></td>
+<td>Por padrão, <code>collect all</code> coleta apenas o que é rápido; acessos de report/dataset/dataflow são opt-in</td>
+<td>Média — separa coleta rápida da demorada</td>
+</tr>
+</tbody>
+</table>
+<p>Até lá, a estratégia recomendada é rodar <code>fabricgov collect all --resume</code> após cada rate limit (aguardando ~1h entre execuções) e verificar o progresso no resumo final.</p>
 <hr />
 <h3 id="personal-workspaces">Personal Workspaces<a class="headerlink" href="#personal-workspaces" title="Permanent link">&para;</a></h3>
 <p><strong>Problema:</strong>
