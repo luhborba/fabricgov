@@ -373,6 +373,17 @@ output/
 - [x] Relatório HTML: seções Atividade e Tendências (Activity/Trends com dados do `activity_events.csv` e `diff.json`)
 - [x] MkDocs — documentação oficial PT + EN com Material theme, Guia CLI, Guia Python, Exemplos
 
+### ✅ v1.0.1 — 2026-03-28
+- [x] fix(checkpoint): guard against `None` checkpoint on rate limit — evita crash quando checkpoint está ausente ao atingir 429
+- [x] fix(checkpoint): corrige lógica do `inner_resume` para retomar corretamente sub-coletores internos
+
+### ✅ v1.0.2 — 2026-04-06
+- [x] feat(collect): exibe estimativa de ciclos restantes no resumo da sessão (`collect all`)
+- [x] fix(collect): remove checkpoint obsoleto ao pular sub-coletor já concluído — evita retomadas desnecessárias
+
+### ✅ v1.0.3 — 2026-04-06
+- [x] chore: CHANGELOG, README (PT + EN) e `pyproject.toml` adicionados ao repositório
+
 > 📘 [Ver changelog completo →](CHANGELOG.md)
 
 ---

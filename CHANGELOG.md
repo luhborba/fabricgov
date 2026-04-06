@@ -5,6 +5,31 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.0.3] - 2026-04-06
+
+### Changed
+- `chore`: bump version para 1.0.3 — inclui commits de CHANGELOG, README (PT + EN) e `pyproject.toml` ausentes na release anterior
+
+---
+
+## [1.0.2] - 2026-04-06
+
+### Added
+- `feat(collect)`: exibe estimativa de ciclos restantes no resumo da sessão (`collect all`) — usuário sabe quantas rodadas adicionais serão necessárias para concluir
+
+### Fixed
+- `fix(collect)`: remove checkpoint obsoleto ao pular sub-coletor já concluído — evita retomadas desnecessárias em execuções subsequentes
+
+---
+
+## [1.0.1] - 2026-03-28
+
+### Fixed
+- `fix(checkpoint)`: guard contra `None` checkpoint ao atingir rate limit (429) — evita crash quando checkpoint está ausente
+- `fix(checkpoint)`: corrige lógica do `inner_resume` para retomar corretamente sub-coletores internos após pausa por rate limit
+
+---
+
 ## [1.0.0] - 2026-03-27
 
 ### Added
