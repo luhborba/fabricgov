@@ -383,6 +383,9 @@ output/
 ### ✅ v1.0.3 — 2026-04-06
 - [x] chore: CHANGELOG, README (PT + EN) and `pyproject.toml` added to repository
 
+### ✅ v1.0.4 — 2026-04-06
+- [x] chore: remove company references from all files (HTML report, docs PT + EN)
+
 > 📘 [View full changelog →](CHANGELOG.md)
 
 ---

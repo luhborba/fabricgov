@@ -90,4 +90,4 @@ for f in findings:
 
 **Luciano Borba** — [GitHub](https://github.com/luhborba) · [LinkedIn](https://linkedin.com/in/luhborba) · [YouTube](https://youtube.com/@luhborba)
 
-Power Tuning — Microsoft Fabric & Power BI
+Data Engineering Consultant — Microsoft Fabric & Power BI
