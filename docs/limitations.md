@@ -8,15 +8,14 @@ Este documento lista as limitações técnicas da biblioteca **fabricgov**, incl
 
 ### Rate Limiting - Power BI Admin APIs
 
-**APIs afetadas:**
+**APIs afetadas** (ainda sujeitas a rate limit):
 - `GET /admin/groups/{groupId}/users` (WorkspaceAccessCollector)
-- `GET /admin/reports/{reportId}/users` (ReportAccessCollector)
-- `GET /admin/datasets/{datasetId}/users` (DatasetAccessCollector)
-- `GET /admin/dataflows/{dataflowId}/users` (DataflowAccessCollector)
 - `GET /admin/datasets/{datasetId}/refreshes` (RefreshHistoryCollector)
 - `GET /admin/dataflows/{dataflowId}/transactions` (RefreshHistoryCollector)
 
-**Limite observado:** ~200 requests/hora (não documentado oficialmente pela Microsoft)
+> **v1.1.0 — Impacto reduzido:** os acessos por artefato (reports, datasets, dataflows) eram a principal causa de rate limit, gerando centenas de chamadas individuais. Desde v1.1.0, esses dados são extraídos via **Scanner API** em batch, eliminando o risco de rate limit para coleta de acessos. Os collectors `ReportAccessCollector`, `DatasetAccessCollector` e `DataflowAccessCollector` foram deprecated.
+
+**Limite observado nas APIs ainda sujeitas:** ~200 requests/hora (não documentado oficialmente pela Microsoft)
 
 **Comportamento:**
 - Após ~200 requests, a API retorna `429 Too Many Requests`
@@ -24,58 +23,30 @@ Este documento lista as limitações técnicas da biblioteca **fabricgov**, incl
 - Pausar 30 segundos e tentar novamente **não** é suficiente
 - Requer pausa de **~1h30min** para resetar completamente
 
-**Impacto:**
-- Tenants pequenos (<200 workspaces/reports): sem impacto
-- Tenants médios (200-1000): requer 2-5 execuções
-- Tenants grandes (1000+): requer múltiplas sessões ao longo de várias horas
+**Impacto atual (pós v1.1.0):**
+- `WorkspaceAccessCollector` — ainda pode atingir rate limit em tenants com 500+ workspaces reais
+- `RefreshHistoryCollector` — ainda pode atingir rate limit em tenants com muitos datasets
 
 **Solução implementada:**
 - Sistema de checkpoint automático — salva progresso a cada 100 itens
 - Coleta pode ser retomada em múltiplas execuções com `fabricgov collect all --resume`
 - Scripts param ao detectar rate limit (fail fast) e informam o progresso atual
-- O resumo final exibe os checkpoints pendentes com progresso e estimativa de ciclos restantes
-
-**Estimativa de tempo:**
-| Quantidade total de itens | Tempo total | Execuções necessárias |
-|--------------------------|-------------|----------------------|
-| < 200 | ~10 min | 1 |
-| 500 | ~1h (com pausas) | 3 |
-| 1000 | ~3-5h (com pausas) | 5-7 |
-| 2000+ | ~8-12h (com pausas) | 10-15 |
-
-> **Exemplo real:** tenant com 692 reports + 412 datasets + N dataflows ≈ 1.100 requests → ~6 ciclos de ~1h cada.
-
-**Melhorias planejadas para versões futuras:**
-
-| Opção | Descrição | Impacto |
-|-------|-----------|---------|
-| **Auto-retry com sleep** | Ao bater rate limit, dorme automaticamente e retoma (sem intervenção humana) | Alta — resolve o problema por completo |
-| **Throttle proativo** | Delay configurável entre requests para nunca bater o limite | Alta — coleta lenta mas contínua |
-| **`collect all --full`** | Por padrão, `collect all` coleta apenas o que é rápido; acessos de report/dataset/dataflow são opt-in | Média — separa coleta rápida da demorada |
-
-Até lá, a estratégia recomendada é rodar `fabricgov collect all --resume` após cada rate limit (aguardando ~1h entre execuções) e verificar o progresso no resumo final.
 
 ---
 
 ### Personal Workspaces
 
 **Problema:**
-Personal Workspaces (formato: `"PersonalWorkspace Nome (email)"`) **não suportam** as seguintes APIs Admin:
+Personal Workspaces (tipo `PersonalGroup` na API) **não suportam** as seguintes APIs Admin:
 - `GET /admin/groups/{groupId}/users`
-- `GET /admin/reports/{reportId}/users`
 
 **Comportamento observado:**
 - Retornam `404 Not Found` ao tentar buscar usuários
 - Em alguns casos, retornam `429 Too Many Requests` (consumindo rate limit desnecessariamente)
 
 **Solução implementada:**
-- WorkspaceAccessCollector **filtra automaticamente** Personal Workspaces antes de fazer chamadas
-- ReportAccessCollector **filtra automaticamente** reports em Personal Workspaces
-- Reduz drasticamente quantidade de requests desnecessários
-
-**Impacto em tenants corporativos:**
-- Tenants típicos têm 30-60% de Personal Workspaces
-- Exemplo: 302 workspaces totais → 186 Personal (62%) → apenas 116 precisam ser coletados
+- `WorkspaceInventoryCollector._list_all_workspaces()` **filtra automaticamente** por `type == "Workspace"` desde v1.1.0 — PersonalGroup nunca entra no scan
+- `WorkspaceAccessCollector` também filtra Personal Workspaces antes de fazer chamadas
 
 ---
 

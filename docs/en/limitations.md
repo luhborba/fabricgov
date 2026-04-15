@@ -8,15 +8,14 @@ This document lists the known technical limitations of the **fabricgov** library
 
 ### Rate Limiting — Power BI Admin APIs
 
-**Affected APIs:**
+**Affected APIs** (still subject to rate limiting):
 - `GET /admin/groups/{groupId}/users` (WorkspaceAccessCollector)
-- `GET /admin/reports/{reportId}/users` (ReportAccessCollector)
-- `GET /admin/datasets/{datasetId}/users` (DatasetAccessCollector)
-- `GET /admin/dataflows/{dataflowId}/users` (DataflowAccessCollector)
 - `GET /admin/datasets/{datasetId}/refreshes` (RefreshHistoryCollector)
 - `GET /admin/dataflows/{dataflowId}/transactions` (RefreshHistoryCollector)
 
-**Observed limit:** ~200 requests/hour (not officially documented by Microsoft)
+> **v1.1.0 — Reduced impact:** per-artifact access (reports, datasets, dataflows) was the main source of rate limit errors, generating hundreds of individual API calls. Since v1.1.0, that data is extracted via the **Scanner API** in batch, eliminating rate limit risk for access collection. `ReportAccessCollector`, `DatasetAccessCollector`, and `DataflowAccessCollector` have been deprecated.
+
+**Observed limit on remaining APIs:** ~200 requests/hour (not officially documented by Microsoft)
 
 **Behavior:**
 - After ~200 requests, the API returns `429 Too Many Requests`
@@ -24,46 +23,30 @@ This document lists the known technical limitations of the **fabricgov** library
 - Pausing 30 seconds and retrying is **not** sufficient
 - Requires a pause of **~1h30min** to fully reset
 
-**Impact:**
-- Small tenants (<200 workspaces/reports): no impact
-- Medium tenants (200–1000): requires 2–5 runs
-- Large tenants (1000+): requires multiple sessions over several hours
+**Current impact (post v1.1.0):**
+- `WorkspaceAccessCollector` — may still hit rate limits on tenants with 500+ real workspaces
+- `RefreshHistoryCollector` — may still hit rate limits on tenants with many datasets
 
 **Implemented solution:**
 - Automatic checkpoint system
 - Collection can be resumed across multiple runs
 - Scripts stop upon detecting rate limit (fail fast)
 
-**Time estimates:**
-| Item count | Total time | Runs needed |
-|------------|------------|-------------|
-| 100 items | ~5 min | 1 |
-| 200 items | ~10 min | 1 |
-| 500 items | ~1h (with pauses) | 3 |
-| 1000 items | ~3–5h (with pauses) | 5–7 |
-| 2000 items | ~8–12h (with pauses) | 10–15 |
-
 ---
 
 ### Personal Workspaces
 
 **Problem:**
-Personal Workspaces (format: `"PersonalWorkspace Name (email)"`) **do not support** the following Admin APIs:
+Personal Workspaces (`PersonalGroup` type in the API) **do not support** the following Admin APIs:
 - `GET /admin/groups/{groupId}/users`
-- `GET /admin/reports/{reportId}/users`
 
 **Observed behavior:**
 - Return `404 Not Found` when attempting to fetch users
 - In some cases, return `429 Too Many Requests` (consuming rate limit unnecessarily)
 
 **Implemented solution:**
-- WorkspaceAccessCollector **automatically filters** Personal Workspaces before making API calls
-- ReportAccessCollector **automatically filters** reports inside Personal Workspaces
-- Dramatically reduces unnecessary requests
-
-**Impact on corporate tenants:**
-- Typical tenants have 30–60% Personal Workspaces
-- Example: 302 total workspaces → 186 Personal (62%) → only 116 need to be collected
+- `WorkspaceInventoryCollector._list_all_workspaces()` **automatically filters** by `type == "Workspace"` since v1.1.0 — PersonalGroup entries never enter the scan
+- `WorkspaceAccessCollector` also filters Personal Workspaces before making API calls
 
 ---
 

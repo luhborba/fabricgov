@@ -104,7 +104,7 @@ Verifica quais datasets ou dataflows falharam nas últimas execuções.
 
 ## 4. Detectar usuários externos (#EXT#)
 
-Lista usuários convidados externos com acesso a workspaces do tenant.
+Lista usuários convidados externos com acesso a artefatos do tenant — workspaces e qualquer tipo de artefato.
 
 === "CLI"
 
@@ -121,18 +121,52 @@ Lista usuários convidados externos com acesso a workspaces do tenant.
     from fabricgov import FabricGov
 
     fg = FabricGov.from_env()
-    fg.collect.inventory()
+    result_inv = fg.collect.inventory()
     fg.collect.workspace_access()
 
-    findings = fg.analyze()
-    externos = next(
-        (f for f in findings if "#EXT#" in f["message"]),
-        None
-    )
-    if externos:
-        print(f"{externos['count']} usuário(s) externo(s) encontrado(s):")
-        for u in externos["details"]:
-            print(f"  - {u['email']}  roles: {u['roles']}")
+    # Usuários externos em artefatos (via artifact_users do inventory)
+    import json
+    from pathlib import Path
+    inv = json.loads((Path("output") / "inventory_result.json").read_text())
+
+    externos = [
+        u for u in inv["artifact_users"]
+        if "#EXT#" in (u.get("emailAddress") or "")
+    ]
+    print(f"{len(externos)} acesso(s) externo(s) em artefatos:")
+    for u in externos[:10]:
+        print(f"  - {u['emailAddress']}  {u['artifact_type']}: {u['artifact_name']}")
+    ```
+
+---
+
+## 4b. Auditar acessos por tipo de artefato *(v1.1.0)*
+
+Visualiza quem tem acesso a quais Lakehouses, Notebooks ou qualquer tipo de artefato Fabric.
+
+=== "CLI"
+
+    ```bash
+    fabricgov collect inventory
+    # artifact_users está em inventory_result.json
+    ```
+
+=== "Python"
+
+    ```python
+    import json, pandas as pd
+    from pathlib import Path
+
+    inv = json.loads((Path("output") / "inventory_result.json").read_text())
+    df = pd.DataFrame(inv["artifact_users"])
+
+    # Por tipo de artefato
+    print(df.groupby("artifact_type")["emailAddress"].nunique().sort_values(ascending=False))
+
+    # Usuários únicos com acesso a Lakehouses
+    lh = df[df["artifact_type"] == "Lakehouse"]
+    print(f"\nUsuários com acesso a Lakehouses: {lh['emailAddress'].nunique()}")
+    print(lh[["emailAddress", "artifact_name", "accessRight"]].drop_duplicates().head(10))
     ```
 
 ---

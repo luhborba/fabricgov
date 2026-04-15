@@ -103,7 +103,7 @@ Check which datasets or dataflows failed in recent executions.
 
 ## 4. Detect external users (#EXT#)
 
-List guest users with access to tenant workspaces.
+List guest users with access to tenant workspaces and artifacts.
 
 === "CLI"
 
@@ -118,20 +118,53 @@ List guest users with access to tenant workspaces.
 
     ```python
     from fabricgov import FabricGov
+    import json
+    from pathlib import Path
 
     fg = FabricGov.from_env()
     fg.collect.inventory()
     fg.collect.workspace_access()
 
-    findings = fg.analyze(lang="en")
-    external = next(
-        (f for f in findings if "#EXT#" in f["message"]),
-        None
-    )
-    if external:
-        print(f"{external['count']} external user(s) found:")
-        for u in external["details"]:
-            print(f"  - {u['email']}  roles: {u['roles']}")
+    # External users in artifacts (via artifact_users from inventory)
+    inv = json.loads((Path("output") / "inventory_result.json").read_text())
+    external = [
+        u for u in inv["artifact_users"]
+        if "#EXT#" in (u.get("emailAddress") or "")
+    ]
+    print(f"{len(external)} external access(es) in artifacts:")
+    for u in external[:10]:
+        print(f"  - {u['emailAddress']}  {u['artifact_type']}: {u['artifact_name']}")
+    ```
+
+---
+
+## 4b. Audit access by artifact type *(v1.1.0)*
+
+Visualize who has access to which Lakehouses, Notebooks, or any Fabric artifact type.
+
+=== "CLI"
+
+    ```bash
+    fabricgov collect inventory
+    # artifact_users is available in inventory_result.json
+    ```
+
+=== "Python"
+
+    ```python
+    import json, pandas as pd
+    from pathlib import Path
+
+    inv = json.loads((Path("output") / "inventory_result.json").read_text())
+    df = pd.DataFrame(inv["artifact_users"])
+
+    # By artifact type
+    print(df.groupby("artifact_type")["emailAddress"].nunique().sort_values(ascending=False))
+
+    # Unique users with access to Lakehouses
+    lh = df[df["artifact_type"] == "Lakehouse"]
+    print(f"\nUsers with Lakehouse access: {lh['emailAddress'].nunique()}")
+    print(lh[["emailAddress", "artifact_name", "accessRight"]].drop_duplicates().head(10))
     ```
 
 ---

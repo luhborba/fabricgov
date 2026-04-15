@@ -4,16 +4,16 @@
 
 ---
 
-## 📦 Available Collectors (12 total)
+## 📦 Available Collectors (10 active + 3 deprecated)
 
 ### Inventory & Access
-| Collector | CLI | Checkpoint |
-|-----------|-----|------------|
-| `WorkspaceInventoryCollector` | `collect inventory` | ✅ |
-| `WorkspaceAccessCollector` | `collect workspace-access` | — |
-| `ReportAccessCollector` | `collect report-access` | ✅ |
-| `DatasetAccessCollector` | `collect dataset-access` | ✅ |
-| `DataflowAccessCollector` | `collect dataflow-access` | ✅ |
+| Collector | CLI | Checkpoint | Notes |
+|-----------|-----|------------|-------|
+| `WorkspaceInventoryCollector` | `collect inventory` | ✅ | Includes `artifact_users`, `datasources`, `semantic_models` (v1.1.0) |
+| `WorkspaceAccessCollector` | `collect workspace-access` | — | |
+| ~~`ReportAccessCollector`~~ | ~~`collect report-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
+| ~~`DatasetAccessCollector`~~ | ~~`collect dataset-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
+| ~~`DataflowAccessCollector`~~ | ~~`collect dataflow-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
 
 ### Refresh
 | Collector | CLI | Checkpoint |
@@ -42,36 +42,12 @@
 
 ### What it collects
 
-- **Workspaces:** metadata for all workspaces in the tenant
-- **27+ artifact types:**
-  - `datasets` — Semantic Models / Datasets
-  - `reports` — Power BI Reports
-  - `dashboards` — Power BI Dashboards
-  - `dataflows` — Dataflows Gen1 and Gen2
-  - `datamarts` — Datamarts
-  - `lakehouses` — Lakehouses
-  - `warehouses` — Data Warehouses
-  - `notebooks` — Notebooks
-  - `sparkJobDefinitions` — Spark Job Definitions
-  - `mlModels` — ML Models
-  - `mlExperiments` — ML Experiments
-  - `kqlDatabases` — KQL Databases
-  - `kqlQuerysets` — KQL Querysets
-  - `eventstreams` — Eventstreams
-  - `reflex` — Reflex
-  - `semanticModels` — Semantic Models
-  - `sqlEndpoints` — SQL Endpoints
-  - `mirroredDatabases` — Mirrored Databases
-  - `mirroredWarehouses` — Mirrored Warehouses
-  - `graphqlApis` — GraphQL APIs
-  - `sqlDatabases` — SQL Databases
-  - `variableLibraries` — Variable Libraries
-  - `paginatedReports` — Paginated Reports
-  - `deploymentPipelines` — Deployment Pipelines
-  - `workbooks` — Excel Workbooks
-- **Datasources:**
-  - `datasourceInstances` — Configured datasources
-  - `misconfiguredDatasourceInstances` — Misconfigured datasources
+- **Workspaces:** metadata for all workspaces in the tenant (PersonalGroup automatically excluded since v1.1.0)
+- **27+ artifact types** (Lakehouse, Notebook, Report, Dataset, DataPipeline, etc.)
+- **Datasources:** `datasourceInstances` and `misconfiguredDatasourceInstances`
+- **Per-artifact users** *(v1.1.0)* — `artifact_users`: flat list with normalized `accessRight` for all 22 artifact types that support users
+- **Datasources per dataset** *(v1.1.0)* — `datasources`: type, connection details, gateway
+- **Semantic models** *(v1.1.0)* — `semantic_models`: tables, columns, measures, relationships and DAX/M expressions per dataset
 
 ---
 

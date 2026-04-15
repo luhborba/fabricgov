@@ -64,7 +64,9 @@ for f in findings:
 
 | Funcionalidade | Descrição |
 |----------------|-----------|
-| **12 coletores** | Inventário, acessos, refresh, domínios, tags, capacidades, atividades |
+| **10 coletores ativos** | Inventário, workspace-access, refresh, domínios, tags, capacidades, atividades |
+| **Acessos via Scanner API** | `artifact_users` extraído em batch no `inventory` — sem risco de rate limit por artefato (v1.1.0) |
+| **Modelos semânticos** | `semantic_models` e `datasources` extraídos automaticamente no `inventory` (v1.1.0) |
 | **Relatório HTML** | Standalone com Plotly + Bootstrap 5, PT e EN |
 | **`fabricgov analyze`** | Findings de governança no terminal + `findings.json` |
 | **`fabricgov diff`** | Comparação de dois snapshots de output |

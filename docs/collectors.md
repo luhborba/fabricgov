@@ -4,16 +4,16 @@ Os **coletores** são responsáveis por buscar dados específicos das APIs do Mi
 
 ---
 
-## 📦 Coletores Disponíveis (12 total)
+## 📦 Coletores Disponíveis (10 ativos + 3 deprecated)
 
 ### Inventário & Acesso
-| Coletor | CLI | Checkpoint |
-|---------|-----|------------|
-| `WorkspaceInventoryCollector` | `collect inventory` | ✅ |
-| `WorkspaceAccessCollector` | `collect workspace-access` | — |
-| `ReportAccessCollector` | `collect report-access` | ✅ |
-| `DatasetAccessCollector` | `collect dataset-access` | ✅ |
-| `DataflowAccessCollector` | `collect dataflow-access` | ✅ |
+| Coletor | CLI | Checkpoint | Obs |
+|---------|-----|------------|-----|
+| `WorkspaceInventoryCollector` | `collect inventory` | ✅ | Inclui `artifact_users`, `datasources` e `semantic_models` (v1.1.0) |
+| `WorkspaceAccessCollector` | `collect workspace-access` | — | |
+| ~~`ReportAccessCollector`~~ | ~~`collect report-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
+| ~~`DatasetAccessCollector`~~ | ~~`collect dataset-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
+| ~~`DataflowAccessCollector`~~ | ~~`collect dataflow-access`~~ | — | **Deprecated v1.1.0** — use `inventory` |
 
 ### Refresh
 | Coletor | CLI | Checkpoint |
@@ -42,36 +42,12 @@ Os **coletores** são responsáveis por buscar dados específicos das APIs do Mi
 
 ### O que coleta
 
-- **Workspaces:** metadados de todos os workspaces do tenant
-- **27+ tipos de artefatos:**
-  - `datasets` — Semantic Models / Datasets
-  - `reports` — Power BI Reports
-  - `dashboards` — Power BI Dashboards
-  - `dataflows` — Dataflows Gen1 e Gen2
-  - `datamarts` — Datamarts
-  - `lakehouses` — Lakehouses
-  - `warehouses` — Data Warehouses
-  - `notebooks` — Notebooks
-  - `sparkJobDefinitions` — Spark Job Definitions
-  - `mlModels` — ML Models
-  - `mlExperiments` — ML Experiments
-  - `kqlDatabases` — KQL Databases
-  - `kqlQuerysets` — KQL Querysets
-  - `eventstreams` — Eventstreams
-  - `reflex` — Reflex
-  - `semanticModels` — Semantic Models
-  - `sqlEndpoints` — SQL Endpoints
-  - `mirroredDatabases` — Mirrored Databases
-  - `mirroredWarehouses` — Mirrored Warehouses
-  - `graphqlApis` — GraphQL APIs
-  - `sqlDatabases` — SQL Databases
-  - `variableLibraries` — Variable Libraries
-  - `paginatedReports` — Paginated Reports
-  - `deploymentPipelines` — Deployment Pipelines
-  - `workbooks` — Excel Workbooks
-- **Datasources:**
-  - `datasourceInstances` — Datasources configurados
-  - `misconfiguredDatasourceInstances` — Datasources com erro de configuração
+- **Workspaces:** metadados de todos os workspaces do tenant (PersonalGroup excluídos automaticamente desde v1.1.0)
+- **27+ tipos de artefatos** (Lakehouse, Notebook, Report, Dataset, DataPipeline, etc.)
+- **Datasources:** `datasourceInstances` e `misconfiguredDatasourceInstances`
+- **Usuários por artefato** *(v1.1.0)* — `artifact_users`: lista plana com `accessRight` normalizado para todos os 22 tipos de artefato que suportam usuários
+- **Datasources por dataset** *(v1.1.0)* — `datasources`: tipo, detalhes de conexão, gateway
+- **Modelos semânticos** *(v1.1.0)* — `semantic_models`: tabelas, colunas, medidas, relacionamentos e expressões DAX/M por dataset
 
 ---
 
@@ -161,6 +137,47 @@ print(f"Total de itens: {result['summary']['total_items']}")
   // ... outros tipos de artefatos
   "datasourceInstances": [...],
   "misconfiguredDatasourceInstances": [...],
+  "artifact_users": [
+    {
+      "artifact_type": "reports",
+      "artifact_id": "report-guid",
+      "artifact_name": "Sales Dashboard",
+      "workspace_id": "workspace-guid",
+      "workspace_name": "Marketing Analytics",
+      "emailAddress": "user@company.com",
+      "displayName": "User Name",
+      "principalType": "User",
+      "accessRight": "Owner"
+    }
+  ],
+  "datasources": [
+    {
+      "workspace_id": "workspace-guid",
+      "dataset_id": "dataset-guid",
+      "dataset_name": "Sales Data",
+      "datasource_type": "Sql",
+      "connection_details": "{'server': 'srv', 'database': 'db'}",
+      "datasource_id": "datasource-guid",
+      "gateway_id": "gateway-guid"
+    }
+  ],
+  "semantic_models": [
+    {
+      "workspace_id": "workspace-guid",
+      "dataset_id": "dataset-guid",
+      "dataset_name": "Sales Data",
+      "tables": [
+        {
+          "name": "Vendas",
+          "columns": [{"name": "id"}, {"name": "valor"}],
+          "measures": [{"name": "Total Vendas"}],
+          "isHidden": false
+        }
+      ],
+      "relationships": [...],
+      "expressions": [...]
+    }
+  ],
   "summary": {
     "total_workspaces": 302,
     "total_items": 1367,
@@ -173,12 +190,15 @@ print(f"Total de itens: {result['summary']['total_items']}")
       "datamarts": 2
     },
     "scan_duration_seconds": 23.82,
-    "batches_processed": 4
+    "batches_processed": 4,
+    "total_artifact_users": 5200,
+    "total_datasources": 480,
+    "total_semantic_models": 506
   }
 }
 ```
 
-**Nota:** O `inventory_result` é o pré-requisito para todos os Access Collectors e os collectors de Refresh.
+> **Nota v1.1.0:** `artifact_users`, `datasources` e `semantic_models` são extraídos diretamente do resultado da Scanner API — **sem chamadas extras**. O `inventory_result` continua sendo o pré-requisito para `WorkspaceAccessCollector` e collectors de Refresh.
 
 ---
 
@@ -206,6 +226,31 @@ print(f"Workspaces órfãos: {len(orphaned)}")
 misconfigured = result['misconfiguredDatasourceInstances']
 if misconfigured:
     print(f"⚠️  {len(misconfigured)} datasources com erro de configuração")
+```
+
+#### Listar usuários com acesso a Lakehouses
+```python
+lakehouse_users = [
+    u for u in result['artifact_users']
+    if u['artifact_type'] == 'Lakehouse'
+]
+print(f"Usuários com acesso a Lakehouses: {len(lakehouse_users)}")
+```
+
+#### Ver datasources utilizados nos datasets
+```python
+import pandas as pd
+
+df = pd.DataFrame(result['datasources'])
+print(df.groupby('datasource_type').size().sort_values(ascending=False))
+```
+
+#### Inspecionar modelos semânticos (tabelas e medidas)
+```python
+for model in result['semantic_models']:
+    if model['tables']:
+        table_names = [t['name'] for t in model['tables']]
+        print(f"{model['dataset_name']}: {table_names}")
 ```
 
 ---
@@ -324,9 +369,11 @@ print(f"⚠️  {len(at_risk)} workspaces com apenas 1 Admin")
 
 ---
 
-## 📄 ReportAccessCollector
+## 📄 ReportAccessCollector *(Deprecated)*
 
-Extrai permissões de acesso em reports via Power BI Admin API.
+> **⚠️ Deprecated desde v1.1.0.** Use `WorkspaceInventoryCollector` — os dados de acesso por artefato estão disponíveis na chave `artifact_users` do resultado do `inventory`, obtidos em uma única chamada à Scanner API sem risco de rate limit por artefato.
+
+Extrai permissões de acesso em reports via Power BI Admin API (uma chamada por report).
 
 ### O que coleta
 
@@ -427,9 +474,9 @@ print(f"Reports compartilhados externamente: {len(external_shares)}")
 
 ---
 
-## 📊 DatasetAccessCollector
+## 📊 DatasetAccessCollector *(Deprecated)*
 
-Extrai permissões de acesso em datasets via Power BI Admin API.
+> **⚠️ Deprecated desde v1.1.0.** Use `WorkspaceInventoryCollector` — os dados de acesso por artefato estão disponíveis na chave `artifact_users` do resultado do `inventory`.
 
 ### O que coleta
 
@@ -521,9 +568,9 @@ print(f"⚠️  {len(build_permissions)} usuários com permissão Build")
 
 ---
 
-## 🌊 DataflowAccessCollector
+## 🌊 DataflowAccessCollector *(Deprecated)*
 
-Extrai permissões de acesso em dataflows via Power BI Admin API.
+> **⚠️ Deprecated desde v1.1.0.** Use `WorkspaceInventoryCollector` — os dados de acesso por artefato estão disponíveis na chave `artifact_users` do resultado do `inventory`.
 
 ### O que coleta
 
