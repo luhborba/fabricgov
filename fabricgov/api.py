@@ -40,9 +40,6 @@ from fabricgov.auth import ServicePrincipalAuth, DeviceFlowAuth
 from fabricgov.collectors import (
     WorkspaceInventoryCollector,
     WorkspaceAccessCollector,
-    ReportAccessCollector,
-    DatasetAccessCollector,
-    DataflowAccessCollector,
     RefreshHistoryCollector,
     RefreshScheduleCollector,
     DomainCollector,
@@ -51,6 +48,10 @@ from fabricgov.collectors import (
     WorkloadCollector,
     ActivityCollector,
 )
+# Deprecados — mantidos por compatibilidade retroativa
+from fabricgov.collectors.report_access import ReportAccessCollector
+from fabricgov.collectors.dataset_access import DatasetAccessCollector
+from fabricgov.collectors.dataflow_access import DataflowAccessCollector
 from fabricgov.exporters import FileExporter
 from fabricgov.exceptions import CheckpointSavedException
 
@@ -148,6 +149,10 @@ class CollectAPI:
     ) -> Path:
         """Coleta permissões de acesso em reports.
 
+        .. deprecated::
+            Use :meth:`inventory` — os dados de acesso por artefato ficam
+            disponíveis na chave ``artifact_users`` do resultado.
+
         Raises:
             CheckpointSavedException: se atingir rate limit.
         """
@@ -172,6 +177,10 @@ class CollectAPI:
     ) -> Path:
         """Coleta permissões de acesso em datasets.
 
+        .. deprecated::
+            Use :meth:`inventory` — os dados de acesso por artefato ficam
+            disponíveis na chave ``artifact_users`` do resultado.
+
         Raises:
             CheckpointSavedException: se atingir rate limit.
         """
@@ -195,6 +204,10 @@ class CollectAPI:
         _run_dir: str | None = None,
     ) -> Path:
         """Coleta permissões de acesso em dataflows.
+
+        .. deprecated::
+            Use :meth:`inventory` — os dados de acesso por artefato ficam
+            disponíveis na chave ``artifact_users`` do resultado.
 
         Raises:
             CheckpointSavedException: se atingir rate limit.

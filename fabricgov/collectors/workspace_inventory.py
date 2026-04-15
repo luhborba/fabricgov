@@ -28,6 +28,15 @@ class WorkspaceInventoryCollector(BaseCollector):
     FABRIC_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
     BATCH_SIZE = 100
 
+    ARTIFACT_TYPES_WITH_USERS: tuple[str, ...] = (
+        "reports", "datasets", "dashboards", "dataflows", "datamarts",
+        "Lakehouse", "Notebook", "DataPipeline", "warehouses",
+        "KQLDashboard", "MirroredDatabase", "MirroredAzureDatabricksCatalog",
+        "SQLDatabase", "SQLAnalyticsEndpoint", "GraphModel",
+        "DataAgent", "Reflex", "Environment", "Ontology",
+        "VariableLibrary", "Exploration", "OrgApp",
+    )
+
     def __init__(
         self,
         auth: AuthProvider,
@@ -72,12 +81,18 @@ class WorkspaceInventoryCollector(BaseCollector):
                 ... (todos os tipos de artefatos)
                 "datasourceInstances": [...],
                 "misconfiguredDatasourceInstances": [...],
+                "artifact_users": [...],    # usuários por artefato (lista plana)
+                "datasources": [...],       # datasources por dataset (lista plana)
+                "semantic_models": [...],   # modelo semântico hierárquico por dataset
                 "summary": {
                     "total_workspaces": int,
                     "total_items": int,
                     "items_by_type": {...},
                     "scan_duration_seconds": float,
                     "batches_processed": int,
+                    "total_artifact_users": int,
+                    "total_datasources": int,
+                    "total_semantic_models": int,
                 }
             }
         """
@@ -133,7 +148,28 @@ class WorkspaceInventoryCollector(BaseCollector):
         result["summary"]["items_by_type"]["misconfiguredDatasourceInstances"] = len(
             self._misconfigured_datasource_instances
         )
-        
+
+        # Extrai usuários de artefatos
+        self._progress("Extraindo usuários de artefatos...")
+        artifact_users = self._extract_artifact_users(all_workspaces_raw)
+        result["artifact_users"] = artifact_users
+        result["summary"]["items_by_type"]["artifact_users"] = len(artifact_users)
+        result["summary"]["total_artifact_users"] = len(artifact_users)
+
+        # Extrai datasources por dataset
+        self._progress("Extraindo datasources de datasets...")
+        datasources = self._extract_datasources(all_workspaces_raw)
+        result["datasources"] = datasources
+        result["summary"]["items_by_type"]["datasources"] = len(datasources)
+        result["summary"]["total_datasources"] = len(datasources)
+
+        # Extrai modelos semânticos
+        self._progress("Extraindo modelos semânticos...")
+        semantic_models = self._extract_semantic_models(all_workspaces_raw)
+        result["semantic_models"] = semantic_models
+        result["summary"]["items_by_type"]["semantic_models"] = len(semantic_models)
+        result["summary"]["total_semantic_models"] = len(semantic_models)
+
         # Etapa 5: Calcula summary
         duration = time.time() - start_time
         result["summary"]["total_workspaces"] = len(result["workspaces"])
@@ -155,16 +191,20 @@ class WorkspaceInventoryCollector(BaseCollector):
         """
         Lista todos os workspace IDs via GET /admin/groups.
         Usa paginação automática via _paginate do BaseCollector.
-        
+        Exclui PersonalGroup e outros tipos que não são workspaces reais.
+
         Returns:
-            Lista de workspace IDs (GUIDs)
+            Lista de workspace IDs (GUIDs) somente do tipo "Workspace"
         """
         workspaces = self._paginate(
             endpoint="/v1.0/myorg/admin/groups",
             scope=self.FABRIC_SCOPE,
             params={"$top": 5000}  # máximo por página
         )
-        return [ws["id"] for ws in workspaces]
+        return [
+            ws["id"] for ws in workspaces
+            if ws.get("type", "").lower() == "workspace"
+        ]
 
     def _scan_workspaces(
         self,
@@ -396,6 +436,123 @@ class WorkspaceInventoryCollector(BaseCollector):
 
         return output
 
+    def _extract_artifact_users(self, workspaces_raw: list[dict]) -> list[dict[str, Any]]:
+        """
+        Extrai lista plana de usuários por artefato a partir dos dados brutos do scan.
+
+        Normaliza o campo de permissão (ex: reportUserAccessRight, datasetUserAccessRight...)
+        para um campo unificado ``accessRight``.
+
+        Args:
+            workspaces_raw: lista de workspaces como retornados pelo scan
+
+        Returns:
+            Lista de dicionários com campos: artifact_type, artifact_id, artifact_name,
+            workspace_id, workspace_name, emailAddress, displayName, identifier,
+            principalType, accessRight, graphId
+        """
+        users: list[dict[str, Any]] = []
+        for ws in workspaces_raw:
+            ws_id = ws.get("id")
+            ws_name = ws.get("name")
+            for artifact_type in self.ARTIFACT_TYPES_WITH_USERS:
+                for artifact in ws.get(artifact_type, []):
+                    for user in artifact.get("users", []):
+                        access_right = next(
+                            (v for k, v in user.items() if k.endswith("AccessRight")),
+                            None,
+                        )
+                        users.append({
+                            "artifact_type": artifact_type,
+                            "artifact_id": artifact.get("id"),
+                            "artifact_name": artifact.get("name"),
+                            "workspace_id": ws_id,
+                            "workspace_name": ws_name,
+                            "emailAddress": user.get("emailAddress"),
+                            "displayName": user.get("displayName"),
+                            "identifier": user.get("identifier"),
+                            "principalType": user.get("principalType"),
+                            "accessRight": access_right,
+                            "graphId": user.get("graphId"),
+                        })
+        return users
+
+    def _extract_datasources(self, workspaces_raw: list[dict]) -> list[dict[str, Any]]:
+        """
+        Extrai lista plana de datasources usados por cada dataset.
+
+        Trata a dualidade de ``datasourceInstanceId``: pode ser um dict com detalhes
+        da instância ou uma string (referência opaca), dependendo da versão da API.
+
+        Args:
+            workspaces_raw: lista de workspaces como retornados pelo scan
+
+        Returns:
+            Lista de dicionários com campos: workspace_id, workspace_name,
+            dataset_id, dataset_name, datasource_type, connection_details,
+            datasource_id, gateway_id, instance_id_raw
+        """
+        datasources: list[dict[str, Any]] = []
+        for ws in workspaces_raw:
+            ws_id = ws.get("id")
+            ws_name = ws.get("name")
+            for dataset in ws.get("datasets", []):
+                for ds_usage in dataset.get("datasourceUsages", []):
+                    raw = ds_usage.get("datasourceInstanceId")
+                    info: dict[str, Any] = raw if isinstance(raw, dict) else {}
+                    datasources.append({
+                        "workspace_id": ws_id,
+                        "workspace_name": ws_name,
+                        "dataset_id": dataset.get("id"),
+                        "dataset_name": dataset.get("name"),
+                        "datasource_type": info.get("datasourceType"),
+                        "connection_details": str(info.get("connectionDetails", {})),
+                        "datasource_id": info.get("datasourceId"),
+                        "gateway_id": info.get("gatewayId"),
+                        "instance_id_raw": raw if isinstance(raw, str) else None,
+                    })
+        return datasources
+
+    def _extract_semantic_models(self, workspaces_raw: list[dict]) -> list[dict[str, Any]]:
+        """
+        Extrai modelos semânticos (estrutura hierárquica) de cada dataset.
+
+        Inclui tabelas, colunas, medidas, relacionamentos e expressões (DAX/M)
+        quando presentes no resultado do scan (requer datasetSchema=True e
+        datasetExpressions=True no payload do scan).
+
+        Args:
+            workspaces_raw: lista de workspaces como retornados pelo scan
+
+        Returns:
+            Lista de dicionários — um por dataset — com campos: workspace_id,
+            workspace_name, dataset_id, dataset_name, tables, relationships, expressions
+        """
+        models: list[dict[str, Any]] = []
+        for ws in workspaces_raw:
+            ws_id = ws.get("id")
+            ws_name = ws.get("name")
+            for dataset in ws.get("datasets", []):
+                tables = [
+                    {
+                        "name": table.get("name"),
+                        "columns": table.get("columns", []),
+                        "measures": table.get("measures", []),
+                        "isHidden": table.get("isHidden"),
+                    }
+                    for table in dataset.get("tables", [])
+                ]
+                models.append({
+                    "workspace_id": ws_id,
+                    "workspace_name": ws_name,
+                    "dataset_id": dataset.get("id"),
+                    "dataset_name": dataset.get("name"),
+                    "tables": tables,
+                    "relationships": dataset.get("relationships", []),
+                    "expressions": dataset.get("expressions", []),
+                })
+        return models
+
     def _empty_result(self) -> dict[str, Any]:
         """Retorna estrutura vazia quando não há workspaces."""
         artifact_types = [
@@ -413,12 +570,18 @@ class WorkspaceInventoryCollector(BaseCollector):
             "workspaces": [],
             "datasourceInstances": [],
             "misconfiguredDatasourceInstances": [],
+            "artifact_users": [],
+            "datasources": [],
+            "semantic_models": [],
             "summary": {
                 "total_workspaces": 0,
                 "total_items": 0,
                 "items_by_type": {},
                 "scan_duration_seconds": 0,
                 "batches_processed": 0,
+                "total_artifact_users": 0,
+                "total_datasources": 0,
+                "total_semantic_models": 0,
             }
         }
         
@@ -428,5 +591,8 @@ class WorkspaceInventoryCollector(BaseCollector):
         
         empty["summary"]["items_by_type"]["datasourceInstances"] = 0
         empty["summary"]["items_by_type"]["misconfiguredDatasourceInstances"] = 0
+        empty["summary"]["items_by_type"]["artifact_users"] = 0
+        empty["summary"]["items_by_type"]["datasources"] = 0
+        empty["summary"]["items_by_type"]["semantic_models"] = 0
         
         return empty

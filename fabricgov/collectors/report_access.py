@@ -12,7 +12,13 @@ if TYPE_CHECKING:
 class ReportAccessCollector(BaseCollector):
     """
     Coleta permissões de acesso em reports via API Admin com suporte a checkpoint.
-    
+
+    .. deprecated::
+        Use :class:`~fabricgov.collectors.WorkspaceInventoryCollector` com
+        ``getArtifactUsers=True`` (ativo por padrão). Os dados de acesso por artefato
+        ficam disponíveis na chave ``artifact_users`` do resultado, obtidos em uma
+        única chamada à Scanner API sem risco de rate limit por artefato.
+
     Uso com checkpoint (recomendado para ambientes grandes):
         collector = ReportAccessCollector(
             auth=auth,

@@ -12,7 +12,13 @@ if TYPE_CHECKING:
 class DataflowAccessCollector(BaseCollector):
     """
     Coleta permissões de acesso em dataflows via API Admin com suporte a checkpoint.
-    
+
+    .. deprecated::
+        Use :class:`~fabricgov.collectors.WorkspaceInventoryCollector` com
+        ``getArtifactUsers=True`` (ativo por padrão). Os dados de acesso por artefato
+        ficam disponíveis na chave ``artifact_users`` do resultado, obtidos em uma
+        única chamada à Scanner API sem risco de rate limit por artefato.
+
     Para cada dataflow encontrado no inventory, faz:
     GET /v1.0/myorg/admin/dataflows/{dataflowId}/users
     
