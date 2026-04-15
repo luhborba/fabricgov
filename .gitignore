@@ -224,3 +224,6 @@ output/.auth_config.json
 PROJECT_SUMMARY.md
 PROJETO_CONTEXTO_COMPLETO.md
 .claude/
+.github/
+tests/manual/
+specs/
