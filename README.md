@@ -18,7 +18,8 @@
 
 **Principais features:**
 - 🔍 Inventário completo de workspaces e 27+ tipos de artefatos
-- 🔐 Coleta de acessos (workspaces, reports, datasets, dataflows)
+- 🔐 Coleta de acessos por artefato via Scanner API — `artifact_users` no resultado do inventory
+- 🗄️ Datasources e modelos semânticos (tabelas, colunas, medidas, DAX) extraídos automaticamente
 - 🔄 Histórico de refresh e agendamentos configurados
 - 🏢 Domínios, tags, capacidades e workloads do tenant
 - 📋 Log de atividades do tenant — até 28 dias de histórico
@@ -95,15 +96,12 @@ fabricgov auth keyvault --vault-url https://meu-vault.vault.azure.net/
 
 ### 2. Use o CLI
 ```bash
-# Coleta inventário
+# Coleta inventário (inclui artifact_users, datasources e semantic_models)
 fabricgov collect inventory
 
-# Coleta acessos (com checkpoint automático)
+# Coleta acessos de workspaces (com checkpoint automático)
 fabricgov collect workspace-access
-fabricgov collect report-access
-fabricgov collect dataset-access
-fabricgov collect dataflow-access
-fabricgov collect all-access   # todos os acessos de uma vez
+fabricgov collect all-access   # atalho para workspace-access
 
 # Coleta refresh
 fabricgov collect refresh-history
@@ -129,6 +127,10 @@ fabricgov collect status         # status da sessão
 fabricgov diff                                                  # 2 runs mais recentes
 fabricgov diff --from output/20260301_120000 --to output/20260309_143000
 ```
+
+> ℹ️ Os comandos `report-access`, `dataset-access` e `dataflow-access` foram removidos na v1.1.0.
+> Os dados de acesso por artefato agora estão disponíveis diretamente em `artifact_users`
+> após `fabricgov collect inventory`.
 
 **Flags disponíveis:**
 - `--format json|csv` (padrão: csv)

@@ -5,6 +5,27 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.1.0] - 2026-04-15
+
+### Added
+- `feat(inventory)`: `WorkspaceInventoryCollector.collect()` agora retorna três novas chaves extraídas diretamente do resultado da Scanner API:
+  - `artifact_users` — lista plana de usuários por artefato, com campo `accessRight` normalizado (suporta todos os tipos de artefato Fabric + Power BI)
+  - `datasources` — lista plana de datasources utilizados por cada dataset, com tratamento de `datasourceInstanceId` como dict ou string opaca
+  - `semantic_models` — estrutura hierárquica por dataset: tabelas, colunas, medidas, relacionamentos e expressões DAX/M
+- `feat(inventory)`: constante `ARTIFACT_TYPES_WITH_USERS` — tupla com 22 tipos de artefatos que suportam o campo `users` na Scanner API
+- `feat(inventory)`: `summary` agora inclui `total_artifact_users`, `total_datasources` e `total_semantic_models`
+
+### Changed
+- `refactor(inventory)`: `_list_all_workspaces()` agora filtra por `type == "Workspace"`, excluindo PersonalGroup e outros tipos que não são workspaces reais
+- `deprecate`: `ReportAccessCollector`, `DatasetAccessCollector` e `DataflowAccessCollector` marcados como deprecated — use `WorkspaceInventoryCollector` com `getArtifactUsers=True` (ativo por padrão)
+
+### Removed
+- `breaking(cli)`: comandos `report-access`, `dataset-access` e `dataflow-access` removidos do CLI — os dados de acesso por artefato já estão disponíveis em `artifact_users` após `fabricgov collect inventory`
+- `breaking(api)`: `ReportAccessCollector`, `DatasetAccessCollector` e `DataflowAccessCollector` removidos do `fabricgov.collectors.__all__` (arquivos mantidos por compatibilidade retroativa)
+- `chore(cli)`: `all-access` agora executa apenas `workspace-access`
+
+---
+
 ## [1.0.4] - 2026-04-06
 
 ### Changed
