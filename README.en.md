@@ -388,6 +388,19 @@ output/
 ### ✅ v1.0.4 — 2026-04-06
 - [x] chore: remove company references from all files (HTML report, docs PT + EN)
 
+### ✅ v1.1.0 — 2026-04-15
+- [x] feat(inventory): `collect()` now returns `artifact_users`, `datasources` and `semantic_models` extracted directly from the Scanner API
+- [x] feat(inventory): `ARTIFACT_TYPES_WITH_USERS` constant with 22 supported artifact types
+- [x] refactor(inventory): `_list_all_workspaces()` filters by `type == "Workspace"`, excluding PersonalGroup
+- [x] deprecate: `ReportAccessCollector`, `DatasetAccessCollector` and `DataflowAccessCollector` marked as deprecated
+- [x] breaking(cli): `report-access`, `dataset-access` and `dataflow-access` commands removed from CLI
+
+### ✅ v1.1.1 — 2026-04-15
+- [x] fix(inventory): enrichment query params (`datasourceDetails`, `getArtifactUsers`, etc.) now sent as query string — the API ignored them when in the JSON body, causing `datasources.csv` and `artifact_users.csv` to never be generated
+- [x] fix(inventory): `_extract_datasources` resolves `datasourceInstanceId` GUID via join with `datasourceInstances` from the scan root level
+- [x] feat(report): new **Datasources** section in the HTML report with KPIs, type chart and connection table
+- [x] feat(report): Access section expanded with `top_artifact_users` table and `artifact_users_by_type` chart
+
 > 📘 [View full changelog →](CHANGELOG.md)
 
 ---

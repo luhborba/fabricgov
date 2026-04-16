@@ -5,6 +5,16 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.1.1] - 2026-04-15
+
+### Fixed
+- `fix(inventory)`: parâmetros de enriquecimento do scan (`datasourceDetails`, `getArtifactUsers`, `datasetSchema`, `datasetExpressions`, `lineage`) agora são enviados como **query params** — a API `/workspaces/getInfo` os ignorava quando enviados no body JSON, resultando em `datasources.csv` e `artifact_users.csv` nunca gerados
+- `fix(inventory)`: `_extract_datasources` agora realiza o join via `self._datasource_instances` (acumulado no nível raiz da response do scan), corrigindo resolução de `datasourceInstanceId` GUID → tipo e detalhes de conexão
+- `feat(report)`: nova seção **Datasources** no relatório HTML com KPIs, gráfico de tipos e tabela de datasets/conexões
+- `feat(report)`: seção de Acesso ampliada com tabela `top_artifact_users` e gráfico `artifact_users_by_type`
+
+---
+
 ## [1.1.0] - 2026-04-15
 
 ### Added
