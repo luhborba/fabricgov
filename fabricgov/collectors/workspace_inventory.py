@@ -262,6 +262,9 @@ class WorkspaceInventoryCollector(BaseCollector):
         """
         POST /v1.0/myorg/admin/workspaces/getInfo
         Inicia scan assíncrono e retorna scan_id.
+
+        Os parâmetros de enriquecimento são query params (não body),
+        conforme documentação da API do Power BI Admin Scanner.
         """
         url = f"{self._base_url}/v1.0/myorg/admin/workspaces/getInfo"
         token = self._auth.get_token(self.FABRIC_SCOPE)
@@ -269,16 +272,20 @@ class WorkspaceInventoryCollector(BaseCollector):
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
-        payload = {
-            "workspaces": workspace_ids,
-            "datasetExpressions": True,
-            "datasetSchema": True,
-            "datasourceDetails": True,
-            "getArtifactUsers": True,
-            "lineage": True,
+        params = {
+            "lineage": "true",
+            "datasourceDetails": "true",
+            "datasetSchema": "true",
+            "datasetExpressions": "true",
+            "getArtifactUsers": "true",
         }
-        
-        response = self._client.post(url, headers=headers, json=payload)
+
+        response = self._client.post(
+            url,
+            headers=headers,
+            params=params,
+            json={"workspaces": workspace_ids},
+        )
         response.raise_for_status()
         return response.json()
 
@@ -492,6 +499,14 @@ class WorkspaceInventoryCollector(BaseCollector):
             dataset_id, dataset_name, datasource_type, connection_details,
             datasource_id, gateway_id, instance_id_raw
         """
+        # A API retorna datasourceInstances no nível raiz da response (não por workspace).
+        # self._datasource_instances foi acumulado em _get_scan_result → usá-lo como lookup.
+        instance_lookup: dict[str, dict] = {
+            inst["datasourceId"]: inst
+            for inst in self._datasource_instances
+            if inst.get("datasourceId")
+        }
+
         datasources: list[dict[str, Any]] = []
         for ws in workspaces_raw:
             ws_id = ws.get("id")
@@ -499,17 +514,28 @@ class WorkspaceInventoryCollector(BaseCollector):
             for dataset in ws.get("datasets", []):
                 for ds_usage in dataset.get("datasourceUsages", []):
                     raw = ds_usage.get("datasourceInstanceId")
-                    info: dict[str, Any] = raw if isinstance(raw, dict) else {}
+                    if isinstance(raw, str):
+                        # GUID opaco — resolve via lookup no nível raiz do scan
+                        info: dict[str, Any] = instance_lookup.get(raw, {})
+                        instance_id_raw: str | None = raw
+                    elif isinstance(raw, dict):
+                        # Formato alternativo já contém detalhes inline
+                        info = raw
+                        instance_id_raw = None
+                    else:
+                        continue
+
+                    conn = info.get("connectionDetails", {})
                     datasources.append({
                         "workspace_id": ws_id,
                         "workspace_name": ws_name,
                         "dataset_id": dataset.get("id"),
                         "dataset_name": dataset.get("name"),
                         "datasource_type": info.get("datasourceType"),
-                        "connection_details": str(info.get("connectionDetails", {})),
+                        "connection_details": str(conn) if conn else None,
                         "datasource_id": info.get("datasourceId"),
                         "gateway_id": info.get("gatewayId"),
-                        "instance_id_raw": raw if isinstance(raw, str) else None,
+                        "instance_id_raw": instance_id_raw,
                     })
         return datasources
 

@@ -165,6 +165,22 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "col_failures_before": "Falhas Antes",
         "col_failures_after": "Falhas Depois",
         "chart_diff_overview": "Visão Geral do Comparativo",
+        # Datasources
+        "nav_datasources": "Datasources",
+        "section_datasources": "Datasources & Conexões",
+        "datasource_type_title": "Datasources por Tipo",
+        "datasource_list_title": "Datasources por Dataset (Top 50)",
+        "col_dataset": "Dataset",
+        "col_datasource_type": "Tipo de Datasource",
+        "col_connection": "Conexão",
+        "kpi_datasource_types": "Tipos de Datasource",
+        "kpi_misconfigured": "Datasources Mal-configurados",
+        "chart_datasource_types": "Datasources por Tipo",
+        # Artifact users
+        "artifact_users_by_type_title": "Usuários Únicos por Tipo de Artefato",
+        "top_artifact_users_title": "Top 10 Usuários por Artefatos com Acesso",
+        "col_artifact_count": "Artefatos com Acesso",
+        "chart_artifact_users_by_type": "Usuários por Tipo de Artefato",
     },
     "en": {
         "html_lang": "en",
@@ -294,6 +310,22 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "col_failures_before": "Failures Before",
         "col_failures_after": "Failures After",
         "chart_diff_overview": "Comparison Overview",
+        # Datasources
+        "nav_datasources": "Datasources",
+        "section_datasources": "Datasources & Connections",
+        "datasource_type_title": "Datasources by Type",
+        "datasource_list_title": "Datasources by Dataset (Top 50)",
+        "col_dataset": "Dataset",
+        "col_datasource_type": "Datasource Type",
+        "col_connection": "Connection",
+        "kpi_datasource_types": "Datasource Types",
+        "kpi_misconfigured": "Misconfigured Datasources",
+        "chart_datasource_types": "Datasources by Type",
+        # Artifact users
+        "artifact_users_by_type_title": "Unique Users by Artifact Type",
+        "top_artifact_users_title": "Top 10 Users by Artifacts with Access",
+        "col_artifact_count": "Artifacts with Access",
+        "chart_artifact_users_by_type": "Users by Artifact Type",
     },
 }
 
@@ -372,6 +404,12 @@ class HtmlReporter:
 
         if ins.activity_timeline:
             charts["activity_timeline"] = self._chart_activity_timeline(ins, t)
+
+        if ins.datasource_type_counts:
+            charts["datasource_types"] = self._chart_datasource_types(ins, t)
+
+        if ins.artifact_users_by_type:
+            charts["artifact_users_by_type"] = self._chart_artifact_users_by_type(ins, t)
 
         if ins.has_diff_data and ins.diff_summary:
             charts["diff_overview"] = self._chart_diff_overview(ins, t)
@@ -515,6 +553,30 @@ class HtmlReporter:
             fill="tozeroy", fillcolor="rgba(224,123,57,0.1)",
         ))
         fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_activity_timeline"],
+                          showlegend=False)
+        return self._fig_to_div(fig)
+
+    def _chart_datasource_types(self, ins: ReportInsights, t: dict) -> str:
+        items = sorted(ins.datasource_type_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        labels, values = zip(*items) if items else ([], [])
+        fig = go.Figure(go.Bar(
+            x=list(values), y=list(labels), orientation="h",
+            marker_color=COLORS_PRIMARY[2],
+            text=list(values), textposition="outside",
+        ))
+        fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_datasource_types"],
+                          showlegend=False)
+        return self._fig_to_div(fig)
+
+    def _chart_artifact_users_by_type(self, ins: ReportInsights, t: dict) -> str:
+        items = sorted(ins.artifact_users_by_type.items(), key=lambda x: x[1], reverse=True)[:12]
+        labels, values = zip(*items) if items else ([], [])
+        fig = go.Figure(go.Bar(
+            x=list(values), y=list(labels), orientation="h",
+            marker_color=COLORS_ACCENT[0],
+            text=list(values), textposition="outside",
+        ))
+        fig.update_layout(**PLOTLY_LAYOUT, title=t["chart_artifact_users_by_type"],
                           showlegend=False)
         return self._fig_to_div(fig)
 

@@ -265,6 +265,11 @@
       <a class="nav-link" href="#access"><i class="bi bi-people"></i> {{ t.nav_access }}</a>
     </li>
     {% endif %}
+    {% if ins.has_datasource_data %}
+    <li class="nav-item">
+      <a class="nav-link" href="#datasources"><i class="bi bi-plug"></i> {{ t.nav_datasources }}</a>
+    </li>
+    {% endif %}
     {% if ins.has_refresh_data %}
     <li class="nav-item">
       <a class="nav-link" href="#refresh"><i class="bi bi-arrow-repeat"></i> {{ t.nav_refresh }}</a>
@@ -707,6 +712,90 @@
               <td>{{ w.workspace }}</td>
               <td class="text-break">{{ w.user_email }}</td>
               <td><span class="badge bg-primary">{{ w.role }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Top artifact users (v1.1.0) -->
+    {% if ins.top_artifact_users %}
+    <div class="table-card">
+      <h6><i class="bi bi-person-badge me-1"></i>{{ t.top_artifact_users_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead><tr><th>#</th><th>{{ t.col_email }}</th><th class="text-end">{{ t.col_artifact_count }}</th></tr></thead>
+          <tbody>
+            {% for u in ins.top_artifact_users %}
+            <tr>
+              <td class="text-muted">{{ loop.index }}</td>
+              <td class="text-break">{{ u.get("email", "—") }}</td>
+              <td class="text-end fw-semibold">{{ u.get("artifact_count", 0) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Artifact users by type chart (v1.1.0) -->
+    {% if "artifact_users_by_type" in charts %}
+    <div class="chart-card">{{ charts["artifact_users_by_type"] | safe }}</div>
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+
+  <!-- ── SECTION: Datasources ── -->
+  {% if ins.has_datasource_data %}
+  <div id="datasources" class="section">
+    <div class="section-title"><i class="bi bi-plug me-2"></i>{{ t.section_datasources }}</div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-access">
+          <div class="kpi-value">{{ ins.datasource_type_counts | length }}</div>
+          <div class="kpi-label">{{ t.kpi_datasource_types }}</div>
+        </div>
+      </div>
+      {% if ins.misconfigured_datasources_count > 0 %}
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card kpi-risk">
+          <div class="kpi-value">{{ ins.misconfigured_datasources_count }}</div>
+          <div class="kpi-label">{{ t.kpi_misconfigured }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if "datasource_types" in charts %}
+    <div class="chart-card mb-3">{{ charts["datasource_types"] | safe }}</div>
+    {% endif %}
+
+    {% if ins.top_datasources %}
+    <div class="table-card">
+      <h6><i class="bi bi-database me-1"></i>{{ t.datasource_list_title }}</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{{ t.col_dataset }}</th>
+              <th>{{ t.nav_workspaces }}</th>
+              <th>{{ t.col_datasource_type }}</th>
+              <th>{{ t.col_connection }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ds in ins.top_datasources %}
+            <tr>
+              <td>{{ ds.get("dataset_name", "—") }}</td>
+              <td>{{ ds.get("workspace_name", "—") }}</td>
+              <td><span class="badge bg-secondary">{{ ds.get("datasource_type", "—") }}</span></td>
+              <td class="text-muted small text-break">{{ ds.get("connection_details", "—") }}</td>
             </tr>
             {% endfor %}
           </tbody>

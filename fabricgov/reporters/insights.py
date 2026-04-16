@@ -28,6 +28,8 @@ class ReportInsights:
     has_refresh_data: bool = False
     has_infra_data: bool = False
     has_domain_data: bool = False
+    has_datasource_data: bool = False
+    has_artifact_users_data: bool = False
 
     # --- KPIs ---
     total_workspaces: int = 0
@@ -50,6 +52,8 @@ class ReportInsights:
     capacity_workspace_counts: dict[str, int] = field(default_factory=dict)
     workload_state_counts: dict[str, int] = field(default_factory=dict)
     sku_counts: dict[str, int] = field(default_factory=dict)
+    datasource_type_counts: dict[str, int] = field(default_factory=dict)
+    artifact_users_by_type: dict[str, int] = field(default_factory=dict)
 
     # --- Tabelas ---
     workspace_rows: list[dict] = field(default_factory=list)
@@ -62,6 +66,10 @@ class ReportInsights:
     artifact_cards: list[dict] = field(default_factory=list)
     capacities_list: list[dict] = field(default_factory=list)
     domains_list: list[dict] = field(default_factory=list)
+    top_artifact_users: list[dict] = field(default_factory=list)
+    external_artifact_users: list[dict] = field(default_factory=list)
+    top_datasources: list[dict] = field(default_factory=list)
+    misconfigured_datasources_count: int = 0
 
     # --- Findings de governança ---
     findings: list[dict] = field(default_factory=list)
@@ -137,6 +145,7 @@ class InsightsEngine:
         self._load_summary(ins)
         self._load_workspaces(ins)
         self._load_access(ins)
+        self._load_datasources(ins)
         self._load_refresh(ins)
         self._load_infra(ins)
         self._load_domains(ins)
@@ -359,6 +368,70 @@ class InsightsEngine:
                             "role": str(sub.get("role", "")),
                         })
 
+        # --- artifact_users (v1.1.0) ---
+        au_df = self._read_csv("artifact_users")
+        if au_df is not None and not au_df.empty:
+            has_any = True
+            ins.has_artifact_users_data = True
+
+            # Emails únicos de artefatos
+            if "emailAddress" in au_df.columns:
+                emails_au = au_df["emailAddress"].fillna("").astype(str)
+                all_emails.update(e for e in emails_au if e)
+
+                # Externos em artefatos
+                ext_mask_au = emails_au.str.contains("#EXT#", na=False, case=False)
+                for _, row in au_df[ext_mask_au].iterrows():
+                    em = str(row.get("emailAddress", ""))
+                    if em not in ext_emails:
+                        ext_emails[em] = {"roles": set(), "workspace_count": 0}
+                    ar = str(row.get("accessRight", ""))
+                    if ar:
+                        ext_emails[em]["roles"].add(ar)
+                    ws = row.get("workspace_name") or ""
+                    if ws:
+                        ext_emails[em]["workspace_count"] += 1
+
+            # Porção principal de usuários por tipo de artefato
+            if "artifact_type" in au_df.columns:
+                ins.artifact_users_by_type = (
+                    au_df.groupby("artifact_type")["emailAddress"]
+                    .nunique()
+                    .sort_values(ascending=False)
+                    .to_dict()
+                )
+
+            # Roles via accessRight
+            if "accessRight" in au_df.columns:
+                for right, cnt in au_df["accessRight"].value_counts().items():
+                    role_dist[str(right)] = role_dist.get(str(right), 0) + int(cnt)
+
+            # Top 10 usuários por número de artefatos
+            if "emailAddress" in au_df.columns and "artifact_id" in au_df.columns:
+                top_au = (
+                    au_df.groupby("emailAddress")["artifact_id"]
+                    .nunique()
+                    .sort_values(ascending=False)
+                    .head(10)
+                )
+                ins.top_artifact_users = [
+                    {"email": em, "artifact_count": int(cnt)}
+                    for em, cnt in top_au.items()
+                ]
+
+            # external_artifact_users consolidados
+            ins.external_artifact_users = [
+                {
+                    "email": em,
+                    "roles": ", ".join(sorted(info["roles"])) or "—",
+                    "workspace_count": info["workspace_count"],
+                }
+                for em, info in sorted(
+                    ext_emails.items(), key=lambda x: x[1]["workspace_count"], reverse=True
+                )
+                if "#EXT#" in em
+            ][:50]
+
         if not has_any:
             return
 
@@ -379,7 +452,7 @@ class InsightsEngine:
             )
         ][:50]
 
-        # Top users por acesso
+        # Top users por acesso (workspace_access)
         wdf = self._read_csv("workspace_access")
         if wdf is not None and "user_email" in wdf.columns and "workspace_id" in wdf.columns:
             top_users = (
@@ -392,6 +465,40 @@ class InsightsEngine:
                 {"email": em, "workspace_count": int(cnt)}
                 for em, cnt in top_users.items()
             ]
+
+    def _load_datasources(self, ins: ReportInsights) -> None:
+        df = self._read_csv("datasources")
+        if df is None or df.empty:
+            # Tenta datasourceInstances como fallback
+            df = self._read_csv("datasourceInstances")
+            if df is None or df.empty:
+                return
+
+        ins.has_datasource_data = True
+
+        # Contagem por tipo
+        type_col = next(
+            (c for c in ["datasource_type", "datasourceType", "type"] if c in df.columns),
+            None,
+        )
+        if type_col:
+            ins.datasource_type_counts = (
+                df[type_col].fillna("Unknown")
+                .value_counts()
+                .head(20)
+                .to_dict()
+            )
+
+        # Top datasources (dataset + tipo + workspace)
+        cols_wanted = ["dataset_name", "workspace_name", "datasource_type", "connection_details"]
+        available = [c for c in cols_wanted if c in df.columns]
+        if available:
+            ins.top_datasources = df[available].head(50).fillna("—").to_dict("records")
+
+        # Misconfigured
+        misc_df = self._read_csv("misconfiguredDatasourceInstances")
+        if misc_df is not None:
+            ins.misconfigured_datasources_count = len(misc_df)
 
     def _load_refresh(self, ins: ReportInsights) -> None:
         df = self._read_csv("refresh_history")
@@ -561,6 +668,17 @@ class InsightsEngine:
                 "message_en": f"{len(ins.stale_datasets)} dataset(s) without refresh in the last 30 days",
                 "count": len(ins.stale_datasets),
                 "details": ins.stale_datasets,
+            })
+
+        if ins.misconfigured_datasources_count > 0:
+            findings.append({
+                "severity": "HIGH",
+                "badge": "warning",
+                "icon": "🟠",
+                "message": f"{ins.misconfigured_datasources_count} datasource(s) com erro de configuração detectado(s)",
+                "message_en": f"{ins.misconfigured_datasources_count} datasource(s) with configuration error detected",
+                "count": ins.misconfigured_datasources_count,
+                "details": [],
             })
 
         if not findings:

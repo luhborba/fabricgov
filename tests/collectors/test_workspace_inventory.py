@@ -12,7 +12,10 @@ def mock_auth():
 
 @pytest.fixture
 def collector(mock_auth):
-    return WorkspaceInventoryCollector(auth=mock_auth)
+    c = WorkspaceInventoryCollector(auth=mock_auth)
+    c._datasource_instances = []
+    c._misconfigured_datasource_instances = []
+    return c
 
 
 # ── _list_all_workspaces ──────────────────────────────────────────────────────
@@ -182,7 +185,8 @@ class TestExtractDatasources:
         assert row["workspace_id"] == "ws-1"
         assert row["dataset_id"] == "ds-1"
 
-    def test_extrai_datasource_como_string(self, collector):
+    def test_extrai_datasource_como_string_sem_lookup(self, collector):
+        """GUID sem datasourceInstances no workspace → campos de tipo ficam None."""
         workspaces_raw = [
             {
                 "id": "ws-1",
@@ -200,6 +204,39 @@ class TestExtractDatasources:
         assert len(result) == 1
         assert result[0]["instance_id_raw"] == "opaque-ref-123"
         assert result[0]["datasource_type"] is None
+
+    def test_resolve_datasource_via_lookup(self, collector):
+        """GUID é resolvido contra self._datasource_instances (nível raiz do scan)."""
+        # Simula o que _get_scan_result acumula em self._datasource_instances
+        collector._datasource_instances = [
+            {
+                "datasourceId": "inst-guid-1",
+                "datasourceType": "Sql",
+                "gatewayId": "gw-1",
+                "connectionDetails": {"server": "srv", "database": "db"},
+            }
+        ]
+        workspaces_raw = [
+            {
+                "id": "ws-1",
+                "name": "WS",
+                "datasets": [
+                    {
+                        "id": "ds-1",
+                        "name": "DS",
+                        "datasourceUsages": [{"datasourceInstanceId": "inst-guid-1"}],
+                    }
+                ],
+            }
+        ]
+        result = collector._extract_datasources(workspaces_raw)
+        assert len(result) == 1
+        row = result[0]
+        assert row["datasource_type"] == "Sql"
+        assert row["gateway_id"] == "gw-1"
+        assert row["datasource_id"] == "inst-guid-1"
+        assert row["instance_id_raw"] == "inst-guid-1"
+        assert "srv" in row["connection_details"]
 
     def test_ignora_dataset_sem_datasource_usages(self, collector):
         workspaces_raw = [
